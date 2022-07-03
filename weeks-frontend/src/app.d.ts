@@ -5,6 +5,9 @@
 declare namespace App {
 	// interface Locals {}
 	// interface Platform {}
-	// interface Session {}
 	// interface Stuff {}
+
+  interface Session {
+    currentUser: import("$lib/services/user/user.service").User
+  }
 }

@@ -1,3 +1,4 @@
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 /*
 |--------------------------------------------------------------------------
 | Http Exception Handler
@@ -19,5 +20,9 @@ import HttpExceptionHandler from '@ioc:Adonis/Core/HttpExceptionHandler'
 export default class ExceptionHandler extends HttpExceptionHandler {
   constructor() {
     super(Logger)
+  }
+
+  public async handle(error: any, ctx: HttpContextContract) {
+    super.handle(error, ctx)
   }
 }

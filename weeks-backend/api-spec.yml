@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: Weeks API
+  description: Description of weeks API
+  version: 1.0.0
+# servers:
+#   - url: http://api.example.com/v1
+#     description: Optional server description, e.g. Main (production) server
+#   - url: http://staging-api.example.com
+#     description: Optional server description, e.g. Internal staging server for test
+components:
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        total: 
+          type: integer
+        perPage:
+          type: number
+        currentPage:
+          type: number
+    User:
+      type: object
+      properties:
+        id: 
+          type: integer
+        email:
+          type: string
+        rememberMeToken:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
+paths:
+  /auth/login:
+    post:
+      summary: Return a token to put in the authorization header.
+      responses:
+        '200':
+          description: Auth token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  token:
+                    type: string
+                  expires_at:
+                    type: string
+                    format: date-time
+                  expires_in:
+                    type: number
+  /auth/logout:
+    post:
+      summary: Revoke a token for a user.
+      responses:
+        '200':
+          description: Status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revoked:
+                    type: boolean
+  /users:
+    get:
+      summary: Returns a list of users.
+      responses:
+        '200':    # status code
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+    post:
+      summary: Create a user.
+      responses:
+        '200':    # status code
+          description: The new user.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/User"
+  /users/{userId}:
+    get:
+      summary: Returns a certain user.
+      responses:
+        '200':    # status code
+          description: The user got.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/User"
+    put:
+      summary: Update a certain user.
+      responses:
+        '200':    # status code
+          description: The user got.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/User"

@@ -20,6 +20,11 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async () => {
-  return { hello: 'world' }
-})
+Route.post('/auth/login', 'AuthController.login')
+Route.post('/auth/logout', 'AuthController.logout').middleware('auth:api')
+Route.get('/auth/me', 'AuthController.me').middleware('auth:api')
+Route.post('/auth/google/redirect', 'AuthController.googleRedirect')
+Route.post('/auth/google/callback', 'AuthController.googleCallback')
+Route.resource('users', 'UsersController')
+  .only([ 'index', 'store', 'update', 'show', 'destroy' ])
+  .middleware('auth:api')
