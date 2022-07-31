@@ -15,6 +15,7 @@
   })
 
   let loginPath: string = '/auth/Login'
+  let callbackGooglePath: string = '/auth/google/callback'
   let defaultPath: string = '/'
   async function checkAuth(destinationUrl: string) {
     const authService = new AuthService({ fetch })
@@ -22,9 +23,9 @@
     else if(!$session.currentUser && authService.authCookiePresent()) {
       await authService.setSession()
 
-      if(destinationUrl == loginPath) goto(defaultPath)
+      if(destinationUrl == loginPath || destinationUrl == callbackGooglePath) goto(defaultPath)
     } else if(!$session.currentUser && !authService.authCookiePresent()) {
-      if(destinationUrl != loginPath) goto(loginPath)
+      if(destinationUrl != loginPath && destinationUrl != callbackGooglePath) goto(loginPath)
     }
   }
 

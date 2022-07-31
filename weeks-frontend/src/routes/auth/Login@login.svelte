@@ -23,6 +23,11 @@
     })
   }
 
+  function loginWithGoogle() {
+    const service = new AuthService({ fetch })
+    service.loginWithGoogle()
+  }
+
   import StandardButton from '$lib/components/StandardButton.svelte';
   import LabelAndTextfield from '$lib/components/LabelAndTextfield.svelte';
   import LinkButton from '$lib/components/LinkButton.svelte';
@@ -45,6 +50,7 @@
     >
       <StandardButton
         type="standard"
+        on:click={loginWithGoogle}
       >
         <Icon 
           name="mdi-google" 

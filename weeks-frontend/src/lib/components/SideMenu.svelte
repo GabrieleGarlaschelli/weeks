@@ -9,7 +9,9 @@
   import { page } from "$app/stores"
   import colors from "$lib/stores/colors";
   import AuthService from "$lib/services/auth/auth.service";
-import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
+  import { session } from "$app/stores";
+  import UserAvatar from "./UserAvatar.svelte";
 
 
   export let width: number = 200;
@@ -98,14 +100,39 @@ import { goto } from "$app/navigation";
   <div
     style:padding-left="30px"
   >
-    <LinkButton
-      on:click={handleLogout}
-    >
-      <span
-        style:color={$colors.lightContrast}
-        style:font-size="0.8rem"
-      >Logout</span>
-    </LinkButton>
+    <div style:margin-bottom="20px">
+      <UserAvatar
+        username={$session?.currentUser?.name}
+        src={$session?.currentUser?.avatarUrl}
+      ></UserAvatar>
+    </div>
+
+    <div style:margin-top="5px">
+      <LinkButton>
+        <span
+          style:color={$colors.lightContrast}
+          style:font-size="0.8rem"
+        >Hai bisogno di aiuto?</span>
+      </LinkButton>
+    </div>
+    <div style:margin-top="5px">
+      <LinkButton>
+        <span
+          style:color={$colors.lightContrast}
+          style:font-size="0.8rem"
+        >Informativa privacy</span>
+      </LinkButton>
+    </div>
+    <div style:margin-top="5px">
+      <LinkButton
+        on:click={handleLogout}
+      >
+        <span
+          style:color={$colors.lightContrast}
+          style:font-size="0.8rem"
+        >Logout</span>
+      </LinkButton>
+    </div>
   </div>
 </div>
 

@@ -7,11 +7,26 @@
 </script>
 
 <script lang="ts">
+  import Icon from '@likable-hair/svelte/media/Icon.svelte'
+  import colors from '$lib/stores/colors';
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher<{
+    "click": {
+      nativeEvent: MouseEvent,
+      item: MenuItem
+    }
+  }>()
+
+
   export let items: MenuItem[] = [],
     selected: string | undefined = undefined
 
-  import Icon from '@likable-hair/svelte/media/Icon.svelte'
-  import colors from '$lib/stores/colors';
+  function handleItemClick(item: MenuItem, event: MouseEvent) {
+    dispatch('click', {
+      item: item,
+      nativeEvent: event
+    })
+  }
 </script>
 
 <div
@@ -23,6 +38,8 @@
     <div 
       style:display="flex"
       style:padding-left="30px"
+      style:cursor="pointer"
+      on:click={(event) => handleItemClick(item, event)}
     >
       <div
         style:margin-right="30px"

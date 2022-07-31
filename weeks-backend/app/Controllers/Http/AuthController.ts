@@ -1,3 +1,4 @@
+import Env from '@ioc:Adonis/Core/Env';
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User';
 
@@ -27,7 +28,7 @@ export default class AuthController {
     return ally.use('google').redirect()
   }
 
-  public async googleCallback({ auth, ally }: HttpContextContract) {
+  public async googleCallback({ auth, ally, response }: HttpContextContract) {
     const google = ally.use('google')
 
     if (google.accessDenied()) {
@@ -40,14 +41,17 @@ export default class AuthController {
 
     const googleUser = await google.user()
 
-    /**
-     * Finally, access the user
-     */
     const user = await User.firstOrCreate({
-      email: googleUser.email || undefined
+      email: googleUser.email || undefined,
     }, {
+      name: googleUser.name || undefined,
+      avatarUrl: googleUser.avatarUrl || undefined,
       password: googleUser.token.token
     })
-    await auth.use('api').login(user)
+    const token = await auth.use('api').login(user, {
+      expiresIn: '7days'
+    })
+
+    response.redirect().withQs(token.toJSON()).toPath(Env.get('GOOGLE_CALLBACK_URL') || 'http://localhost:3000/auth/google/callback')
   }
 }

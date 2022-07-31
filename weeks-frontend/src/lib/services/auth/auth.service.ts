@@ -2,7 +2,6 @@ import { browser } from "$app/env";
 import { FetchBasedService } from "../base/fetchBased.service";
 import Cookies from 'js-cookie'
 import { session } from "$app/stores";
-// import currentUser from "$lib/services/stores/currentUser";
 import type { User } from "../user/user.service";
 
 export type LoginParams = {
@@ -44,6 +43,21 @@ export default class AuthService extends FetchBasedService {
     }
   }
 
+  async loginWithGoogle() {
+    if(browser) {
+      window.location.href = this.urls.api + '/auth/google/redirect'
+    }
+  }
+
+  async loginWithGoogleCallback(params: { token: string, expiresAt: Date }) {
+    if(browser) {
+      Cookies.set(this.coockieName, params.token, {
+        expires: new Date(params.expiresAt),
+        sameSite: 'strict'
+      })
+    }
+  }
+
   async setSession() {
     if(browser && this.authCookiePresent()) {
       let currentUser: User = await this.me();
@@ -66,6 +80,8 @@ export default class AuthService extends FetchBasedService {
 
     return {
       email: response.email,
+      name: response.name,
+      avatarUrl: response.avatarUrl,
       createdAt: new Date(response.createdAt),
       updatedAt: new Date(response.updatedAt)
     }
