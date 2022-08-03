@@ -1,7 +1,8 @@
 import { CamelCaseBaseModel } from './CamelCaseBaseModel';
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeSave, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import Team from 'App/Models/Team';
 
 export default class User extends CamelCaseBaseModel {
 
@@ -28,6 +29,15 @@ export default class User extends CamelCaseBaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @manyToMany(() => Team, {
+    pivotTable: 'teammates',
+    localKey: 'id',
+    pivotForeignKey: 'userId',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'teamId',
+  })
+  public teams: ManyToMany<typeof Team>
 
   @beforeSave()
   public static async hashPassword (user: User) {
