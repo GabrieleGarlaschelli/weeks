@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.integer('invitedByUserId').references('users.id').onDelete('CASCADE')
       table.integer('invitedUserId').references('users.id').onDelete('CASCADE')
+      table.string('invitedEmail')
       table.integer('teamId').references('teams.id').onDelete('CASCADE')
       table.integer('roleId').references('roles.id').onDelete('SET NULL')
       table.string('status')
