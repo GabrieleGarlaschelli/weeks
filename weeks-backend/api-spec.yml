@@ -56,6 +56,12 @@ paths:
                     format: date-time
                   expires_in:
                     type: number
+  /auth/signup:
+    post:
+      summary: Signup and create a new user.
+      responses:
+        '200':
+          description: New User.
   /auth/logout:
     post:
       summary: Revoke a token for a user.

@@ -17,7 +17,8 @@ export default class UsersController {
     return await manager.create({
       data: {
         email: request.body().email,
-        password: request.body().password
+        password: request.body().password,
+        name: request.body().name
       }
     })
   }
@@ -37,7 +38,8 @@ export default class UsersController {
       data: {
         id: params.id,
         email: request.input('email'),
-        password: request.input('password')
+        password: request.input('password'),
+        name: request.input('name')
       }
     })
   }

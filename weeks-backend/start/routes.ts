@@ -21,6 +21,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.post('/auth/login', 'AuthController.login')
+Route.post('/auth/signup', 'AuthController.signup')
 Route.post('/auth/logout', 'AuthController.logout').middleware('auth:api')
 Route.get('/auth/me', 'AuthController.me').middleware('auth:api')
 Route.get('/auth/google/redirect', 'AuthController.googleRedirect')

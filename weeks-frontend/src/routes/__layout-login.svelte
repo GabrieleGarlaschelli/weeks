@@ -15,6 +15,7 @@
   })
 
   let loginPath: string = '/auth/Login'
+  let signupPath: string = '/auth/Signup'
   let callbackGooglePath: string = '/auth/google/callback'
   let defaultPath: string = '/'
   async function checkAuth(destinationUrl: string) {
@@ -23,9 +24,17 @@
     else if(!$session.currentUser && authService.authCookiePresent()) {
       await authService.setSession()
 
-      if(destinationUrl == loginPath || destinationUrl == callbackGooglePath) goto(defaultPath)
+      if(
+        destinationUrl == loginPath || 
+        destinationUrl == callbackGooglePath ||
+        destinationUrl == signupPath
+      ) goto(defaultPath)
     } else if(!$session.currentUser && !authService.authCookiePresent()) {
-      if(destinationUrl != loginPath && destinationUrl != callbackGooglePath) goto(loginPath)
+      if(
+        destinationUrl != loginPath && 
+        destinationUrl != callbackGooglePath &&
+        destinationUrl != signupPath
+      ) goto(loginPath)
     }
   }
 
@@ -34,6 +43,25 @@
     if(!!html)
       html.style.backgroundColor = $colors.thinContrast
   })
+
+  import NProgress from 'nprogress';
+	import { navigating } from '$app/stores';
+
+	import 'nprogress/nprogress.css';
+
+	NProgress.configure({
+		// Full list: https://github.com/rstacruz/nprogress#configuration
+		minimum: 0.16
+	});
+
+	$: {
+		if ($navigating) {
+			NProgress.start();
+		}
+		if (!$navigating) {
+			NProgress.done();
+		}
+	}
 </script>
 
 <main>
@@ -59,6 +87,7 @@
   input:-webkit-autofill:focus, 
   input:-webkit-autofill:active{
       -webkit-box-shadow: 0 0 0 30px var(--global-background-color) inset !important;
+      box-shadow: 0 0 0 30px var(--global-background-color) inset !important;
   }
 
   input:-webkit-autofill {

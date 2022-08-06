@@ -10,6 +10,9 @@ export default class UserValidator {
     ]),
     password: schema.string([
       rules.minLength(6)
+    ]),
+    name: schema.string([
+      rules.maxLength(255)
     ])
   })
 

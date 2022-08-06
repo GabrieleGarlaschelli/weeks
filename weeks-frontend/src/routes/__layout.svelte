@@ -15,6 +15,7 @@
   })
 
   let loginPath: string = '/auth/Login'
+  let signupPath: string = '/auth/Signup'
   let callbackGooglePath: string = '/auth/google/callback'
   let defaultPath: string = '/'
   async function checkAuth(destinationUrl: string) {
@@ -22,14 +23,42 @@
     if(!!$session.currentUser) return
     else if(!$session.currentUser && authService.authCookiePresent()) {
       await authService.setSession()
-      
-      if(destinationUrl == loginPath || destinationUrl == callbackGooglePath) goto(defaultPath)
+
+      if(
+        destinationUrl == loginPath || 
+        destinationUrl == callbackGooglePath ||
+        destinationUrl == signupPath
+      ) goto(defaultPath)
     } else if(!$session.currentUser && !authService.authCookiePresent()) {
-      if(destinationUrl != loginPath && destinationUrl != callbackGooglePath) goto(loginPath)
+      if(
+        destinationUrl != loginPath && 
+        destinationUrl != callbackGooglePath &&
+        destinationUrl != signupPath
+      ) goto(loginPath)
     }
   }
 
   let sideBarWidth: number
+
+
+  import NProgress from 'nprogress';
+	import { navigating } from '$app/stores';
+
+	import 'nprogress/nprogress.css';
+
+	NProgress.configure({
+		// Full list: https://github.com/rstacruz/nprogress#configuration
+		minimum: 0.16
+	});
+
+	$: {
+		if ($navigating) {
+			NProgress.start();
+		}
+		if (!$navigating) {
+			NProgress.done();
+		}
+	}
 
 </script>
 

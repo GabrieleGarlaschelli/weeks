@@ -13,11 +13,17 @@
     bind:value={value}
     id={id}
   ></StandardCheckbox>
-  <label 
-    style:margin-left="0.7rem"
-    style:color={$colors.lightContrast}
-    for={id}>{label}
-  </label>
+  <slot name="label">
+    <label 
+      style:margin-left="0.7rem"
+      style:color={$colors.lightContrast}
+      for={id}
+    >
+      <slot name="text">
+        {label}
+      </slot>
+    </label>
+  </slot>
 </div>
 
 <style>

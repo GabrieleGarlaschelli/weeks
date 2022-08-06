@@ -9,7 +9,9 @@
   import colors from '$lib/stores/colors'
   import { goto } from '$app/navigation';
 
-  let email: string = "", password: string = "";
+  let email: string = "", 
+    password: string = "",
+    authFailed: boolean = false;
 
   function login() {
     const service = new AuthService({ fetch })
@@ -20,12 +22,18 @@
       }
     }).then(() => {
       goto('/')
+    }).catch(() => {
+      authFailed = true
     })
   }
 
   function loginWithGoogle() {
     const service = new AuthService({ fetch })
     service.loginWithGoogle()
+  }
+
+  function goToSignup() {
+    goto('/auth/Signup')
   }
 
   import StandardButton from '$lib/components/StandardButton.svelte';
@@ -75,12 +83,14 @@
         placeholder="email"
         name="email"
         bind:value={email}
+        error={authFailed}
       ></LabelAndTextfield>
       <LabelAndTextfield
         label="Password"
         name="password"
         type="password"
         bind:value={password}
+        error={authFailed}
       ></LabelAndTextfield>
       <div
         style:margin-top="10px"
@@ -122,7 +132,7 @@
         style:color={$colors.lightContrast}
         style:margin-bottom="5px"
       >Don't have an account?</div>
-      <LinkButton>Sign up</LinkButton>
+      <LinkButton on:click={goToSignup}>Sign up</LinkButton>
     </div>
   </div>
 </div>

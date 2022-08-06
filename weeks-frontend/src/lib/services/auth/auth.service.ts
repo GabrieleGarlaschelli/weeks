@@ -12,6 +12,15 @@ export type LoginParams = {
   context?: {}
 }
 
+export type SignupParams = {
+  data: {
+    email: string,
+    password: string,
+    name: string
+  },
+  context?: {}
+}
+
 export default class AuthService extends FetchBasedService {
 
   constructor(params: {
@@ -39,6 +48,21 @@ export default class AuthService extends FetchBasedService {
       })
 
       await this.setSession()
+      return response
+    }
+  }
+
+  async signup(params: SignupParams) {
+    if (browser) {
+      const response = await this.post({
+        url: '/auth/signup',
+        body: {
+          email: params.data.email,
+          password: params.data.password,
+          name: params.data.name
+        }
+      })
+
       return response
     }
   }

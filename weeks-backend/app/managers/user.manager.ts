@@ -8,7 +8,8 @@ import { ModelObject } from '@ioc:Adonis/Lucid/Orm';
 export type CreateParams = {
   data: {
     email: string,
-    password: string
+    password: string,
+    name: string
   },
   context?: {}
 }
@@ -17,7 +18,8 @@ export type UpdateParams = {
   data: {
     id?: number,
     email?: string,
-    password?: string
+    password?: string,
+    name?: string
   },
   context?: {}
 }

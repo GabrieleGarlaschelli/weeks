@@ -3,7 +3,8 @@
     label: string,
     placeholder: string = "",
     name: string,
-    type: 'password' | 'text' = 'text'
+    type: 'password' | 'text' = 'text',
+    error: boolean = false
 
   import StandardTextfield from "./StandardTextfield.svelte";
   import PasswordTextfield from "./PasswordTextfield.svelte";
@@ -22,12 +23,14 @@
       bind:value={value}
       label={placeholder}
       on:input
+      bind:error={error}
     ></StandardTextfield>
   {:else if type == 'password'}
     <PasswordTextfield
       bind:value={value}
       label={placeholder}
       on:input
+      bind:error={error}
     ></PasswordTextfield>
   {/if}
 </div>

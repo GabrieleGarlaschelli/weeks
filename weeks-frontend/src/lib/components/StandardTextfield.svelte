@@ -4,7 +4,8 @@
 
   export let label: string = "",
     placeholder: string = "",
-    value: string = ""
+    value: string = "",
+    error: boolean = false
 </script>
 
 <TextField
@@ -20,8 +21,8 @@
   variant="boxed"
   textColor={$colors.contrast}
   color={$colors.lightContrast}
-  borderColor={$colors.thinContrast}
-  focusBorderColor={$colors.primary}
+  borderColor={error ? 'red' : $colors.thinContrast}
+  focusBorderColor={error ? 'red' : $colors.primary}
   focusedBoxShadow="rgb(149 157 165 / 20%) 2px 2px 10px"
   borderWeight="1px"
   on:input

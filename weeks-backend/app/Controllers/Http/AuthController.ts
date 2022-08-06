@@ -1,6 +1,7 @@
 import Env from '@ioc:Adonis/Core/Env';
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User';
+import UsersManager from 'App/managers/user.manager';
 
 export default class AuthController {
   public async login({ auth, request }: HttpContextContract) {
@@ -21,6 +22,19 @@ export default class AuthController {
   public async me({ auth }: HttpContextContract) {
     await auth.use('api')
     return auth.user
+  }
+
+  public async signup({ request }: HttpContextContract) {
+    const manager = new UsersManager()
+    await manager.create({
+      data: {
+        email: request.input('email'),
+        password: request.input('password'),
+        name: request.input('email')
+      }
+    })
+
+    return true
   }
 
 
