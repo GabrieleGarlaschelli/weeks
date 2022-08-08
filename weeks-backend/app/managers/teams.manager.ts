@@ -163,13 +163,18 @@ class TeamsManager {
         data: params.data
       })
 
-      const team = await TeamModel.findOrFail(params.data.id)
+      const team = await TeamModel.findOrFail(params.data.id, {
+        client: trx
+      })
+
       team.merge({
         name: params.data.name,
         notes: params.data.notes
       })
 
-      return await team.save()
+      const results = await team.save()
+      if (!params.context?.trx) await trx.commit()
+      return results
     } catch(error) {
       if (!params.context?.trx) trx.rollback()
       throw error

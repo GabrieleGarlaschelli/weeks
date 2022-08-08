@@ -42,7 +42,7 @@ test.group('Teams', (group) => {
   test('update an existing team', async ({ client, assert }) => {
     const team = await TeamFactory.with('owner').with('teammateUsers').create()
     const user = await UserModel.query().whereHas('teams', (builder) => builder.where('teams.id', team.id)).firstOrFail()
-    const response = await client.patch('/teams/' + team.id).json({
+    const response = await client.put('/teams/' + team.id).json({
       name: 'il nuovo nome'
     }).loginAs(user)
 
