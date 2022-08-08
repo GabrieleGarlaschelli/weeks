@@ -27,6 +27,14 @@ Route.get('/auth/me', 'AuthController.me').middleware('auth:api')
 Route.get('/auth/google/redirect', 'AuthController.googleRedirect')
 Route.get('/auth/google/callback', 'AuthController.googleCallback')
 
+Route.resource('teams', 'TeamsController')
+  .only(['index', 'store', 'update', 'show', 'destroy'])
+  .middleware({
+    '*': ['auth:api']
+  })
+  
 Route.resource('users', 'UsersController')
   .only([ 'index', 'store', 'update', 'show', 'destroy' ])
-  .middleware('auth:api')
+  .middleware({
+    '*': ['auth:api']
+  })

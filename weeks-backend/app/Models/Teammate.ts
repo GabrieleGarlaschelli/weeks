@@ -1,30 +1,40 @@
+import { CamelCaseBaseModel } from './CamelCaseBaseModel'
 import { DateTime, } from 'luxon'
-import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
 import Team from 'App/Models/Team'
 import Role from 'App/Models/Role'
 
-export default class Teammate extends BaseModel {
+export default class Teammate extends CamelCaseBaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
   public uid: string
 
-  @hasOne(() => User, {
+  @column()
+  public userId: number
+
+  @belongsTo(() => User, {
     foreignKey: 'userId'
   })
-  public user: HasOne<typeof User>
+  public user: BelongsTo<typeof User>
 
-  @hasOne(() => Team, {
+  @column()
+  public teamId: number
+
+  @belongsTo(() => Team, {
     foreignKey: 'teamId'
   })
-  public team: HasOne<typeof Team>
+  public team: BelongsTo<typeof Team>
 
-  @hasOne(() => Role, {
+  @column()
+  public roleId: number
+
+  @belongsTo(() => Role, {
     foreignKey: 'roleId'
   })
-  public role: HasOne<typeof Role>
+  public role: BelongsTo<typeof Role>
   
 
   @column.dateTime({ autoCreate: true })

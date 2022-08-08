@@ -1,9 +1,10 @@
+import { CamelCaseBaseModel } from './CamelCaseBaseModel'
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import Frequency from 'App/Models/Frequency'
 import Team from 'App/Models/Team'
 
-export default class Event extends BaseModel {
+export default class Event extends CamelCaseBaseModel {
   @column({ isPrimary: true })
   public id: number
 

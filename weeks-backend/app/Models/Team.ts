@@ -1,7 +1,10 @@
+import User from 'App/Models/User';
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { CamelCaseBaseModel } from './CamelCaseBaseModel';
+import { BelongsTo, belongsTo, column, hasMany, HasMany, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import Teammate from './Teammate'
 
-export default class Team extends BaseModel {
+export default class Team extends CamelCaseBaseModel {
   @column({ isPrimary: true })
   public id: number
 
@@ -13,6 +16,28 @@ export default class Team extends BaseModel {
 
   @column()
   public notes: string
+
+  @hasMany(() => Teammate, {
+    foreignKey: 'teamId'
+  })
+  public teammates: HasMany<typeof Teammate>
+
+  @column()
+  public ownerId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'ownerId'
+  })
+  public owner: BelongsTo<typeof User>
+
+  @manyToMany(() => User, {
+    localKey: 'id',
+    pivotTable: 'teammates',
+    pivotForeignKey: 'teamId',
+    pivotRelatedForeignKey: 'userId',
+    relatedKey: 'id'
+  })
+  public teammateUsers: ManyToMany<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
