@@ -1,6 +1,6 @@
 import { CamelCaseBaseModel } from './CamelCaseBaseModel'
 import { DateTime } from 'luxon'
-import { column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
 import Team from 'App/Models/Team'
 import Role from 'App/Models/Role'
@@ -9,28 +9,43 @@ export default class Invitation extends CamelCaseBaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @hasOne(() => User, {
+  @column()
+  public invitedByUserId: number
+
+  @belongsTo(() => User, {
     foreignKey: 'invitedByUserId'
   })
-  public invitedBy: HasOne<typeof User>
+  public invitedBy: BelongsTo<typeof User>
 
-  @hasOne(() => User, {
+  @column()
+  public invitedUserId: number
+
+  @belongsTo(() => User, {
     foreignKey: 'invitedUserId'
   })
-  public invite: HasOne<typeof User>
+  public invite: BelongsTo<typeof User>
 
-  @hasOne(() => Team, {
+  @column()
+  public teamId: number
+
+  @belongsTo(() => Team, {
     foreignKey: 'teamId'
   })
-  public team: HasOne<typeof Team>
+  public team: BelongsTo<typeof Team>
 
-  @hasOne(() => Role, {
+  @column()
+  public roleId: number
+
+  @belongsTo(() => Role, {
     foreignKey: 'roleId'
   })
-  public role: HasOne<typeof Role>
+  public role: BelongsTo<typeof Role>
 
   @column()
   public status: 'pending' | 'rejected' | 'accepted' | 'discarded'
+
+  @column()
+  public invitedEmail: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

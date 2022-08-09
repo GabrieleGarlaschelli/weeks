@@ -150,12 +150,17 @@ class TeamsManager {
     if (!trx) trx = await Database.transaction()
 
     try {
-      if(!!user) {
-        const userCanEdit = await UserModel.query().whereHas('teams', (builder) => {
-          builder.where('teams.id', params.data.id)
-        }).where('users.id', user.id)
+      if (!!user) {
+        const userBelongs = await this.userBelogsToTeam({
+          data: {
+            user: user, team: { id: params.data.id }
+          },
+          context: {
+            trx: trx
+          }
+        })
 
-        if(userCanEdit.length == 0) throw new Error('you cannot edit a someone else team')
+        if(!userBelongs) throw new Error('user does not belongs to the team')
       }
 
       await validator.validate({
@@ -213,6 +218,27 @@ class TeamsManager {
       if (!params.context?.trx) trx.rollback()
       throw error
     }
+  }
+
+  public async userBelogsToTeam(params: {
+    data: {
+      team: { id: number }
+      user: { id: number }
+    },
+    context?: Context
+  }) {
+    if (!params.data.team || !params.data.team.id) throw new Error('team must be defined')
+    if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
+
+    const userBelongs = await UserModel.query({
+        client: params.context?.trx
+      })
+      .whereHas('teams', (builder) => {
+        builder.where('teams.id', params.data.team.id)
+      })
+      .where('users.id', params.data.user.id)
+
+    return userBelongs.length != 0
   }
 
   private async _getUserFromContext(context?: Context) {

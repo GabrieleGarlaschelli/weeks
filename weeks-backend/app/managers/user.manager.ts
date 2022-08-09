@@ -57,7 +57,9 @@ class UsersManager {
       data: params.data
     })
 
-    return await UserModel.create(params.data)
+    return await UserModel.firstOrCreate({
+      email: params.data.email
+    }, params.data)
   }
 
   public async get(params: GetParams): Promise<User | null> {

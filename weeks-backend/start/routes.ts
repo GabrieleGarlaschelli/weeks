@@ -38,3 +38,9 @@ Route.resource('users', 'UsersController')
   .middleware({
     '*': ['auth:api']
   })
+
+Route.post('/invitations/inviteUser', 'InvitationsController.inviteUser').middleware('auth:api')
+Route.get('/invitations/list', 'InvitationsController.list').middleware('auth:api')
+Route.post('/invitations/accept', 'InvitationsController.accept').middleware('auth:api')
+Route.post('/invitations/reject', 'InvitationsController.reject').middleware('auth:api')
+Route.post('/invitations/discard', 'InvitationsController.discard').middleware('auth:api')

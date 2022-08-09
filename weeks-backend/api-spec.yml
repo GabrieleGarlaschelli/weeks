@@ -58,6 +58,42 @@ components:
         updatedAt: 
           type: string
           format: date-time
+    Invitation:
+      type: object
+      properties:
+        id: 
+          type: integer
+        invitedByUserId:
+          type: integer
+        invitedUserId:
+          type: integer
+          nullable: true
+        invitedBy:
+          nullable: true
+          $ref: "#/components/schemas/User"
+        invitedEmail:
+          type: string
+        teamId:
+          type: integer
+        team:
+          nullable: true
+          $ref: "#/components/schemas/Team"
+        roleId:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum:
+            - pending 
+            - rejected
+            - accepted
+            - discarded
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
 
 paths:
   /auth/login:
@@ -99,6 +135,7 @@ paths:
             application/json:
               schema:
                 type: object
+                $ref: "#/components/schemas/User"
     parameters:
       - name: email
         in: path
@@ -215,3 +252,113 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Team"
+  /invitations/inviteUser:
+    post:
+      summary: Invite a user to a team.
+      responses:
+        '200':
+          description: The invitation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+    parameters:
+      - name: user
+        in: path
+        description: The user to invite
+        required: true
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+      - name: team
+        in: path
+        description: The team where the user has been invited
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+      - name: role
+        in: path
+        description: The role the user would be
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+  /invitations/list:
+    get:
+      summary: Get my invitations
+      responses:
+        '200':
+          description: The invitation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invitation"
+  /invitations/accept:
+    post:
+      summary: Accept an invitation
+      responses:
+        '200':
+          description: The accepted invitation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+    parameters:
+      - name: invitation
+        in: path
+        description: The invitation to accept
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+  /invitations/reject:
+    post:
+      summary: Reject an invitation
+      responses:
+        '200':
+          description: The rejected invitation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+    parameters:
+      - name: invitation
+        in: path
+        description: The invitation to reject
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+  /invitations/discard:
+    post:
+      summary: Discard an invitation
+      responses:
+        '200':
+          description: The discarded invitation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+    parameters:
+      - name: invitation
+        in: path
+        description: The invitation to discard
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
