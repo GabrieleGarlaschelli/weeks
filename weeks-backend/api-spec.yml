@@ -94,6 +94,42 @@ components:
         updatedAt: 
           type: string
           format: date-time
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        teamId:
+          type: integer
+          nullable: true
+        team:
+          nullable: true
+          $ref: "#/components/schemas/Team"
+        frequencyId:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum:
+            - confirmed
+            - notConfirmed
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
 
 paths:
   /auth/login:
@@ -118,13 +154,17 @@ paths:
                     type: number
     parameters:
       - name: email
-        in: path
+        in: query
         description: The email of the user
         required: true
+        schema:
+          type: string
       - name: password
-        in: path
+        in: query
         description: The password of the user
         required: true
+        schema:
+          type: string
   /auth/signup:
     post:
       summary: Signup and create a new user.
@@ -138,17 +178,23 @@ paths:
                 $ref: "#/components/schemas/User"
     parameters:
       - name: email
-        in: path
+        in: query
         description: The email of the new user
         required: true
+        schema:
+          type: string
       - name: password
-        in: path
+        in: query
         description: The password of the new user
         required: true
+        schema:
+          type: string
       - name: name
-        in: path
+        in: query
         description: The name of the new user
         required: true
+        schema:
+          type: string
   /auth/logout:
     post:
       summary: Revoke a token for a user.
@@ -264,7 +310,7 @@ paths:
                 $ref: "#/components/schemas/Invitation"
     parameters:
       - name: user
-        in: path
+        in: query
         description: The user to invite
         required: true
         schema:
@@ -273,7 +319,7 @@ paths:
             email:
               type: string
       - name: team
-        in: path
+        in: query
         description: The team where the user has been invited
         required: true
         schema:
@@ -282,7 +328,7 @@ paths:
             id:
               type: integer
       - name: role
-        in: path
+        in: query
         description: The role the user would be
         required: false
         schema:
@@ -314,7 +360,7 @@ paths:
                 $ref: "#/components/schemas/Invitation"
     parameters:
       - name: invitation
-        in: path
+        in: query
         description: The invitation to accept
         required: true
         schema:
@@ -334,7 +380,7 @@ paths:
                 $ref: "#/components/schemas/Invitation"
     parameters:
       - name: invitation
-        in: path
+        in: query
         description: The invitation to reject
         required: true
         schema:
@@ -354,7 +400,7 @@ paths:
                 $ref: "#/components/schemas/Invitation"
     parameters:
       - name: invitation
-        in: path
+        in: query
         description: The invitation to discard
         required: true
         schema:
@@ -362,3 +408,167 @@ paths:
           properties:
             id:
               type: integer
+  /events:
+    post:
+      summary: Create a new event.
+      responses:
+        '200':
+          description: The new event.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+      parameters:
+        - name: event
+          in: query
+          description: The event to create
+          required: true
+          schema:
+            $ref: "#/components/schemas/Event"
+    get:
+      summary: Get a list of events.
+      responses:
+        '200':
+          description: The events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+      parameters:
+        - name: filters
+          in: query
+          description: The event to create
+          required: true
+          schema:
+            type: object
+            properties:
+              from: 
+                type: string
+                format: date-time
+              to: 
+                type: string
+                format: date-time
+              team:
+                type: object
+                properties:
+                  id: 
+                    type: integer
+  /events/{eventId}:
+    get:
+      summary: Get an event.
+      responses:
+        '200':
+          description: The event.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+      parameters:
+        - name: eventId
+          in: path
+          description: The id of the event to get
+          required: true
+          schema:
+            type: integer
+    put:
+      summary: Create a new event.
+      responses:
+        '200':
+          description: The new event.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+      parameters:
+        - name: eventId
+          in: path
+          description: The id of the event to update
+          required: true
+          schema:
+            type: integer
+        - name: data
+          in: query
+          description: The data used to update the event
+          required: true
+          schema:
+            $ref: "#/components/schemas/Event"
+    delete:
+      summary: Destroy a new event.
+      responses:
+        '200':
+          description: No response.
+      parameters:
+        - name: eventId
+          in: path
+          description: The id of the event to update
+          required: true
+          schema:
+            type: integer
+  /events/createWithFrequency:
+    post:
+      summary: Create a new event repeating over time.
+      responses:
+        '200':
+          description: The new events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    parameters:
+      - name: event
+        in: query
+        description: The event to create
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+            status:
+              type: string
+              enum:
+                - confirmed
+                - notConfirmed
+            team:
+              type: object
+              properties:
+                id:
+                  type: integer
+      - name: rule
+        in: query
+        description: The rule to create the event
+        required: true
+        schema:
+          type: object
+          properties:
+            frequency:
+              type: string
+              enum:
+                - week
+                - month
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+            daysOfWeek:
+              type: array
+              items:
+                type: number
+            daysOfMonth:
+              type: array
+              items:
+                type: number

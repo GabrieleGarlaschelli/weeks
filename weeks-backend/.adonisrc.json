@@ -15,7 +15,15 @@
   },
   "preloads": [
     "./start/routes",
-    "./start/kernel"
+    "./start/kernel",
+    {
+      "file": "./start/validator",
+      "environment": [
+        "console",
+        "repl",
+        "web"
+      ]
+    }
   ],
   "providers": [
     "./providers/AppProvider",

@@ -44,3 +44,10 @@ Route.get('/invitations/list', 'InvitationsController.list').middleware('auth:ap
 Route.post('/invitations/accept', 'InvitationsController.accept').middleware('auth:api')
 Route.post('/invitations/reject', 'InvitationsController.reject').middleware('auth:api')
 Route.post('/invitations/discard', 'InvitationsController.discard').middleware('auth:api')
+
+Route.post('/events', 'EventsController.store').middleware('auth:api')
+Route.post('/events/createWithFrequency', 'EventsController.createWithFrequency').middleware('auth:api')
+Route.get('/events', 'EventsController.index').middleware('auth:api')
+Route.put('/events/:id', 'EventsController.update').middleware('auth:api')
+Route.delete('/events/:id', 'EventsController.destroy').middleware('auth:api')
+Route.get('/events/:id', 'EventsController.show').middleware('auth:api')

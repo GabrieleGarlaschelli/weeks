@@ -1,8 +1,9 @@
 import { CamelCaseBaseModel } from './CamelCaseBaseModel'
 import { DateTime } from 'luxon'
-import { column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import Frequency from 'App/Models/Frequency'
 import Team from 'App/Models/Team'
+import User from 'App/Models/User'
 
 export default class Event extends CamelCaseBaseModel {
   @column({ isPrimary: true })
@@ -24,17 +25,28 @@ export default class Event extends CamelCaseBaseModel {
   public status: 'confirmed' | 'notConfirmed'
 
   @column()
-  public type: 'training' | 'planning'
+  public frequencyId: number
 
-  @hasOne(() => Frequency, {
+  @belongsTo(() => Frequency, {
     foreignKey: 'frequencyId'
   })
-  public role: HasOne<typeof Frequency>
+  public frequency: BelongsTo<typeof Frequency>
 
-  @hasOne(() => Team, {
+  @column()
+  public teamId: number
+
+  @belongsTo(() => Team, {
     foreignKey: 'teamId'
   })
-  public team: HasOne<typeof Team>
+  public team: BelongsTo<typeof Team>
+
+  @column()
+  public createdByUserId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'createdByUserId'
+  })
+  public createdBy: BelongsTo<typeof User>
 
 
   @column.dateTime({ autoCreate: true })
