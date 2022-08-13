@@ -1,8 +1,10 @@
+import User from 'App/Models/User';
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeCreate, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import { cuid } from '@ioc:Adonis/Core/Helpers'
+import { CamelCaseBaseModel } from './CamelCaseBaseModel';
 
-export default class EventSession extends BaseModel {
+export default class EventSession extends CamelCaseBaseModel {
   @column({ isPrimary: true })
   public id: number
 
@@ -11,6 +13,14 @@ export default class EventSession extends BaseModel {
 
   @column()
   public name: string
+
+  @column()
+  public ownedByUserId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'ownedByUserId'
+  })
+  public ownedBy: BelongsTo<typeof User>
 
   @beforeCreate()
   public static async generateUid(eventSession: EventSession) {

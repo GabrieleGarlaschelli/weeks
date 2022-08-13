@@ -143,7 +143,7 @@ export default class InvitationsManager {
       await invitation.load('team')
       return invitation
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -166,7 +166,7 @@ export default class InvitationsManager {
       if (!params?.context?.trx) await trx.commit()
       return results
     } catch (error) {
-      if (!params?.context?.trx) trx.rollback()
+      if (!params?.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -194,7 +194,7 @@ export default class InvitationsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -222,7 +222,7 @@ export default class InvitationsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -250,7 +250,7 @@ export default class InvitationsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }

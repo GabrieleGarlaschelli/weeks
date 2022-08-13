@@ -130,10 +130,10 @@ export default class EventsManager {
         .preload('createdBy')
         .preload('frequency')
 
-      if (!params.context?.trx) trx.commit()
+      if (!params.context?.trx) await trx.commit()
       return results
     } catch(error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -178,7 +178,7 @@ export default class EventsManager {
       if (!params.context?.trx) await trx.commit()
       return createdEvent
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -330,7 +330,7 @@ export default class EventsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -397,7 +397,7 @@ export default class EventsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -437,9 +437,9 @@ export default class EventsManager {
         await event.delete()
       }
 
-      if (!params.context?.trx) trx.commit()
+      if (!params.context?.trx) await trx.commit()
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -464,10 +464,10 @@ export default class EventsManager {
         .preload('team')
         .firstOrFail()
       
-      if (!params.context?.trx) trx.commit()
+      if (!params.context?.trx) await trx.commit()
       return event
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }

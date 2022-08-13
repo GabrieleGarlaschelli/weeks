@@ -130,6 +130,21 @@ components:
         updatedAt: 
           type: string
           format: date-time
+    EventSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        uid:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
 
 paths:
   /auth/login:
@@ -473,10 +488,10 @@ paths:
           schema:
             type: integer
     put:
-      summary: Create a new event.
+      summary: Update an event.
       responses:
         '200':
-          description: The new event.
+          description: The updated event.
           content:
             application/json:
               schema:
@@ -572,3 +587,53 @@ paths:
               type: array
               items:
                 type: number
+  /eventSessions:
+    post:
+      summary: Create a new event session.
+      responses:
+        '200':
+          description: The new event session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventSession"
+    get:
+      summary: Returns a list of event sessions associated to the current user.
+      responses:
+        '200':
+          description: The event sessions associated to my user.
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EventSession"
+  /eventSessions/{eventSessionId}:
+    get:
+      summary: Returns a certain event session.
+      responses:
+        '200':
+          description: The event session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventSession"
+    put:
+      summary: Update an event session.
+      responses:
+        '200':
+          description: The team updated.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Team"
+    delete:
+      summary: delete a event session.
+      responses:
+        '200':
+          description: No response.

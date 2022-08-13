@@ -117,7 +117,7 @@ class TeamsManager {
       if (!params.context?.trx) await trx.commit()
       return createdTeam
     } catch(error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -125,7 +125,9 @@ class TeamsManager {
   public async get(params: GetParams): Promise<ModelObject> {
     const user = await this._getUserFromContext(params.context)
     let query = TeamModel
-      .query();
+      .query({
+        client: params.context?.trx
+      });
 
     if (!!user) {
       query = query.whereHas('teammates', (teammateQuery) => {
@@ -145,6 +147,7 @@ class TeamsManager {
 
   public async update(params: UpdateParams): Promise<Team> {
     const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be update a team')
 
     let trx = params.context?.trx
     if (!trx) trx = await Database.transaction()
@@ -181,7 +184,7 @@ class TeamsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch(error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }
@@ -214,8 +217,9 @@ class TeamsManager {
         })
       
       await results[0].delete()
+      if (!params.context?.trx) await trx.commit()
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }

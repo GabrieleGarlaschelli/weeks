@@ -46,7 +46,7 @@ export default class TeammatesManager {
 
       if (!params.context?.trx) await trx.commit()
     } catch (error) {
-      if (!params.context?.trx) trx.rollback()
+      if (!params.context?.trx) await trx.rollback()
       throw error
     }
   }

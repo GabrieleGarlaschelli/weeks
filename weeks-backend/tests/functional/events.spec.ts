@@ -1,11 +1,9 @@
 import { DateTime } from 'luxon';
-import EventModel from 'App/Models/Event';
 import UserModel from 'App/Models/User'
 import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
-import TeamModel from 'App/Models/Team'
 import { test } from '@japa/runner'
-import { EventFactory, TeamFactory } from 'Database/factories'
+import { TeamFactory } from 'Database/factories'
 
 
 test.group('Events', (group) => {

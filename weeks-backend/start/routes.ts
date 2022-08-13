@@ -51,3 +51,9 @@ Route.get('/events', 'EventsController.index').middleware('auth:api')
 Route.put('/events/:id', 'EventsController.update').middleware('auth:api')
 Route.delete('/events/:id', 'EventsController.destroy').middleware('auth:api')
 Route.get('/events/:id', 'EventsController.show').middleware('auth:api')
+
+Route.resource('eventSessions', 'EventSessionsController')
+  .only(['index', 'store', 'update', 'show', 'destroy'])
+  .middleware({
+    '*': ['auth:api']
+  })
