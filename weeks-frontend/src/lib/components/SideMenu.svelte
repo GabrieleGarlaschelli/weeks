@@ -22,13 +22,13 @@
       icon: "mdi-home",
       name: 'home'
     }, {
-      title: "Squadre",
+      title: "Teams",
       icon: "mdi-account-group",
       name: 'teams'
     }, {
-      title: "Settimana",
+      title: "Calendario",
       icon: "mdi-calendar",
-      name: 'week'
+      name: 'calendar'
     }
   ]
   let selectedMenu: string
