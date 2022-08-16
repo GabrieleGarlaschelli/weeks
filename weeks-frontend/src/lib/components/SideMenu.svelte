@@ -26,9 +26,9 @@
       icon: "mdi-account-group",
       name: 'teams'
     }, {
-      title: "Calendario",
-      icon: "mdi-calendar",
-      name: 'calendar'
+      title: "Notifiche",
+      icon: "mdi-alarm",
+      name: 'notifications'
     }
   ]
   let selectedMenu: string
@@ -42,6 +42,13 @@
     service.logout().then(() => {
       goto("/auth/Login")
     })
+  }
+
+  function handleMenuClick(item: any) {
+    if(item.detail?.item?.name == 'home') goto('/')
+    if(item.detail?.item?.name == 'teams') goto('/teams')
+
+    selectedMenu = item.detail?.item?.name
   }
 </script>
 
@@ -87,6 +94,7 @@
   <SideNavigator
     items={menuItems}
     selected={selectedMenu}
+    on:click={handleMenuClick}
   ></SideNavigator>
 
   <Divider

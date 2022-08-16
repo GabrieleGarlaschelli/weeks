@@ -4,7 +4,8 @@
 
   export let type: 'impact' | 'standard' = 'impact',
     loading: boolean = false,
-    disabled: boolean = false
+    disabled: boolean = false,
+    width: string = "auto"
 
   let backgroundColor: string
   $: if(type == 'impact') {
@@ -22,14 +23,24 @@
 >
   <Button
     on:click
+    width={width}
+    height="24px"
     backgroundColor={backgroundColor}
     hoverBackgroundColor={backgroundColor}
     border={border}
     color={textColor}
     padding="10px"
+    loaderHeight="20px"
     bind:loading={loading}
     cursor={disabled ? 'not-allowed' : 'pointer'}
   >
-    <slot></slot>
+    <div 
+      style:display="flex"
+      style:align-items="center"
+      style:justify-content="center"
+      style:height="100%"
+    >
+      <slot></slot>
+    </div>
   </Button>
 </div>

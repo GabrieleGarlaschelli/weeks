@@ -4,11 +4,17 @@
   import AuthService from "$lib/services/auth/auth.service"
   import { goto, beforeNavigate  } from "$app/navigation";
   import "$lib/css/global.css"
+  import colors from "$lib/stores/colors";
   import SideMenu from "$lib/components/SideMenu.svelte";
 
   let mounted = false
   onMount(async () => {
     await checkAuth($page.url.pathname)
+
+    let html: HTMLElement | null = document.querySelector("html")
+    if(!!html)
+      html.style.backgroundColor = $colors.background
+
     setTimeout(() => {
       mounted = true
     }, 1000);

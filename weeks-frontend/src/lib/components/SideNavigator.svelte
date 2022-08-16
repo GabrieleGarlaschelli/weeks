@@ -53,6 +53,7 @@
         style:font-size="14pt"
         style:font-weight="400"
         style:color={selected == item.name ? $colors.primary : $colors.contrast}
+        style:transition="all .1s ease-in"
       >{item.title}</div>
     </div>
   {/each}
