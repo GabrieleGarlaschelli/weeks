@@ -1,12 +1,31 @@
 import { FetchBasedService } from "../base/fetchBased.service";
 import { browser } from "$app/env";
+import type { User } from "../user/user.service";
+
+export type Teammate = {
+  id: number,
+  roleId?: number
+  teamId: number
+  uid?: string
+  userId: number,
+  user: User,
+  createdAt: Date,
+  updatedAt: Date,
+}
 
 export type Team = {
-  id: string
+  id: number
   name: string,
   notes: string,
-  createdAt: Date
-  updatedAt: Date
+  owner?: User,
+  teammates: Teammate[]
+  createdAt: Date,
+  updatedAt: Date,
+}
+
+export type PaginatedTeams = {
+  data: Team[],
+  meta: PaginationData
 }
 
 export default class TeamsService extends FetchBasedService {
@@ -18,22 +37,61 @@ export default class TeamsService extends FetchBasedService {
     })
   }
 
-  async create(params: {
+  public async create(params: {
     name?: string,
     notes?: string
   }): Promise<Team> {
-    if (browser) {
-      if(!params.name) throw new Error('name must be defined')
+    if (!browser) throw new Error('only available in browser')
+    if(!params.name) throw new Error('name must be defined')
 
-      let response = await this.post({
-        url: '/teams',
-        body: params
-      })
+    let response = await this.post({
+      url: '/teams',
+      body: params
+    })
 
-      console.log(response)
+    return response
+  }
+
+  public async list(params?: {
+    page?: number,
+    perPage?: number
+  }): Promise<PaginatedTeams> {
+    if (!browser) throw new Error('only available in browser')
+    if(!params) params = {
+      page: 1,
+      perPage: 300
     }
+    if (!params.page) params.page = 1
+    if (!params.perPage) params.perPage = 300
 
-    // @ts-ignore
-    return {}
+    let response = await this.get({
+      url: '/teams',
+      params: params
+    })
+
+    return response
+  }
+
+  public async show(params: {
+    id: number
+  }): Promise<Team> {
+    let response = await this.get({
+      url: '/teams/' + params.id
+    })
+
+    return response
+  }
+
+  public async update(params: {
+    id: string,
+    name?: string,
+    notes?: string
+  }): Promise<Team> {
+    let response = await this.put({
+      url: '/teams/' + params.id,
+      body: params
+    })
+
+    return response
   }
 }

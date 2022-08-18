@@ -7,6 +7,7 @@ import HttpContext from '@ioc:Adonis/Core/HttpContext'
 import TeamsManager from './teams.manager'
 import TeamModel from 'App/Models/Team'
 import RoleModel from 'App/Models/Role'
+import AuthorizationManager from './authorization.manager';
 
 
 export type Context = {
@@ -89,18 +90,22 @@ export default class InvitationsManager {
       }
       
       // check if the team is owned by the user
-      const teamsManager = new TeamsManager()
-      const userBelongs = await teamsManager.userBelogsToTeam({
+      await AuthorizationManager.canOrFail({
         data: {
-          user: user,
-          team: params.data.team
-        }, 
-        context: {
-          trx: trx
-        }
+          actor: user,
+          action: 'invite',
+          resource: 'Team',
+          entities: {
+            team: {
+              id: params.data.team.id
+            },
+            invitee: {
+              email: params.data.user.email
+            }
+          }
+        },
+        context: { trx: trx }
       })
-
-      if(!userBelongs) throw new Error('the user has to belong to the team')
 
       // check if the user exists
       if (!params.data.user.email) throw new Error('invited user email must be defined')
@@ -111,6 +116,7 @@ export default class InvitationsManager {
 
       // if user exists check if he's already in the team
       if(!!invitedUser) {
+        const teamsManager = new TeamsManager()
         const invitedUserBelongs = await teamsManager.userBelogsToTeam({
           data: {
             user: invitedUser,
@@ -186,7 +192,18 @@ export default class InvitationsManager {
         .firstOrFail()
 
       // check if the invitation match the user
-      if(invitation.invitedEmail !== user.email) throw new Error("Cannot accet other user invitation");
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'accept',
+          resource: 'Invitation',
+          entities: {
+            invitation: invitation,
+            invitee: user
+          }
+        },
+        context: { trx: trx }
+      })
 
       invitation.status = 'accepted'
       const results = await invitation.save()
@@ -214,7 +231,18 @@ export default class InvitationsManager {
         .firstOrFail()
 
       // check if the invitation match the user
-      if (invitation.invitedEmail !== user.email) throw new Error("Cannot reject other user invitation");
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'reject',
+          resource: 'Invitation',
+          entities: {
+            invitation: invitation,
+            invitee: user
+          }
+        },
+        context: { trx: trx }
+      })
 
       invitation.status = 'rejected'
       const results = await invitation.save()
@@ -242,7 +270,17 @@ export default class InvitationsManager {
         .firstOrFail()
 
       // check if the invitation match the user
-      if (invitation.invitedByUserId !== user.id) throw new Error("Cannot discard other user invitation");
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'discard',
+          resource: 'Invitation',
+          entities: {
+            invitation: invitation,
+          }
+        },
+        context: { trx: trx }
+      })
 
       invitation.status = 'discarded'
       const results = await invitation.save()

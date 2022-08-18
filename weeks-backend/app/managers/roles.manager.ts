@@ -1,13 +1,13 @@
 import Database, { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 import { CreateTeamValidator, UpdateTeamValidator } from 'App/Validators/teams'
 import { validator } from "@ioc:Adonis/Core/Validator"
+import RoleModel from 'App/Models/Role'
 import TeamModel from 'App/Models/Team'
 import UserModel from 'App/Models/User';
 import TeammateModel from 'App/Models/Teammate';
 import type Team from 'App/Models/Team'
 import { ModelObject } from '@ioc:Adonis/Lucid/Orm';
 import HttpContext from '@ioc:Adonis/Core/HttpContext'
-import AuthorizationManager from './authorization.manager';
 
 export type Context = {
   user?: {
@@ -55,7 +55,7 @@ export type DestroyParams = {
   context?: Context
 }
 
-class TeamsManager {
+class RolesManager {
   constructor() {
   }
 
@@ -64,11 +64,11 @@ class TeamsManager {
     if (!params.data.perPage) params.data.perPage = 100
 
     const user = await this._getUserFromContext(params.context)
-    let query = TeamModel
+    let query = RoleModel
       .query()
 
-    if(!!user) {
-      query = query.whereHas('teammates', (teammateQuery) => {
+    if (!!user) {
+      query = query.whereHas('teammates ', (teammateQuery) => {
         teammateQuery.whereHas('user', (userQuery) => {
           userQuery.where('id', user.id)
         })
@@ -86,7 +86,7 @@ class TeamsManager {
 
   public async create(params: CreateParams): Promise<Team> {
     const user = await this._getUserFromContext(params.context)
-    if(!user) throw new Error('user must be defined to create team')
+    if (!user) throw new Error('user must be defined to create team')
 
     let trx = params.context?.trx
     if (!trx) trx = await Database.transaction()
@@ -117,7 +117,7 @@ class TeamsManager {
 
       if (!params.context?.trx) await trx.commit()
       return createdTeam
-    } catch(error) {
+    } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }
@@ -125,32 +125,24 @@ class TeamsManager {
 
   public async get(params: GetParams): Promise<ModelObject> {
     const user = await this._getUserFromContext(params.context)
-    if (!user) throw new Error('user must be update a team')
-
     let query = TeamModel
       .query({
         client: params.context?.trx
       });
 
-    await AuthorizationManager.canOrFail({
-      data: {
-        actor: user,
-        action: 'view',
-        resource: 'Team',
-        entities: {
-          team: {
-            id: params.data.id
-          }
-        }
-      }
-    })
+    if (!!user) {
+      query = query.whereHas('teammates', (teammateQuery) => {
+        teammateQuery.whereHas('user', (userQuery) => {
+          userQuery.where('id', user.id)
+        })
+      })
+    }
 
     const results = await query
       .preload('teammates', (teammateQuery) => {
         teammateQuery.preload('user')
       })
       .preload('owner')
-      .where('id', params.data.id)
 
     return results[0]
   }
@@ -163,21 +155,18 @@ class TeamsManager {
     if (!trx) trx = await Database.transaction()
 
     try {
-      await AuthorizationManager.canOrFail({
-        data: {
-          actor: user,
-          action: 'update',
-          resource: 'Team',
-          entities: {
-            team: {
-              id: params.data.id
-            }
+      if (!!user) {
+        const userBelongs = await this.userBelogsToTeam({
+          data: {
+            user: user, team: { id: params.data.id }
+          },
+          context: {
+            trx: trx
           }
-        },
-        context: {
-          trx: trx
-        }
-      })
+        })
+
+        if (!userBelongs) throw new Error('user does not belongs to the team')
+      }
 
       await validator.validate({
         schema: new UpdateTeamValidator().schema,
@@ -196,7 +185,7 @@ class TeamsManager {
       const results = await team.save()
       if (!params.context?.trx) await trx.commit()
       return results
-    } catch(error) {
+    } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }
@@ -204,7 +193,6 @@ class TeamsManager {
 
   public async destroy(params: DestroyParams): Promise<void> {
     const user = await this._getUserFromContext(params.context)
-    if (!user) throw new Error('user must be defined to destroy a team')
 
     let trx = params.context?.trx
     if (!trx) trx = await Database.transaction()
@@ -215,24 +203,21 @@ class TeamsManager {
         data: params.data
       })
 
-      await AuthorizationManager.canOrFail({
-        data: {
-          actor: user,
-          action: 'destroy',
-          resource: 'Team',
-          entities: {
-            team: {
-              id: params.data.id
-            }
-          }
-        },
-        context: {
-          trx: trx
-        }
-      })
+      let query = TeamModel.query()
 
-      const results = await TeamModel.query().where('id', params.data.id)
-      
+      if (!!user) {
+        query = query.whereHas('teammates', (teammateQuery) => {
+          teammateQuery.whereHas('user', (userQuery) => {
+            userQuery.where('id', user.id)
+          })
+        })
+      }
+
+      const results = await query
+        .preload('teammates', (teammateQuery) => {
+          teammateQuery.preload('user')
+        })
+
       await results[0].delete()
       if (!params.context?.trx) await trx.commit()
     } catch (error) {
@@ -252,8 +237,8 @@ class TeamsManager {
     if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
 
     const userBelongs = await UserModel.query({
-        client: params.context?.trx
-      })
+      client: params.context?.trx
+    })
       .whereHas('teams', (builder) => {
         builder.where('teams.id', params.data.team.id)
       })
@@ -263,7 +248,7 @@ class TeamsManager {
   }
 
   private async _getUserFromContext(context?: Context) {
-    if(!!context?.user) {
+    if (!!context?.user) {
       return await UserModel.query().where('id', context.user.id).first()
     } else {
       const ctx = HttpContext.get()

@@ -13,8 +13,6 @@
 </script>
 
 <div
-  style:font-weight="600"
-  style:font-size="22pt"
   style:margin-top={marginTop}
   style:padding-top={paddingTop}
   style:display="flex"
@@ -34,5 +32,14 @@
       </slot>
     </div>
   {/if}
-  {title}
+  <div
+    style:font-weight="600"
+    style:font-size="22pt"
+  >{title}</div>
+  <div
+    style:flex-grow="1"
+  ></div>
+  <div>
+    <slot name="append"></slot>
+  </div>
 </div>

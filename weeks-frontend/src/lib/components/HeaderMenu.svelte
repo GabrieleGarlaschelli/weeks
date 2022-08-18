@@ -4,9 +4,13 @@
 
 <script lang="ts">
   export let opened: boolean = false
+  import { goto } from "$app/navigation";
+
   function handleItemClick(event: CustomEvent) {
     opened = false
-    console.log(event.detail.item)
+    if(event.detail.item.name == 'home') goto('/')
+    if(event.detail.item.name == 'teams') goto('/teams') 
+    if(event.detail.item.name == 'notifications') goto('/notifications')
   }
 
   import { session } from "$app/stores";
@@ -22,7 +26,7 @@
   items={[
     {name: 'home', title: 'Home'},
     {name: 'teams', title: 'Teams'},
-    {name: 'calendar', title: 'Calendario'},
+    {name: 'notifications', title: 'Notifiche'},
   ]}
   bind:openDrawer={opened}
   on:item-click={handleItemClick}

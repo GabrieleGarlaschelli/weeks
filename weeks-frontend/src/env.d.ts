@@ -7,3 +7,15 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+interface PaginationData {
+  currentPage: number
+  firstPage: number
+  firstPageUrl: string
+  lastPage: number
+  lastPageUrl: string
+  nextPageUrl: string
+  perPage: number
+  previousPageUrl: string
+  total: number
+}

@@ -7,9 +7,11 @@ export type PostParams = {
   headers?: Record<string, string>
 }
 
+export type PutParams = PostParams
+
 export type GetParams = {
   url: string,
-  params?: string | string[][] | Record<string, string> | URLSearchParams | undefined,
+  params?: string | string[][] | Record<string, any> | URLSearchParams | undefined,
   headers?: Record<string, string>
 }
 
@@ -50,6 +52,21 @@ export abstract class FetchBasedService {
     })
 
     if(response.status != 200) {
+      throw await response.json()
+    }
+
+    return response.json()
+  }
+
+  protected async put(params: PutParams) {
+    console.log(params.body)
+    const response = await this.fetch(this._calculateApiUrl(params.url), {
+      method: 'PUT',
+      headers: this._calculateHeaders(params.headers),
+      body: JSON.stringify(params.body)
+    })
+
+    if (response.status != 200) {
       throw await response.json()
     }
 

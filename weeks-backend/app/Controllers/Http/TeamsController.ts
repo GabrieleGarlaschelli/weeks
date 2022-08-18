@@ -2,12 +2,12 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import TeamsManager from "App/managers/teams.manager";
 
 export default class TeamsController {
-  public async index({ params }: HttpContextContract) {
+  public async index({ request }: HttpContextContract) {
     const manager = new TeamsManager()
     return await manager.list({
       data: {
-        page: params.page,
-        perPage: params.perPage
+        page: request.input('page'),
+        perPage: request.input('perPage')
       }
     })
   }
