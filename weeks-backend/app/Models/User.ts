@@ -18,6 +18,12 @@ export default class User extends CamelCaseBaseModel {
   @column()
   public name?: string
 
+  @column()
+  public color?: string
+
+  @column()
+  public textColor?: string
+
   @column({ serializeAs: null })
   public password: string
 

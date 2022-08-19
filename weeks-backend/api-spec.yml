@@ -28,6 +28,12 @@ components:
           type: string
         name:
           type: string
+        color:
+          type: string
+          nullable: true
+        textColor:
+          type: string
+          nullable: true
         rememberMeToken:
           type: string
           nullable: true

@@ -13,7 +13,13 @@ export default class UserValidator {
     ]),
     name: schema.string([
       rules.maxLength(255)
-    ])
+    ]),
+    color: schema.string.nullableAndOptional([
+      rules.maxLength(12)
+    ]),
+    textColor: schema.string.nullableAndOptional([
+      rules.maxLength(12)
+    ]),
   })
 
   public messages: CustomMessages = {}
