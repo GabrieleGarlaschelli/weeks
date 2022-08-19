@@ -69,12 +69,22 @@ export default class RolesService extends FetchBasedService {
   }
 
   public async update(params: {
-    id: string,
+    id: number,
     name?: string,
   }): Promise<Role> {
     let response = await this.put({
       url: '/roles/' + params.id,
       body: params
+    })
+
+    return response
+  }
+
+  public async destroy(params: {
+    id: number,
+  }): Promise<void> {
+    let response = await this.delete({
+      url: '/roles/' + params.id,
     })
 
     return response

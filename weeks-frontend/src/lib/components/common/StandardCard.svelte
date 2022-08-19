@@ -2,8 +2,7 @@
   export let height: string = "300px",
     width: string = "300px",
     maxWidth: string = "90vw",
-    maxHeight: string = "90vh",
-    title: string = "Dialogo"
+    maxHeight: string = "90vh"
 
 
   import Card from '@likable-hair/svelte/common/Card.svelte'
@@ -17,8 +16,10 @@
   maxWidth={maxWidth}
 >
   <svelte:fragment slot="header">
-    <Subtitle 
-      subtitle={title}
-    ></Subtitle>
+    <slot name="header"></slot>
+  </svelte:fragment>
+  <slot></slot>
+  <svelte:fragment slot="footer">
+    <slot name="footer"></slot>
   </svelte:fragment>
 </Card>

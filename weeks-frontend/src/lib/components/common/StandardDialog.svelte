@@ -1,17 +1,40 @@
 <script lang="ts">
   export let open: boolean = false,
-    title: string | undefined = undefined
+    title: string | undefined = undefined,
+    titlePadding: string = "10px",
+    bodyPadding: string = "10px",
+    footerPadding: string = "10px"
 
   import Dialog from "@likable-hair/svelte/dialogs/Dialog.svelte"
   import StandardCard from "./StandardCard.svelte"
+  import Subtitle from "$lib/components/typography/Subtitle.svelte";
 </script>
 
 <Dialog
-  open={open}
+  bind:open={open}
+  overlayOpacity="60%"
 >
   <StandardCard
-    title={title}
+    height="auto"
   >
-    <slot></slot>
+    <div 
+      slot="header" 
+      style:padding={titlePadding}
+    >
+      <slot name="header">
+        <Subtitle subtitle={title}></Subtitle>
+      </slot>
+    </div>
+    <div
+      style:padding={bodyPadding}
+    >
+      <slot></slot>
+    </div>
+    <div 
+      slot="footer"
+      style:padding={footerPadding}
+    >
+      <slot name="footer"></slot>
+    </div>
   </StandardCard>
 </Dialog>

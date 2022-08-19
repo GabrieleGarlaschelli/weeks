@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
 
   export let loading: boolean = false,
+    marginTop: string = "20px",
     cancelText: string = "Annulla",
     confirmText: string = "Salva"
 
@@ -31,6 +32,7 @@
 </script>
 
 <div
+  style:margin-top={marginTop}
   class="button-container"
 >
   <div
@@ -64,7 +66,6 @@
 
   .button-container {
     display: flex;
-    margin-top: 20px;
   }
 
   .link-button-container {

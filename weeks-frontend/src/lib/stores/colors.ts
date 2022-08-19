@@ -9,7 +9,8 @@ export type Colors = {
   background: string,
   contrast: string,
   lightContrast: string
-  thinContrast: string
+  thinContrast: string,
+  warning: string
 }
 
 let lighColors: Colors = {
@@ -19,7 +20,8 @@ let lighColors: Colors = {
   background: '#EFF2F3',
   contrast: '#143342',
   lightContrast: '#778B95',
-  thinContrast: '#DFDFDF'
+  thinContrast: '#DFDFDF',
+  warning: '#AD0000'
 }
 
 let darkColors: Colors = {
@@ -29,7 +31,8 @@ let darkColors: Colors = {
   background: '#143342',
   contrast: '#EFF2F3',
   lightContrast: '#A3A3A3',
-  thinContrast: '#314954'
+  thinContrast: '#314954',
+  warning: '#AD0000'
 }
 
 const store = derived<typeof theme, Colors>(theme, $theme => $theme == 'light' ? lighColors : darkColors)

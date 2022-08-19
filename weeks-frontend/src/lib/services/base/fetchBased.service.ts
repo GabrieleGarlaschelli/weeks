@@ -9,6 +9,8 @@ export type PostParams = {
 
 export type PutParams = PostParams
 
+export type DeleteParams = PostParams
+
 export type GetParams = {
   url: string,
   params?: string | string[][] | Record<string, any> | URLSearchParams | undefined,
@@ -59,7 +61,6 @@ export abstract class FetchBasedService {
   }
 
   protected async put(params: PutParams) {
-    console.log(params.body)
     const response = await this.fetch(this._calculateApiUrl(params.url), {
       method: 'PUT',
       headers: this._calculateHeaders(params.headers),
@@ -71,6 +72,25 @@ export abstract class FetchBasedService {
     }
 
     return response.json()
+  }
+
+  protected async delete(params: DeleteParams) {
+    const response = await this.fetch(this._calculateApiUrl(params.url), {
+      method: 'DELETE',
+      headers: this._calculateHeaders(params.headers),
+      body: JSON.stringify(params.body)
+    })
+
+    if (response.status != 200) {
+      throw await response.json()
+    }
+
+    let jsonText = await response.text()
+    if(!!jsonText) {
+      return JSON.parse(jsonText)
+    } else {
+      return {}
+    }
   }
 
   protected async get(params: GetParams) {
