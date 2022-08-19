@@ -5,12 +5,14 @@
   export let label: string = "",
     placeholder: string = "",
     value: string = "",
-    error: boolean = false
+    error: boolean = false,
+    maxWidth: string | undefined = undefined
 </script>
 
 <TextField
   label={label}
   placeholder={placeholder}
+  maxWidth={maxWidth}
   bind:value={value}
   backgroundColor="transparent"
   paddingBottom="8px"

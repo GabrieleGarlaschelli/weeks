@@ -1,11 +1,10 @@
 <script lang="ts" context="module">
-  import type { Teammate } from '$lib/services/teams/teams.service'
+  import type { Teammate, Team } from '$lib/services/teams/teams.service'
   import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import TeamsService from '$lib/services/teams/teams.service';
   import { createEventDispatcher } from 'svelte';
 
   let dispatch = createEventDispatcher<{
@@ -13,6 +12,7 @@
   }>()
 
   export let teammates: Teammate[] = [],
+    team: Pick<Team, 'id' | 'ownerId'>,
     searchable: boolean = false
 
   let headers: Header[] = [
@@ -25,7 +25,12 @@
       value: "email",
       label: "Email",
       type: 'custom',
-    }
+    },
+    {
+      value: "role",
+      label: "Ruolo",
+      type: 'custom',
+    },
   ]
 
   let searchText: string
@@ -34,6 +39,7 @@
   }) : teammates
 
   function inviteUser(event: any) {
+    goto('/teams/' + team.id + '/inviteUser' )
   }
 
   let confirmDialogOpen: boolean, deletingTeammate: Teammate | undefined
@@ -50,8 +56,6 @@
     }
   }
 
-  $: console.log(teammates)
-
   import StandardTable from '$lib/components/common/StandardTable.svelte';
   import StandardTextfield from '$lib/components/StandardTextfield.svelte';
   import Icon from '@likable-hair/svelte/media/Icon.svelte';
@@ -63,13 +67,13 @@
 
 {#if searchable}
   <div
-    style:max-width="100%"
-    style:width="400px"
+    style:width="100%"
     style:margin-bottom="0px"
     style:display="flex"
   >
     <StandardTextfield
       bind:value={searchText}
+      maxWidth="300px"
       placeholder="Cerca partecipanti ..."
     >
       <svelte:fragment
@@ -84,6 +88,9 @@
       </svelte:fragment>
     </StandardTextfield>
     <div
+      style:flex-grow="1"
+    ></div>
+    <div
       style:margin-left="10px"
     >
       <StandardButton
@@ -93,35 +100,50 @@
   </div>
 {/if}
 
-<StandardTable
-  headers={headers}
-  items={filteredTeammates}
+<div
+  style:max-width="100%"
+  style:overflow="auto"
 >
-  <svelte:fragment 
-    slot="customColumn"
-    let:item
-    let:header
+  <StandardTable
+    headers={headers}
+    items={filteredTeammates}
   >
-    {#if header.value == 'name'}
-      {item.user.name}
-    {:else if header.value == 'email'}
-      {item.user.email}
-    {/if}
-  </svelte:fragment>
-  <div 
-    style:display="flex"
-    style:justify-content="end"
-    slot="appendLastColumn" 
-    let:item
-  >
-    <Icon 
-      name="mdi-delete"
-      click
-      color={$colors.warning}
-      on:click={() => handleDeleteClick(item)}
-    ></Icon>
-  </div>
-</StandardTable>
+    <svelte:fragment 
+      slot="customColumn"
+      let:item
+      let:header
+    >
+      {#if header.value == 'name'}
+        {item.user.name}
+      {:else if header.value == 'email'}
+        {item.user.email}
+      {:else if header.value == 'role'}
+        {#if !!item.role?.name}
+          {item.role?.name}
+        {:else if !!team.ownerId && item.user.id == team.ownerId}
+          Proprietario
+        {:else}
+          Nessuno
+        {/if}
+      {/if}
+    </svelte:fragment>
+    <div 
+      style:display="flex"
+      style:justify-content="end"
+      slot="appendLastColumn" 
+      let:item
+    >
+      {#if (!!team.ownerId && item.user.id != team.ownerId) || !team.ownerId}
+        <Icon 
+          name="mdi-delete"
+          click
+          color={$colors.warning}
+          on:click={() => handleDeleteClick(item)}
+        ></Icon>
+      {/if}
+    </div>
+  </StandardTable>
+</div>
 
 <ConfirmDialog
   confirmText="Elimina"

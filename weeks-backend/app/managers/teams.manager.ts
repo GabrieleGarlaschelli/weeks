@@ -148,10 +148,16 @@ export default class TeamsManager {
 
     const results = await query
       .preload('teammates', (teammateQuery) => {
-        teammateQuery.preload('user')
+        teammateQuery.preload('user').preload('role')
       })
       .preload('owner')
       .preload('roles')
+      .preload('invitations', (invitationBuilder) => {
+        invitationBuilder
+          .preload('invitedBy')
+          .preload('invite')
+          .preload('role')
+      })
       .where('id', params.data.id)
 
     return results[0]

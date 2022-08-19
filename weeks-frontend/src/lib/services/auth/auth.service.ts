@@ -2,7 +2,7 @@ import { browser } from "$app/env";
 import { FetchBasedService } from "../base/fetchBased.service";
 import Cookies from 'js-cookie'
 import { session } from "$app/stores";
-import type { User } from "../user/user.service";
+import type { User } from "../users/user.service";
 
 export type LoginParams = {
   data: {

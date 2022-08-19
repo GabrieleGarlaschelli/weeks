@@ -55,9 +55,6 @@ components:
           type: string
         ownerId:
           type: integer
-        roles:
-          nullable: true
-          $ref: "#/components/schemas/Role"
         notes:
           type: string
           nullable: true

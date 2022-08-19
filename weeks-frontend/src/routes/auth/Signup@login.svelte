@@ -40,6 +40,10 @@
     })
   }
 
+  function goToLogin() {
+    goto('/auth/Login')
+  }
+
   $: passValid = !!password && !!passwordConfirmation && password == passwordConfirmation
   $: disabled = !passValid || !lastname || !firstname || !email || !acceptPrivacy
 
@@ -147,6 +151,24 @@
             disabled={disabled}
             loading={loading}
           >Signup</StandardButton>
+        </div>
+        <hr 
+          style:background-color={$colors.thinContrast}
+          style:border="none"
+          style:height="1px"
+        />
+        <div 
+          style:margin-top="20px"
+          style:margin-bottom="20px"
+          style:display="flex"
+          style:align-items="center"
+          style:flex-direction="column"
+        >
+          <div
+            style:color={$colors.lightContrast}
+            style:margin-bottom="5px"
+          >Already have an account?</div>
+          <LinkButton on:click={goToLogin}>Log in</LinkButton>
         </div>
       </div>
     {/if}

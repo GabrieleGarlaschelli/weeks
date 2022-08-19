@@ -4,7 +4,8 @@
 
 <script lang="ts">
   export let headers: Header[] = [],
-    items: { [key: string]: any }[] = []
+    items: { [key: string]: any }[] = [],
+    width: string = "auto"
 
   import SimpleTable from "@likable-hair/svelte/common/SimpleTable.svelte"
 </script>
@@ -12,6 +13,7 @@
 <SimpleTable
   headers={headers}
   items={items}
+  width={width}
 >
   <svelte:fragment slot="appendLastColumn" let:item>
     <slot name="appendLastColumn" item={item}></slot>

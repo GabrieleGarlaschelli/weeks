@@ -2,12 +2,13 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import UsersManager from 'App/managers/user.manager'
 
 export default class UsersController {
-  public async index({params}: HttpContextContract) {
+  public async index({ request }: HttpContextContract) {
     const manager = new UsersManager()
     return await manager.list({
       data: {
-        page: params.page,
-        perPage: params.perPage
+        page: request.input('page'),
+        perPage: request.input('perPage'),
+        filters: request.input('filters')
       }
     })
   }

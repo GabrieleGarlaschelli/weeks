@@ -27,7 +27,10 @@ export type UpdateParams = {
 export type ListParams = {
   data: {
     page?: number,
-    perPage?: number
+    perPage?: number,
+    filters?: {
+      [key: string]: any
+    }
   },
   context?: {}
 }
@@ -47,7 +50,14 @@ class UsersManager {
     if(!params.data.page) params.data.page = 1
     if(!params.data.perPage) params.data.perPage = 100
 
-    const results = await UserModel.query().paginate(params.data.page, params.data.perPage)
+    let query = UserModel.query()
+
+    if(!!params.data.filters) {
+      if (!!params.data.filters.email)
+        query = query.whereILike('email', params.data.filters.email)
+    }
+
+    const results = await query.paginate(params.data.page, params.data.perPage)
     return results.toJSON()
   } 
 

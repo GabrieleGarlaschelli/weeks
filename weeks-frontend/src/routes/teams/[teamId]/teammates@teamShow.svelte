@@ -4,9 +4,14 @@
   import TeammatesList from "$lib/components/teammates/TeammatesList.svelte";
 </script>
 
-{#if !!$team}
-  <TeammatesList
-    searchable={true}
-    teammates={$team.teammates}
-  ></TeammatesList>
-{/if}
+<div 
+  style:margin-top="20px"
+>
+  {#if !!$team}
+    <TeammatesList
+      searchable={true}
+      teammates={$team.teammates}
+      team={$team}
+    ></TeammatesList>
+  {/if}
+</div>

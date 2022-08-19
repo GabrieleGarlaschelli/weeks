@@ -1,5 +1,4 @@
 import { FetchBasedService } from "../base/fetchBased.service";
-import Cookies from 'js-cookie'
 
 export type User = {
   email: string
@@ -16,5 +15,22 @@ export default class UserService extends FetchBasedService {
     super({
       fetch: params.fetch,
     })
+  }
+
+  public async search(params: {
+    email: string
+  }): Promise<User[]> {
+    if(!params.email) throw new Error('email must be defined')
+
+    let response = await this.get({
+      url: '/users',
+      params: {
+        filters: {
+          email: params.email
+        }
+      }
+    })
+
+    return response.data
   }
 }

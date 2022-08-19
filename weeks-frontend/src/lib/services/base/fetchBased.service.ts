@@ -1,5 +1,6 @@
 import UrlService from "../urls/urls.service";
 import Cookies from 'js-cookie'
+import qs from 'qs'
 
 export type PostParams = {
   url: string,
@@ -96,7 +97,7 @@ export abstract class FetchBasedService {
     return await this.fetch(
       this._calculateApiUrl(params.url) 
       + '?' 
-      + new URLSearchParams(params.params), 
+      + qs.stringify(params.params), 
       {
         headers: this._calculateHeaders(params.headers),
       }

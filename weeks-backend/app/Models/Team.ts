@@ -1,5 +1,6 @@
 import Role from 'App/Models/Role';
 import User from 'App/Models/User';
+import Invitation from 'App/Models/Invitation';
 import { DateTime } from 'luxon'
 import { CamelCaseBaseModel } from './CamelCaseBaseModel';
 import { BelongsTo, belongsTo, column, hasMany, HasMany, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
@@ -27,6 +28,11 @@ export default class Team extends CamelCaseBaseModel {
     foreignKey: 'teamId'
   })
   public roles: HasMany<typeof Role>
+
+  @hasMany(() => Invitation, {
+    foreignKey: 'teamId'
+  })
+  public invitations: HasMany<typeof Invitation>
 
   @column()
   public ownerId: number

@@ -8,6 +8,6 @@ declare namespace App {
 	// interface Stuff {}
 
   interface Session {
-    currentUser: import("$lib/services/user/user.service").User
+    currentUser: import("$lib/services/users/user.service").User
   }
 }

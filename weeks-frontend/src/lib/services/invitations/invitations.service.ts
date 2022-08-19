@@ -1,6 +1,6 @@
 import { FetchBasedService } from "../base/fetchBased.service";
 import { browser } from "$app/env";
-import type { User } from "$lib/services/user/user.service"
+import type { User } from "$lib/services/users/user.service"
 import type { Team } from "$lib/services/teams/teams.service"
 import type { Role } from "$lib/services/roles/roles.service"
 
@@ -24,12 +24,13 @@ export default class InvitationsService extends FetchBasedService {
 
   public async inviteUser(params: {
     team: { id: number },
-    user: { id: number }
+    user: { email: string },
+    role: { id: number }
   }): Promise<Invitation> {
     if (!browser) throw new Error('only available in browser')
 
     let response = await this.post({
-      url: '/teams',
+      url: '/invitations/inviteUser',
       body: params
     })
 
