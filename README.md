@@ -1,2 +1,2 @@
 # weeks
-Application to handle weeks shared appointments, modificato dal proprietario
+Application to handle weeks shared appointments
