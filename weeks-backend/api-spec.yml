@@ -145,6 +145,27 @@ components:
         updatedAt: 
           type: string
           format: date-time
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        cans:
+          nullable: true
+          type: string
+        team:
+          nullable: true
+          $ref: "#/components/schemas/Team"
+        teamId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
 
 paths:
   /auth/login:
@@ -637,3 +658,49 @@ paths:
       responses:
         '200':
           description: No response.
+  /roles:
+    post:
+      summary: Create a new role.
+      responses:
+        '200':
+          description: The new role.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+  /teams/{teamId}/roles:
+    get:
+      summary: Returns a list of roles associated to the team.
+      responses:
+        '200':
+          description: The roles associated to the teams.
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Role"
+  /roles/{teamId}:
+    get:
+      summary: Returns a certain role.
+      responses:
+        '200':
+          description: The role.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+    put:
+      summary: Update a certain role.
+      responses:
+        '200':
+          description: The updated role.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Role"

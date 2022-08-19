@@ -1,3 +1,4 @@
+import Role from 'App/Models/Role';
 import User from 'App/Models/User';
 import { DateTime } from 'luxon'
 import { CamelCaseBaseModel } from './CamelCaseBaseModel';
@@ -21,6 +22,11 @@ export default class Team extends CamelCaseBaseModel {
     foreignKey: 'teamId'
   })
   public teammates: HasMany<typeof Teammate>
+
+  @hasMany(() => Role, {
+    foreignKey: 'teamId'
+  })
+  public roles: HasMany<typeof Role>
 
   @column()
   public ownerId: number

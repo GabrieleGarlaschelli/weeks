@@ -6,6 +6,7 @@ import InvitationModel from 'App/Models/Invitation'
 import EventModel from 'App/Models/Event'
 import EventSessionModel from 'App/Models/EventSession'
 import ConvocationModel from 'App/Models/Convocation'
+import RoleModel from 'App/Models/Role'
 
 import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
@@ -13,13 +14,15 @@ import type Invitation from 'App/Models/Invitation'
 import type Event from 'App/Models/Event'
 import type EventSession from 'App/Models/EventSession'
 import type Convocation from 'App/Models/Convocation'
+import type Role from 'App/Models/Role'
 
 export type Resource = 
   'Team' |
   'Invitation' |
   'Event' |
   'Convocation' |
-  'EventSession'
+  'EventSession' |
+  'Role'
 
 export type Action =
   'update' |
@@ -38,6 +41,7 @@ export type Entities = {
   eventSession?: Pick<EventSession, 'id'>,
   convocation?: Pick<Convocation, 'id'>,
   invitee?: Pick<User, 'email'>
+  role?: Pick<Role, 'id'>
 }
 
 type CanFunction = (params: {
@@ -76,7 +80,14 @@ export default class AuthorizationManager {
       accept: AuthorizationManager._canAcceptInvitation,
       reject: AuthorizationManager._canRejectInvitation,
       discard: AuthorizationManager._canDiscardInvitation,
+    },
+    Role: {
+      create: AuthorizationManager._canUpdateTeam,
+      update: AuthorizationManager._canUpdateRole,
+      destroy: AuthorizationManager._canUpdateRole,
+      view: AuthorizationManager._canViewRole,
     }
+
   }
 
   constructor() { }
@@ -216,6 +227,42 @@ export default class AuthorizationManager {
       .where('id', invitationId)
 
     return invitationBelogs.length != 0
+  }
+
+  private static async _canViewRole(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.role?.id) throw new Error('team must be defined')
+    let roleId: number = params.entities.role.id
+
+    const userBelongs = await UserModel.query({
+      client: context?.trx
+    }).whereHas('teams', (builder) => {
+      builder.whereHas('roles', rolesBuilder => {
+        rolesBuilder.where('roles.id', roleId)
+      })
+    }).where('users.id', params.actor.id)
+
+    return userBelongs.length != 0
+  }
+
+  private static async _canUpdateRole(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.role?.id) throw new Error('team must be defined')
+    let roleId: number = params.entities.role.id
+
+    const userBelongs = await UserModel.query({
+      client: context?.trx
+    }).whereHas('teams', (builder) => {
+      builder.whereHas('roles', rolesBuilder => {
+        rolesBuilder.where('roles.id', roleId)
+      })
+    }).where('users.id', params.actor.id)
+
+    return userBelongs.length != 0
   }
 
 }

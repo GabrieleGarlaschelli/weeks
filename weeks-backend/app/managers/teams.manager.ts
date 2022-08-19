@@ -55,7 +55,7 @@ export type DestroyParams = {
   context?: Context
 }
 
-class TeamsManager {
+export default class TeamsManager {
   constructor() {
   }
 
@@ -210,11 +210,6 @@ class TeamsManager {
     if (!trx) trx = await Database.transaction()
 
     try {
-      await validator.validate({
-        schema: new UpdateTeamValidator().schema,
-        data: params.data
-      })
-
       await AuthorizationManager.canOrFail({
         data: {
           actor: user,
@@ -231,7 +226,7 @@ class TeamsManager {
         }
       })
 
-      const results = await TeamModel.query().where('id', params.data.id)
+      const results = await TeamModel.query({ client: trx }).where('id', params.data.id)
       
       await results[0].delete()
       if (!params.context?.trx) await trx.commit()
@@ -271,5 +266,3 @@ class TeamsManager {
     }
   }
 }
-
-export default TeamsManager

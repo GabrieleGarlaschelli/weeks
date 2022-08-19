@@ -1,6 +1,7 @@
+import Team from 'App/Models/Team';
 import { CamelCaseBaseModel } from './CamelCaseBaseModel'
 import { DateTime } from 'luxon'
-import { column } from '@ioc:Adonis/Lucid/Orm'
+import { BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Role extends CamelCaseBaseModel {
   @column({ isPrimary: true })
@@ -11,6 +12,14 @@ export default class Role extends CamelCaseBaseModel {
 
   @column()
   public cans: Object
+
+  @column()
+  public teamId: number
+
+  @belongsTo(() => Team, {
+    foreignKey: 'teamId'
+  })
+  public team: BelongsTo<typeof Team>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

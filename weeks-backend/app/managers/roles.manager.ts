@@ -1,13 +1,12 @@
 import Database, { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
-import { CreateTeamValidator, UpdateTeamValidator } from 'App/Validators/teams'
+import { CreateRoleValidator, UpdateRoleValidator } from 'App/Validators/roles'
 import { validator } from "@ioc:Adonis/Core/Validator"
 import RoleModel from 'App/Models/Role'
-import TeamModel from 'App/Models/Team'
 import UserModel from 'App/Models/User';
-import TeammateModel from 'App/Models/Teammate';
-import type Team from 'App/Models/Team'
+import type Role from 'App/Models/Role'
 import { ModelObject } from '@ioc:Adonis/Lucid/Orm';
 import HttpContext from '@ioc:Adonis/Core/HttpContext'
+import AuthorizationManager from './authorization.manager';
 
 export type Context = {
   user?: {
@@ -19,7 +18,9 @@ export type Context = {
 export type CreateParams = {
   data: {
     name: string,
-    notes: string,
+    team: {
+      id: number
+    }
   },
   context?: Context
 }
@@ -28,7 +29,6 @@ export type UpdateParams = {
   data: {
     id: number,
     name?: string,
-    notes?: string,
   },
   context?: Context
 }
@@ -36,7 +36,10 @@ export type UpdateParams = {
 export type ListParams = {
   data: {
     page?: number,
-    perPage?: number
+    perPage?: number,
+    team: {
+      id: number
+    }
   },
   context?: Context
 }
@@ -55,36 +58,38 @@ export type DestroyParams = {
   context?: Context
 }
 
-class RolesManager {
+export default class RolesManager {
   constructor() {
   }
 
   public async list(params: ListParams): Promise<{ data: ModelObject[], meta: any }> {
     if (!params.data.page) params.data.page = 1
     if (!params.data.perPage) params.data.perPage = 100
+    if (!params.data.team.id) throw new Error('can only get roles for a specific team')
 
     const user = await this._getUserFromContext(params.context)
-    let query = RoleModel
+    if (!user) if (!user) throw new Error('user must be defined to get roles')
+
+    await AuthorizationManager.canOrFail({
+      data: {
+        actor: user,
+        action: 'view',
+        resource: 'Team',
+        entities: {
+          team: params.data.team
+        }
+      }
+    })
+
+    let results = await RoleModel
       .query()
-
-    if (!!user) {
-      query = query.whereHas('teammates ', (teammateQuery) => {
-        teammateQuery.whereHas('user', (userQuery) => {
-          userQuery.where('id', user.id)
-        })
-      })
-    }
-
-    const results = await query
-      .preload('teammates', (teammateQuery) => {
-        teammateQuery.preload('user')
-      })
+      .where('teamId', params.data.team.id)
       .paginate(params.data.page, params.data.perPage)
 
     return results.toJSON()
   }
 
-  public async create(params: CreateParams): Promise<Team> {
+  public async create(params: CreateParams): Promise<Role> {
     const user = await this._getUserFromContext(params.context)
     if (!user) throw new Error('user must be defined to create team')
 
@@ -93,30 +98,41 @@ class RolesManager {
 
     try {
       await validator.validate({
-        schema: new CreateTeamValidator().schema,
+        schema: new CreateRoleValidator().schema,
         data: {
           ...params.data,
-          owner: {
-            id: user.id
+        }
+      })
+
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'create',
+          resource: 'Role',
+          entities: {
+            team: params.data.team
           }
         }
       })
 
-      const createdTeam = await TeamModel.create(params.data, {
-        client: trx
-      })
+      // check if role already exists
+      let existingRole = await RoleModel.query()
+        .where('name', params.data.name)
+        .whereHas('team', builder => {
+          builder.where('teams.id', params.data.team.id)
+        })
 
-      await createdTeam.related('owner').associate(user)
+      if (existingRole.length != 0) throw new Error('role already exists')
 
-      await TeammateModel.create({
-        userId: user.id,
-        teamId: createdTeam.id
+      const createdRole = await RoleModel.create({
+        name: params.data.name,
+        teamId: params.data.team.id
       }, {
         client: trx
       })
 
       if (!params.context?.trx) await trx.commit()
-      return createdTeam
+      return createdRole
     } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
@@ -125,64 +141,67 @@ class RolesManager {
 
   public async get(params: GetParams): Promise<ModelObject> {
     const user = await this._getUserFromContext(params.context)
-    let query = TeamModel
+    if (!user) throw new Error('user must be defined to get a role')
+
+    await AuthorizationManager.canOrFail({
+      data: {
+        actor: user,
+        action: 'view',
+        resource: 'Role',
+        entities: {
+          role: {
+            id: params.data.id
+          }
+        }
+      }
+    })
+
+    let results = await RoleModel
       .query({
         client: params.context?.trx
-      });
-
-    if (!!user) {
-      query = query.whereHas('teammates', (teammateQuery) => {
-        teammateQuery.whereHas('user', (userQuery) => {
-          userQuery.where('id', user.id)
-        })
       })
-    }
-
-    const results = await query
-      .preload('teammates', (teammateQuery) => {
-        teammateQuery.preload('user')
-      })
-      .preload('owner')
+      .preload('team')
+      .where('id', params.data.id);
 
     return results[0]
   }
 
-  public async update(params: UpdateParams): Promise<Team> {
+  public async update(params: UpdateParams): Promise<Role> {
     const user = await this._getUserFromContext(params.context)
-    if (!user) throw new Error('user must be update a team')
+    if (!user) throw new Error('user must be defined to update a role')
 
     let trx = params.context?.trx
     if (!trx) trx = await Database.transaction()
 
     try {
-      if (!!user) {
-        const userBelongs = await this.userBelogsToTeam({
-          data: {
-            user: user, team: { id: params.data.id }
-          },
-          context: {
-            trx: trx
-          }
-        })
-
-        if (!userBelongs) throw new Error('user does not belongs to the team')
-      }
-
       await validator.validate({
-        schema: new UpdateTeamValidator().schema,
+        schema: new UpdateRoleValidator().schema,
         data: params.data
       })
 
-      const team = await TeamModel.findOrFail(params.data.id, {
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'update',
+          resource: 'Role',
+          entities: {
+            role: {
+              id: params.data.id
+            }
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
+      const role = await RoleModel.findOrFail(params.data.id, {
         client: trx
       })
 
-      team.merge({
-        name: params.data.name,
-        notes: params.data.notes
-      })
+      if (!!params.data.name) role.name = params.data.name
 
-      const results = await team.save()
+      const results = await role.save()
       if (!params.context?.trx) await trx.commit()
       return results
     } catch (error) {
@@ -193,30 +212,29 @@ class RolesManager {
 
   public async destroy(params: DestroyParams): Promise<void> {
     const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be defined to destroy a team')
 
     let trx = params.context?.trx
     if (!trx) trx = await Database.transaction()
 
     try {
-      await validator.validate({
-        schema: new UpdateTeamValidator().schema,
-        data: params.data
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'destroy',
+          resource: 'Role',
+          entities: {
+            role: {
+              id: params.data.id
+            }
+          }
+        },
+        context: {
+          trx: trx
+        }
       })
 
-      let query = TeamModel.query()
-
-      if (!!user) {
-        query = query.whereHas('teammates', (teammateQuery) => {
-          teammateQuery.whereHas('user', (userQuery) => {
-            userQuery.where('id', user.id)
-          })
-        })
-      }
-
-      const results = await query
-        .preload('teammates', (teammateQuery) => {
-          teammateQuery.preload('user')
-        })
+      const results = await RoleModel.query({ client: trx }).where('id', params.data.id)
 
       await results[0].delete()
       if (!params.context?.trx) await trx.commit()
@@ -224,27 +242,6 @@ class RolesManager {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }
-  }
-
-  public async userBelogsToTeam(params: {
-    data: {
-      team: { id: number }
-      user: { id: number }
-    },
-    context?: Context
-  }) {
-    if (!params.data.team || !params.data.team.id) throw new Error('team must be defined')
-    if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
-
-    const userBelongs = await UserModel.query({
-      client: params.context?.trx
-    })
-      .whereHas('teams', (builder) => {
-        builder.where('teams.id', params.data.team.id)
-      })
-      .where('users.id', params.data.user.id)
-
-    return userBelongs.length != 0
   }
 
   private async _getUserFromContext(context?: Context) {
@@ -256,5 +253,3 @@ class RolesManager {
     }
   }
 }
-
-export default TeamsManager

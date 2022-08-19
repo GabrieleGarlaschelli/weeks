@@ -32,6 +32,12 @@ Route.resource('teams', 'TeamsController')
   .middleware({
     '*': ['auth:api']
   })
+
+Route.post('/roles', 'RolesController.store').middleware('auth:api')
+Route.get('/teams/:teamId/roles', 'RolesController.index').middleware('auth:api')
+Route.put('/roles/:id', 'RolesController.update').middleware('auth:api')
+Route.delete('/roles/:id', 'RolesController.destroy').middleware('auth:api')
+Route.get('/roles/:id', 'RolesController.show').middleware('auth:api')
   
 Route.resource('users', 'UsersController')
   .only([ 'index', 'store', 'update', 'show', 'destroy' ])
