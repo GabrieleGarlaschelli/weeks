@@ -65,9 +65,6 @@ export type DiscardInvitationParams = {
 }
 
 
-
-
-
 export default class InvitationsManager {
   constructor() {
   }
@@ -165,6 +162,7 @@ export default class InvitationsManager {
       const results = await InvitationModel
         .query({ client: trx })
         .where('invitedEmail', user.email)
+        .where('status', 'pending')
         .preload('invitedBy')
         .preload('team')
         .preload('role')
@@ -205,8 +203,26 @@ export default class InvitationsManager {
         context: { trx: trx }
       })
 
+      // change status to the invitation
       invitation.status = 'accepted'
       const results = await invitation.save()
+
+      // join the team
+      let teamsManager = new TeamsManager()
+      await teamsManager.addUser({
+        data: {
+          user: user,
+          team: {
+            id: invitation.teamId
+          },
+          role: {
+            id: invitation.roleId
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
 
       if (!params.context?.trx) await trx.commit()
       return results

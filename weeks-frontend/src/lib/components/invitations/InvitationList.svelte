@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-  import type { Teammate, Team } from '$lib/services/teams/teams.service'
   import type { Invitation } from '$lib/services/invitations/invitations.service'
   import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
 </script>

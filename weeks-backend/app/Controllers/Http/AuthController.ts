@@ -30,7 +30,7 @@ export default class AuthController {
       data: {
         email: request.input('email'),
         password: request.input('password'),
-        name: request.input('email')
+        name: request.input('name')
       }
     })
 

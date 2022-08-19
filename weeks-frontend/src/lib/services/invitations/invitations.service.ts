@@ -6,7 +6,7 @@ import type { Role } from "$lib/services/roles/roles.service"
 
 export type Invitation = {
   id: number,
-  invitedByUser: User,
+  invitedBy: User,
   invitedUser?: User,
   invitedEmail: string,
   team: Team,
@@ -31,6 +31,42 @@ export default class InvitationsService extends FetchBasedService {
 
     let response = await this.post({
       url: '/invitations/inviteUser',
+      body: params
+    })
+
+    return response
+  }
+
+  public async invitationToAccept(): Promise<Invitation[]> {
+    if (!browser) throw new Error('only available in browser')
+
+    let response = await this.get({
+      url: '/invitations/list',
+    })
+
+    return response
+  }
+
+  public async acceptInvitation(params: {
+    invitation: { id: number }
+  }): Promise<Invitation> {
+    if (!browser) throw new Error('only available in browser')
+
+    let response = await this.post({
+      url: '/invitations/accept',
+      body: params
+    })
+
+    return response
+  }
+
+  public async rejectInvitation(params: {
+    invitation: { id: number }
+  }): Promise<Invitation> {
+    if (!browser) throw new Error('only available in browser')
+
+    let response = await this.post({
+      url: '/invitations/reject',
       body: params
     })
 

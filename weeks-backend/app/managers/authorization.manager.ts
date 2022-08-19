@@ -32,7 +32,7 @@ export type Action =
   'invite' |
   'accept' |
   'reject' |
-  'discard'
+  'discard' 
 
 export type Entities = {
   team?: Pick<Team, 'id'>,
@@ -74,7 +74,7 @@ export default class AuthorizationManager {
       update: AuthorizationManager._canUpdateTeam,
       destroy: AuthorizationManager._canDestroyTeam,
       view: AuthorizationManager._canViewTeam,
-      invite: AuthorizationManager._canInviteToTeam
+      invite: AuthorizationManager._canInviteToTeam,
     },
     Invitation: {
       accept: AuthorizationManager._canAcceptInvitation,

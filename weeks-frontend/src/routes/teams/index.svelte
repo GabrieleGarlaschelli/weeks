@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   import type { Team } from "$lib/services/teams/teams.service"
+  import type { Invitation } from "$lib/services/invitations/invitations.service"
 </script>
 
 <script lang="ts">
@@ -8,8 +9,11 @@
   import TeamsBoxList from "$lib/components/teams/TeamsBoxList.svelte"
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import TeamsService from "$lib/services/teams/teams.service"
+  import InvitationsService from "$lib/services/invitations/invitations.service";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation"
+  import Subhead from "$lib/components/typography/Subhead.svelte";
+  import InvitationToAccept from "$lib/components/invitations/InvitationToAccept.svelte";
 
   let teams: Team[] = []
   async function loadTeams() {
@@ -18,12 +22,24 @@
     teams = paginationData.data
   }
 
+  let invitationsToAccept: Invitation[]
+  async function loadInvitations() {
+    let service = new InvitationsService({ fetch })
+    invitationsToAccept = await service.invitationToAccept()
+  }
+
   async function handleTeamClick(event: any) {
     goto('/teams/' + event.detail.team.id + '/general')
   }
 
+  async function reload() {
+    await loadTeams()
+    await loadInvitations()
+  }
+
   onMount(() => {
     loadTeams()
+    loadInvitations()
   })
 
   function handleOptionClick(event: any) {
@@ -63,5 +79,19 @@
       teams={teams}
       on:teams-click={handleTeamClick}
     ></TeamsBoxList>
+  </div>
+  <div 
+    style:margin-top="30px"
+  >
+    <Subhead text="I miei inviti"></Subhead>
+  </div>
+  <div 
+    style:margin-top="10px"
+  >
+    <InvitationToAccept
+      invitations={invitationsToAccept}
+      on:accept={reload}
+      on:reject={reload}
+    ></InvitationToAccept>
   </div>
 </MediaQuery>

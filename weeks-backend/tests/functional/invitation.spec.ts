@@ -1,3 +1,4 @@
+import TeammateModel from 'App/Models/Teammate';
 import InvitationModel from 'App/Models/Invitation';
 import UserModel from 'App/Models/User'
 import type User from 'App/Models/User'
@@ -82,6 +83,12 @@ test.group('Invitations', (group) => {
     const invitation = response.body()
     response.assertAgainstApiSpec()
     assert.equal(invitation.status, 'accepted', 'invitation should be accepted')
+
+    let teammate = await TeammateModel.query()
+      .where('teamId', team.id)
+      .where('userId', invitedUser.id)
+
+    assert.isTrue(teammate.length > 0, 'should have created the teammate')
   })
 
   test('reject an invitations', async ({ client, assert }) => {

@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import Database, { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 import { CreateTeamValidator, UpdateTeamValidator } from 'App/Validators/teams'
 import { validator } from "@ioc:Adonis/Core/Validator"
@@ -29,6 +30,21 @@ export type UpdateParams = {
     id: number,
     name?: string,
     notes?: string,
+  },
+  context?: Context
+}
+
+export type AddUserParams = {
+  data: {
+    team: {
+      id: number
+    }
+    user: {
+      id: number
+    },
+    role?: {
+      id: number
+    }
   },
   context?: Context
 }
@@ -154,6 +170,7 @@ export default class TeamsManager {
       .preload('roles')
       .preload('invitations', (invitationBuilder) => {
         invitationBuilder
+          .where('status', 'pending')
           .preload('invitedBy')
           .preload('invite')
           .preload('role')
@@ -205,6 +222,36 @@ export default class TeamsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch(error) {
+      if (!params.context?.trx) await trx.rollback()
+      throw error
+    }
+  }
+
+  public async addUser(params: AddUserParams): Promise<void> {
+    const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be defined to add user to a team')
+
+    let trx = params.context?.trx
+    if (!trx) trx = await Database.transaction()
+
+    try {
+      if (!params.data.team || !params.data.team.id) throw new Error('team must be defined')
+      if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
+
+      const team = await TeamModel.findOrFail(params.data.team.id, {
+        client: trx
+      })
+
+      await team.related('teammateUsers').attach({
+        [params.data.user.id]: {
+          roleId: params.data.role?.id,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        }
+      })
+
+      if (!params.context?.trx) await trx.commit()
+    } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }
