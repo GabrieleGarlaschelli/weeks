@@ -9,6 +9,7 @@
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import StandardTabSwitcher from "$lib/components/common/StandardTabSwitcher.svelte";
   import DateTimeFormattor from "$lib/components/common/DateTimeFormattor.svelte";
+  import RolesList from "$lib/components/roles/RolesList.svelte";
 </script>
 
 <MediaQuery
@@ -24,6 +25,10 @@
         {
           name: 'teammates',
           label: 'Partecipanti'
+        },
+        {
+          name: 'roles',
+          label: 'Ruoli'
         },
       ]}
       marginTop="10px"
@@ -55,6 +60,12 @@
           </td>
         </tr>
       </table>
+    {:else}
+      <RolesList
+        team={team}
+        searchable={true}
+        roles={team.roles}
+      ></RolesList>
     {/if}
   {/if}
 </MediaQuery>

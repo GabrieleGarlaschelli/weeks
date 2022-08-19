@@ -19,7 +19,7 @@
   }
 
   async function handleTeamClick(event: any) {
-    goto('/teams/' + event.detail.team.id)
+    goto('/teams/' + event.detail.team.id + '/general')
   }
 
   onMount(() => {

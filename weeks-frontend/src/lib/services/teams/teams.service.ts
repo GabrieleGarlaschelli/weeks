@@ -1,6 +1,7 @@
 import { FetchBasedService } from "../base/fetchBased.service";
 import { browser } from "$app/env";
 import type { User } from "../user/user.service";
+import type { Role } from "../roles/roles.service";
 
 export type Teammate = {
   id: number,
@@ -19,6 +20,7 @@ export type Team = {
   notes: string,
   owner?: User,
   teammates: Teammate[]
+  roles?: Role[],
   createdAt: Date,
   updatedAt: Date,
 }

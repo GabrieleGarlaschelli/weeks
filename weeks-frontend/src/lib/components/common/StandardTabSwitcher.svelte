@@ -4,7 +4,7 @@
 
 <script lang="ts">
   export let tabs: Tab[] = [],
-    selected: string | undefined = undefined,
+    selected: string,
     marginTop: string | undefined = undefined,
     marginBottom: string | undefined = undefined
 
@@ -24,5 +24,6 @@
     margin="4px"
     width="100%"
     bind:selected={selected}
+    on:tab-click
   ></TabSwitcher>
 </div>

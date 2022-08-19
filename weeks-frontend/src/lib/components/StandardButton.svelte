@@ -24,7 +24,7 @@
   <Button
     on:click
     width={width}
-    height="24px"
+    height="20px"
     backgroundColor={backgroundColor}
     hoverBackgroundColor={backgroundColor}
     border={border}

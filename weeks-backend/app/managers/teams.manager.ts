@@ -79,6 +79,7 @@ export default class TeamsManager {
       .preload('teammates', (teammateQuery) => {
         teammateQuery.preload('user')
       })
+      .preload('roles')
       .paginate(params.data.page, params.data.perPage)
 
     return results.toJSON()
@@ -150,6 +151,7 @@ export default class TeamsManager {
         teammateQuery.preload('user')
       })
       .preload('owner')
+      .preload('roles')
       .where('id', params.data.id)
 
     return results[0]
