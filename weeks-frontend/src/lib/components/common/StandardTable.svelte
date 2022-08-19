@@ -16,4 +16,8 @@
   <svelte:fragment slot="appendLastColumn" let:item>
     <slot name="appendLastColumn" item={item}></slot>
   </svelte:fragment>
+
+  <svelte:fragment slot="customColumn" let:item let:header>
+    <slot name="customColumn" item={item} header={header}></slot>
+  </svelte:fragment>
 </SimpleTable>

@@ -6,7 +6,6 @@
     if(!!$team) {
       let service = new RolesService({ fetch })
       let response = await service.list({ team: $team })
-      console.log(response)
       $team.roles = response.data
     }
   }

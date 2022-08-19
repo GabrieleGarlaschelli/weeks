@@ -46,7 +46,6 @@ export abstract class FetchBasedService {
   }
 
   protected async post(params: PostParams) {
-    console.log(params.body)
     const response = await this.fetch(this._calculateApiUrl(params.url), {
       method: 'POST',
       headers: this._calculateHeaders(params.headers),
