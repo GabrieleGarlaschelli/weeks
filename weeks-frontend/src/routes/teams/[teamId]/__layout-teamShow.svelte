@@ -10,22 +10,15 @@
   onMount(async () => {
     let service = new TeamService({ fetch })
     $team = await service.show({ id: parseInt($page.params.teamId) })
-
-    if($page.url.href.endsWith('general')) {
-      selectedTab = 'general'
-    } else if(
-      $page.url.href.endsWith('teammates') || 
-      $page.url.href.endsWith('inviteUser')
-    ) {
-      selectedTab = 'teammates'
-    } else if($page.url.href.endsWith('roles')) {
-      selectedTab = 'roles'
-    }
   })
 
   function handleOptionClick(event: any) {
     if(event.detail?.option?.name == 'edit' && !!$team) {
       goto('/teams/' + $team.id + '/edit')
+    } else if(event.detail?.option?.name == 'inviteUser' && !!$team) {
+      goto('/teams/' + $team.id + '/inviteUser')
+    } else if(event.detail?.option?.name == 'addEvent' && !!$team) {
+      goto('/teams/' + $team.id + '/events/new')
     }
   }
 
@@ -36,9 +29,24 @@
       goto(`/teams/${$team?.id}/teammates`)
     } else if(selectedTab == 'roles') {
       goto(`/teams/${$team?.id}/roles`)
+    } else if(selectedTab == 'calendar') {
+      goto(`/teams/${$team?.id}/calendar`)
     }
   }
 
+  $: if($page.url.href.endsWith('general')) {
+    selectedTab = 'general'
+  } else if(
+    $page.url.href.endsWith('teammates') || 
+    $page.url.href.endsWith('inviteUser')
+  ) {
+    selectedTab = 'teammates'
+  } else if($page.url.href.endsWith('roles')) {
+    selectedTab = 'roles'
+  } else if($page.url.href.endsWith('calendar')) {
+    selectedTab = 'calendar'
+  }
+  
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
   import PageTitle from "$lib/components/typography/PageTitle.svelte"
   import StandardTabSwitcher from "$lib/components/common/StandardTabSwitcher.svelte"
@@ -63,6 +71,16 @@
                 name: 'edit', 
                 label: 'Modifica',
                 icon: 'mdi-pencil'
+              },
+              {
+                name: 'inviteUser', 
+                label: 'Invita utente',
+                icon: 'mdi-account-plus'
+              },
+              {
+                name: 'addEvent', 
+                label: 'Aggiungi evento',
+                icon: 'mdi-calendar-plus'
               },
               {
                 name: 'delete', 
@@ -90,6 +108,10 @@
         {
           name: 'roles',
           label: 'Ruoli'
+        },
+        {
+          name: 'calendar',
+          label: 'Calendario'
         },
       ]}
       marginTop="10px"

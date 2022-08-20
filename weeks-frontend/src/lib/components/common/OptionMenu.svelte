@@ -58,10 +58,11 @@
     <Menu
       bind:activator={activator}
       bind:open={open}
-      width="auto"
+      width="200px"
       height="auto"
       maxHeight="300px"
       closeOnClickOutside={true}
+      boxShadow="rgba(0, 0, 0, 0.1) 0px 4px 12px"
     >
       <div 
         style:border-color={$colors.thinContrast}

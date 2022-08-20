@@ -49,6 +49,7 @@
       style:margin-top="20px"
     >
       <RoleForm
+        mode="update"
         role={role}
       ></RoleForm>
       <ConfirmOrCancelButtons

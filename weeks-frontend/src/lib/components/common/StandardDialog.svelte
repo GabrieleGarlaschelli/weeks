@@ -3,6 +3,7 @@
     title: string | undefined = undefined,
     titlePadding: string = "10px",
     bodyPadding: string = "10px",
+    cardPadding: string | undefined = undefined,
     footerPadding: string = "10px"
 
   import Dialog from "@likable-hair/svelte/dialogs/Dialog.svelte"
@@ -16,6 +17,7 @@
 >
   <StandardCard
     height="auto"
+    padding={cardPadding}
   >
     <div 
       slot="header" 

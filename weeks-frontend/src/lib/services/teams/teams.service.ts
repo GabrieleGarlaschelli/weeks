@@ -89,7 +89,7 @@ export default class TeamsService extends FetchBasedService {
   }
 
   public async update(params: {
-    id: string,
+    id: number,
     name?: string,
     notes?: string
   }): Promise<Team> {

@@ -23,6 +23,7 @@
       bind:value={value}
       label={placeholder}
       on:input
+      on:focus
       bind:error={error}
     ></StandardTextfield>
   {:else if type == 'password'}

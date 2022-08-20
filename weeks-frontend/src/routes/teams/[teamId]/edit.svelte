@@ -50,6 +50,7 @@
     >
       <TeamForm
         team={team}
+        mode="update"
       ></TeamForm>
       <ConfirmOrCancelButtons
         on:confirm-click={handleConfirmClick}

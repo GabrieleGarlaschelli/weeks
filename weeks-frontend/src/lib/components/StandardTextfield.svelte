@@ -28,6 +28,7 @@
   focusedBoxShadow="rgb(149 157 165 / 20%) 2px 2px 10px"
   borderWeight="1px"
   on:input
+  on:focus
 >
   <svelte:fragment slot="prepend-inner">
     <slot name="prepend-inner"></slot>
