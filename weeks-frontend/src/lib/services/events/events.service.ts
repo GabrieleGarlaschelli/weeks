@@ -41,6 +41,31 @@ export default class EventsService extends FetchBasedService {
       params: params
     })
 
+    return response.map((el: any) => {
+      el.start = new Date(el.start)
+      el.end = new Date(el.end)
+      return el
+    })
+  }
+
+  public async create(params: {
+    start: Date,
+    end: Date,
+    name: string,
+    description: string
+    team: {
+      id: number
+    }
+  }): Promise<Event[]> {
+    if (!browser) throw new Error('only available in browser')
+
+    let response = await this.post({
+      url: '/events',
+      body: {
+        event: params
+      }
+    })
+
     return response
   }
 }

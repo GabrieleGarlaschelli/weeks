@@ -4,7 +4,9 @@
     placeholder: string = "",
     name: string,
     type: 'password' | 'text' = 'text',
-    error: boolean = false
+    error: boolean = false,
+    disabled: boolean = false,
+    readonly: boolean = false
 
   import StandardTextfield from "./StandardTextfield.svelte";
   import PasswordTextfield from "./PasswordTextfield.svelte";
@@ -22,6 +24,8 @@
     <StandardTextfield
       bind:value={value}
       label={placeholder}
+      disabled={disabled}
+      readonly={readonly}
       on:input
       on:focus
       bind:error={error}

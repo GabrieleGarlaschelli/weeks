@@ -6,7 +6,9 @@
     placeholder: string = "",
     value: string = "",
     error: boolean = false,
-    maxWidth: string | undefined = undefined
+    maxWidth: string | undefined = undefined,
+    disabled: boolean = false,
+    readonly: boolean = false
 </script>
 
 <TextField
@@ -27,6 +29,8 @@
   focusBorderColor={error ? 'red' : $colors.primary}
   focusedBoxShadow="rgb(149 157 165 / 20%) 2px 2px 10px"
   borderWeight="1px"
+  disabled={disabled}
+  readonly={readonly}
   on:input
   on:focus
 >

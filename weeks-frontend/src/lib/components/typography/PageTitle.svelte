@@ -7,7 +7,6 @@
     prependVisible: boolean = false
 
   function handleBackClick() {
-    console.log(window.history)
     window.history.back()
   }
   import Icon from "@likable-hair/svelte/media/Icon.svelte";

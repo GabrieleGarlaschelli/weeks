@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
   import type { Team } from "$lib/services/teams/teams.service"
   import type { DateStat } from "@likable-hair/svelte/dates/utils"
+  import type { Event } from "$lib/services/events/events.service"
 </script>
 
 <script lang="ts">
@@ -12,6 +13,10 @@
     selectedDate: Date = new Date()
 
 
+  let dayGroupedEvents: {
+    [key: string]: Event[] | undefined
+  } = {}
+
   onMount(() => {
     loadEvents()
   })
@@ -22,7 +27,7 @@
       filters: {
         from: DateTime.now()
           .set({
-            month: visibleMonth,
+            month: visibleMonth + 1,
             year: visibleYear
           })
           .startOf('month')
@@ -33,21 +38,25 @@
           .toJSDate(),
         to: DateTime.now()
           .set({
-            month: visibleMonth,
+            month: visibleMonth + 1,
             year: visibleYear
           })
-          .startOf('month')
-          .startOf('day')
-          .startOf('hour')
-          .startOf('minute')
-          .startOf('millisecond')
+          .endOf('month')
+          .endOf('day')
+          .endOf('hour')
+          .endOf('minute')
+          .endOf('millisecond')
           .toJSDate(),
         team: {
           id: team.id
         }
       }
     }).then((events) => {
-      console.log(events)
+      for(let i = 0; i < events.length; i += 1) {
+        let dayKey = DateTime.fromJSDate(events[i].start).toFormat('yyyyMMdd')
+        if(!dayGroupedEvents[dayKey]) dayGroupedEvents[dayKey] = []
+        dayGroupedEvents[dayKey]?.push(events[i])
+      }
     })
   }
 
@@ -99,7 +108,7 @@
   let:mAndDown
 >
   <div
-    style:height="100%"
+    style:height="auto"
     style:width="100%"
   >
     <div class="month-switcher">
@@ -122,7 +131,8 @@
       bind:visibleYear={visibleYear}
       bind:selectedDate={selectedDate}
       locale="it"
-      height="100%"
+      height="auto"
+      gridGap="0px"
     >
       <div
         slot="day"
@@ -132,6 +142,15 @@
         on:click={() => handleDayClick(dayStat)}
       >
         {#if !mAndDown}
+          <div>
+            {#each dayGroupedEvents[DateTime.now().set({
+              day: dayStat.dayOfMonth,
+              month: dayStat.month + 1,
+              year: dayStat.year
+            }).toFormat('yyyyMMdd')] || [] as event}
+              {event.name}
+            {/each}
+          </div>
           <div
             class="add-new"
             style:background-color={$colors.primary}
@@ -183,7 +202,7 @@
 
     .day-slot {
       border: 1px solid;
-      height: 100px;
+      height: 120px;
       position: relative;
     }
 
