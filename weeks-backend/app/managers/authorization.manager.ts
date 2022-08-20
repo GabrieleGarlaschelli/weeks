@@ -30,6 +30,7 @@ export type Action =
   'create' |
   'view' |
   'invite' |
+  'removeUser' |
   'accept' |
   'reject' |
   'discard' 
@@ -75,6 +76,7 @@ export default class AuthorizationManager {
       destroy: AuthorizationManager._canDestroyTeam,
       view: AuthorizationManager._canViewTeam,
       invite: AuthorizationManager._canInviteToTeam,
+      removeUser: AuthorizationManager._canUpdateTeam
     },
     Invitation: {
       accept: AuthorizationManager._canAcceptInvitation,

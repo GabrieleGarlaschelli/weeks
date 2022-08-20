@@ -37,6 +37,21 @@ export default class InvitationsService extends FetchBasedService {
     return response
   }
 
+
+  public async removeUser(params: {
+    team: { id: number },
+    user: { id: number },
+  }): Promise<void> {
+    if (!browser) throw new Error('only available in browser')
+    if (!params.team.id) throw new Error('team must be defined')
+    if (!params.user.id) throw new Error('user must be defined')
+
+    await this.post({
+      url: `/teams/${params.team.id}/removeUser`,
+      body: params
+    })
+  }
+
   public async invitationToAccept(): Promise<Invitation[]> {
     if (!browser) throw new Error('only available in browser')
 

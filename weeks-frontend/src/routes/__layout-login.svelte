@@ -64,6 +64,10 @@
 	}
 </script>
 
+<svelte:head>
+  <title>Weeks - Login</title>
+</svelte:head>
+
 <main>
   <slot></slot>
 </main>

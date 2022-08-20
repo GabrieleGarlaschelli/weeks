@@ -9,13 +9,11 @@ import { TeamFactory, UserFactory } from 'Database/factories'
 
 test.group('Invitations', (group) => {
   let loggedInUser: User
-  let invitedUser: User
   let team: Team
 
   group.setup(async () => {
     team = await TeamFactory.with('owner').with('teammateUsers').create()
     loggedInUser = await UserModel.query().whereHas('teams', (builder) => builder.where('teams.id', team.id)).firstOrFail()
-    invitedUser = await UserFactory.create()
   })
 
   test('invite a non exising user to a team', async ({ client, assert }) => {
@@ -37,6 +35,8 @@ test.group('Invitations', (group) => {
   })
 
   test('invite a exising user to a team', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
     const response = await client.post('/invitations/inviteUser').json({
       user: {
         email: invitedUser.email
@@ -55,6 +55,17 @@ test.group('Invitations', (group) => {
   })
 
   test('get my invitations', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
+    await client.post('/invitations/inviteUser').json({
+      user: {
+        email: invitedUser.email
+      },
+      team: {
+        id: team.id
+      }
+    }).loginAs(loggedInUser)
+
     const response = await client.get('/invitations/list').loginAs(invitedUser)
 
     const invitation = response.body()
@@ -63,6 +74,8 @@ test.group('Invitations', (group) => {
   })
 
   test('accept an invitations', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
     const inviteUserResponse = await client.post('/invitations/inviteUser').json({
       user: {
         email: invitedUser.email
@@ -92,6 +105,8 @@ test.group('Invitations', (group) => {
   })
 
   test('reject an invitations', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
     const inviteUserResponse = await client.post('/invitations/inviteUser').json({
       user: {
         email: invitedUser.email
@@ -115,6 +130,8 @@ test.group('Invitations', (group) => {
   })
 
   test('discard an invitations', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
     const inviteUserResponse = await client.post('/invitations/inviteUser').json({
       user: {
         email: invitedUser.email
@@ -135,5 +152,38 @@ test.group('Invitations', (group) => {
     const invitation = response.body()
     response.assertAgainstApiSpec()
     assert.equal(invitation.status, 'discarded', 'invitation should be discarded')
+  })
+
+  test('remove a user from a team', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
+    const inviteUserResponse = await client.post('/invitations/inviteUser').json({
+      user: {
+        email: invitedUser.email
+      },
+      team: {
+        id: team.id
+      }
+    }).loginAs(loggedInUser)
+
+    const invitationToAccept = inviteUserResponse.body()
+
+    await client.post('/invitations/accept').json({
+      invitation: {
+        id: invitationToAccept.id
+      }
+    }).loginAs(invitedUser)
+
+    await client.post(`/teams/${team.id}/removeUser`).json({
+      user: {
+        id: invitedUser.id
+      },
+    }).loginAs(loggedInUser)
+
+    let teammate = await TeammateModel.query()
+      .where('teamId', team.id)
+      .where('userId', invitedUser.id)
+
+    assert.isTrue(teammate.length == 0, 'should have remove the teammate')
   })
 })

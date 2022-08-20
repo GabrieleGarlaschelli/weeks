@@ -20,7 +20,6 @@
   >
     <div slot="avatar">
       {#if !!src}
-        pippo
         <Avatar
           src={src}
         ></Avatar>

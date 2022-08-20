@@ -74,6 +74,9 @@
   import HeaderMenu from "$lib/components/HeaderMenu.svelte";
 </script>
 
+<svelte:head>
+  <title>Weeks</title>
+</svelte:head>
 
 {#if mounted}
   <MediaQuery

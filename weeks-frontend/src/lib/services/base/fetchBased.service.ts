@@ -57,7 +57,12 @@ export abstract class FetchBasedService {
       throw await response.json()
     }
 
-    return response.json()
+    let jsonText = await response.text()
+    if (!!jsonText) {
+      return JSON.parse(jsonText)
+    } else {
+      return {}
+    }
   }
 
   protected async put(params: PutParams) {

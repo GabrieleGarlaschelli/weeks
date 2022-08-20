@@ -6,6 +6,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { createEventDispatcher } from 'svelte';
+  import InvitationsService from '$lib/services/invitations/invitations.service'
 
   let dispatch = createEventDispatcher<{
     "destroy": { },
@@ -52,7 +53,15 @@
     confirmDialogOpen = false
 
     if(!!deletingTeammate) {
-      dispatch('destroy')
+      let service = new InvitationsService({ fetch })
+      service.removeUser({
+        team: team,
+        user: {
+          id: deletingTeammate.userId
+        }
+      }).then(() => {
+        dispatch('destroy')
+      })
     }
   }
 

@@ -32,6 +32,7 @@ Route.resource('teams', 'TeamsController')
   .middleware({
     '*': ['auth:api']
   })
+Route.post('/teams/:id/removeUser', 'TeamsController.removeUser').middleware('auth:api')
 
 Route.post('/roles', 'RolesController.store').middleware('auth:api')
 Route.get('/teams/:teamId/roles', 'RolesController.index').middleware('auth:api')

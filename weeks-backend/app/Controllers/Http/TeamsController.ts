@@ -50,4 +50,16 @@ export default class TeamsController {
       }
     })
   }
+
+  public async removeUser({ params, request }: HttpContextContract) {
+    const manager = new TeamsManager()
+    return await manager.removeUser({
+      data: {
+        team: {
+          id: params.id
+        },
+        user: request.input('user')
+      }
+    })
+  }
 }

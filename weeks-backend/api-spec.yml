@@ -340,6 +340,12 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Team"
+  /teams/{teamId}/removeUser:
+    post:
+      summary: Remove a user from a team.
+      responses:
+        '200':
+          description: No response.
   /invitations/inviteUser:
     post:
       summary: Invite a user to a team.

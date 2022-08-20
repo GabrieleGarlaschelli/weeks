@@ -257,6 +257,46 @@ export default class TeamsManager {
     }
   }
 
+  public async removeUser(params: AddUserParams): Promise<void> {
+    const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be defined to remove user from a team')
+
+    let trx = params.context?.trx
+    if (!trx) trx = await Database.transaction()
+
+    try {
+      if (!params.data.team || !params.data.team.id) throw new Error('team must be defined')
+      if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
+
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'removeUser',
+          resource: 'Team',
+          entities: {
+            team: {
+              id: params.data.team.id
+            }
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
+      const teammate = await TeammateModel.query({ client: trx })
+        .where('userId', params.data.user.id)
+        .where('teamId', params.data.team.id)
+        .firstOrFail()
+
+      await teammate.delete()
+      if (!params.context?.trx) await trx.commit()
+    } catch (error) {
+      if (!params.context?.trx) await trx.rollback()
+      throw error
+    }
+  }
+
   public async destroy(params: DestroyParams): Promise<void> {
     const user = await this._getUserFromContext(params.context)
     if (!user) throw new Error('user must be defined to destroy a team')
