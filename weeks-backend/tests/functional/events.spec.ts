@@ -4,6 +4,7 @@ import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
 import { test } from '@japa/runner'
 import { TeamFactory } from 'Database/factories'
+import EventModel from 'App/Models/Event';
 
 
 test.group('Events', (group) => {
@@ -140,9 +141,12 @@ test.group('Events', (group) => {
       }
     }).loginAs(loggedInUser)
 
-    let eventToUpdate = response.body()
+    let eventToDelete = response.body()
 
-    await client.delete('/events/' + eventToUpdate.id).loginAs(loggedInUser)
+    await client.delete('/events/' + eventToDelete.id).loginAs(loggedInUser)
+    const results = await EventModel.query().where('id', eventToDelete.id)
+
+    assert.equal(results.length, 0, 'should have remove the event')
   })
 
   

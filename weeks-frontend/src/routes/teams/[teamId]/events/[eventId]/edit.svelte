@@ -29,11 +29,23 @@
     window.history.back()
   }
 
+  function handleOptionClick(customEvent: any) {
+    if(customEvent.detail?.option?.name == 'save') {
+      handleConfirmClick()
+    } else if(customEvent.detail?.option?.name == 'delete' && !!event) {
+      let service = new EventsService({ fetch })
+      service.destroy(event).then(() => {
+        window.history.back()
+      })
+    }
+  }
+
 
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import PageTitle from "$lib/components/typography/PageTitle.svelte";
   import EventForm from "$lib/components/events/EventForm.svelte";
   import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte';
+  import OptionMenu from "$lib/components/common/OptionMenu.svelte";
 </script>
 
 <MediaQuery
@@ -43,7 +55,28 @@
     title={event?.name || ''}
     paddingTop={mAndDown ? "15px" : "40px"}
     prependVisible={true}
-  ></PageTitle>
+  >
+    <svelte:fragment slot="append">
+      <OptionMenu
+        options={
+          [
+            {
+              name: 'save', 
+              label: 'Salva',
+              icon: 'mdi-floppy'
+            },
+            {
+              name: 'delete', 
+              label: 'Elimina',
+              icon: 'mdi-delete',
+              color: '#ad0000'
+            },
+          ]
+        }
+        on:option-click={handleOptionClick}
+      ></OptionMenu>
+    </svelte:fragment>
+  </PageTitle>
 
   {#if !!event}
     <div 

@@ -6,8 +6,11 @@ export default class EventsController {
   public async index({ request }: HttpContextContract) {
     const filters = request.input('filters')
 
-    if (!!filters.from) filters.from = DateTime.fromISO(filters.from)
-    if (!!filters.to) filters.to = DateTime.fromISO(filters.to)
+
+    if( !!filters) {
+      if (!!filters.from) filters.from = DateTime.fromISO(filters.from)
+      if (!!filters.to) filters.to = DateTime.fromISO(filters.to)
+    }
 
     const manager = new EventsManager()
     return await manager.list({

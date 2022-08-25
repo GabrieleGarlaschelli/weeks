@@ -91,7 +91,7 @@
   }
   
   .event-drawer.opened {
-    width: 300px;
+    width: 400px;
   }
 
   .event-drawer.closed {

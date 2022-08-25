@@ -411,7 +411,7 @@ export default class EventsManager {
     if (!trx) trx = await Database.transaction()
 
     try {
-      if(!params.data.deleteAllFrequency) {
+      if(!!params.data.deleteAllFrequency) {
         let events = await EventModel.query({ client: trx })
           .whereIn('frequencyId', eventBuilder => {
             eventBuilder.select('frequencyId').where('id', params.data.id)
@@ -434,7 +434,7 @@ export default class EventsManager {
             })
           })
           .firstOrFail()
-
+        
         await event.delete()
       }
 

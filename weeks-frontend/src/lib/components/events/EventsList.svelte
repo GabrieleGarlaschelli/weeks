@@ -27,12 +27,16 @@
     }
   }
 
+  $: sortedEvents = !!events ? events.sort((a, b) => {
+    return DateTime.fromJSDate(new Date(a.start)).diff(DateTime.fromJSDate(new Date(b.start))).milliseconds
+  } ) : []
+
   import Icon from "@likable-hair/svelte/media/Icon.svelte"
 </script>
 
 <div class="events-container">
   {#if events.length > 0}
-    {#each events as event}
+    {#each sortedEvents as event}
       <div
         class="event-post"
         on:click={() => handleEventClick(event)}
