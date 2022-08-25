@@ -8,6 +8,7 @@
   import { DateTime } from "luxon";
   import { onMount } from "svelte";
   import EventsService from "$lib/services/events/events.service"
+  import { goto } from "$app/navigation";
 
   export let team: Team,
     selectedDate: Date = new Date(),
@@ -97,6 +98,10 @@
       year: dayStat.year
     })
     selectedDate = selection.toJSDate()
+  }
+
+  function handlePlusClick(dayStat: DateStat) {
+    goto(`/teams/${team.id}/events/new`)
   }
 
   function isGreaterThan(array: any[] | undefined, num: number) {
@@ -198,6 +203,8 @@
               name="mdi-plus"
               size={10}
               color={$colors.background}
+              click
+              on:click={() => handlePlusClick(dayStat)}
             ></Icon>
           </div>
         {:else if isGreaterThan(dayGroupedEvents[DateTime.now().set({

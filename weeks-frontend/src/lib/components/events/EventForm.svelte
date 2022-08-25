@@ -12,7 +12,7 @@
   import StandardDatepicker from "$lib/components/common/StandardDatepicker.svelte"
   import StandardTimePicker from "$lib/components/common/StandardTimePicker.svelte"
   import { DateTime } from "luxon";
-import LabelAndTextarea from "../LabelAndTextarea.svelte";
+  import LabelAndTextarea from "../LabelAndTextarea.svelte";
 
   export let event: Event = { },
     mode: 'create' | 'update' = 'create',
@@ -25,23 +25,35 @@ import LabelAndTextarea from "../LabelAndTextarea.svelte";
     endTime: string,
     date: Date
 
-  $: if(!!startTime && !!date) {
-    event.start = DateTime.fromJSDate(date).set({
-        hour: parseInt(startTime.split(':')[0]),
-        minute: parseInt(startTime.split(':')[1])
-      })
-      .startOf('millisecond')
-      .startOf('minute')
-      .toJSDate()
+  $: {
+    if(!!event.start && !startTime) {
+      startTime = DateTime.fromJSDate(new Date(event.start)).toFormat("HH:mm")
+    }
+    
+    if(!!startTime && !!date) {
+      event.start = DateTime.fromJSDate(date).set({
+          hour: parseInt(startTime.split(':')[0]),
+          minute: parseInt(startTime.split(':')[1])
+        })
+        .startOf('millisecond')
+        .startOf('second')
+        .toJSDate()
+    }
   }
-  $: if(!!endTime && !!date) {
-    event.end = DateTime.fromJSDate(date).set({
-        hour: parseInt(endTime.split(':')[0]),
-        minute: parseInt(endTime.split(':')[1])
-      })
-      .startOf('millisecond')
-      .startOf('minute')
-      .toJSDate()
+  $: {
+    if(!!event.end && !endTime) {
+      endTime = DateTime.fromJSDate(new Date(event.end)).toFormat("HH:mm")
+    }
+    
+    if(!!endTime && !!date) {
+      event.end = DateTime.fromJSDate(date).set({
+          hour: parseInt(endTime.split(':')[0]),
+          minute: parseInt(endTime.split(':')[1])
+        })
+        .startOf('millisecond')
+        .startOf('second')
+        .toJSDate()
+    }
   }
 </script>
 

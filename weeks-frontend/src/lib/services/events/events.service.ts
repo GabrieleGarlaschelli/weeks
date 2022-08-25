@@ -69,4 +69,36 @@ export default class EventsService extends FetchBasedService {
 
     return response
   }
+
+  public async show(params: {
+    id: number
+  }): Promise<Event> {
+    let response = await this.get({
+      url: '/events/' + params.id
+    })
+
+    return response
+  }
+
+  public async update(params: {
+    id: number,
+    name?: string,
+  }): Promise<Event> {
+    let response = await this.put({
+      url: '/events/' + params.id,
+      body: params
+    })
+
+    return response
+  }
+
+  public async destroy(params: {
+    id: number,
+  }): Promise<void> {
+    let response = await this.delete({
+      url: '/events/' + params.id,
+    })
+
+    return response
+  }
 }

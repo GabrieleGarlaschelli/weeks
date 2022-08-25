@@ -1,16 +1,33 @@
 <script lang="ts" context="module">
   import type { Event } from '$lib/services/events/events.service'
-  import { DateTime } from 'luxon';
 </script>
 
 <script lang="ts">
-  export let events: Event[] = []
+  import { goto } from '$app/navigation';
+  import { DateTime } from 'luxon';
+
+  export let events: Event[] = [],
+    team: { id: number } | undefined = undefined
 
   function formattedTime(event: Event) {
     let fromTime: string = DateTime.fromJSDate(event.start).setLocale('it').toLocaleString(DateTime.TIME_SIMPLE)
     let toTime: string = DateTime.fromJSDate(event.end).setLocale('it').toLocaleString(DateTime.TIME_SIMPLE)
     return `${fromTime} - ${toTime}`
   }
+
+  function handlePlusClick() {
+    if(!!team) {
+      goto('/teams/' + team.id + '/events/new')
+    }
+  }
+
+  function handleEventClick(event: Event) {
+    if(!!team) {
+      goto(`/teams/${team.id}/events/${event.id}/edit`)
+    }
+  }
+
+  import Icon from "@likable-hair/svelte/media/Icon.svelte"
 </script>
 
 <div class="events-container">
@@ -18,12 +35,28 @@
     {#each events as event}
       <div
         class="event-post"
+        on:click={() => handleEventClick(event)}
+        class:clickable={!!team}
       >
         <div class="title">{event.name}</div>
         <div class="time">{formattedTime(event)}</div>
-        <div class="description">{event.description}</div>
+        {#if !!event.description}
+          <div 
+            class="description"
+            style:white-space="pre-wrap"
+          >{event.description}</div>
+        {/if}
       </div>
     {/each}
+    {#if !!team}
+      <div class="plus-container">
+        <Icon 
+          name="mdi-plus"
+          click
+          on:click={handlePlusClick}
+        ></Icon>
+      </div>
+    {/if}
   {:else}
     <slot name="no-data">
       <div class="no-data">Nessun evento</div>
@@ -49,6 +82,10 @@
     margin-right: 10px;
   }
 
+  .clickable {
+    cursor: pointer;
+  }
+
   .title {
     font-weight: 500;
     font-size: 1.2rem;
@@ -64,10 +101,19 @@
 
   .description {
     font-size: 1rem;
+    margin-bottom: 10px;
   }
 
   .no-data {
     font-weight: 300;
     text-align: center;
+  }
+
+  .plus-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+    margin-bottom: 15px;
   }
 </style>

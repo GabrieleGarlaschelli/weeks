@@ -51,9 +51,12 @@
               ></Icon>
             </div>
           </div>
-          <EventsList
-            events={selectedEvents}
-          ></EventsList>
+          <div class="events-list">
+            <EventsList
+              events={selectedEvents}
+              team={$team}
+            ></EventsList>
+          </div>
         </div>
       {/if}
     </div>
@@ -66,6 +69,7 @@
       </div>
       <EventsList
         events={selectedEvents}
+        team={$team}
       ></EventsList>
     {/if}
   {/if}
@@ -78,6 +82,12 @@
 
   .event-drawer {
     transition: all .4s cubic-bezier(0.075, 0.82, 0.165, 1);
+    height: 100%;
+  }
+
+  .events-list {
+    max-height: calc(100vh - 200px);
+    overflow: auto;
   }
   
   .event-drawer.opened {
