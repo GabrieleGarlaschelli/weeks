@@ -4,7 +4,9 @@
   export let loading: boolean = false,
     marginTop: string = "20px",
     cancelText: string = "Annulla",
-    confirmText: string = "Salva"
+    confirmText: string = "Salva",
+    confirmDisable: boolean = false,
+    cancelDisable: boolean = false
 
   let dispatch = createEventDispatcher<{
     "confirm-click": {
@@ -16,15 +18,19 @@
   }>()
 
   function handleConfirm(event: any) {
-    dispatch('confirm-click', {
-      nativeEvent: event.detail.nativeEvent
-    })
+    if(!confirmDisable) {
+      dispatch('confirm-click', {
+        nativeEvent: event.detail.nativeEvent
+      })
+    }
   }
 
   function handleCancel(nativeEvent: MouseEvent) {
-    dispatch('cancel-click', {
-      nativeEvent
-    })
+    if(!cancelDisable) {
+      dispatch('cancel-click', {
+        nativeEvent
+      })
+    }
   }
 
   import LinkButton from "$lib/components/LinkButton.svelte";
@@ -39,6 +45,7 @@
     class="link-button-container"
   >
     <LinkButton
+      disabled={cancelDisable}
       on:click={handleCancel}
     >{cancelText}</LinkButton>
   </div>
@@ -46,6 +53,7 @@
     width={"auto"}
     loading={loading}
     on:click={handleConfirm}
+    disabled={confirmDisable}
   >{confirmText}</StandardButton>
 </div>
 

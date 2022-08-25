@@ -1,13 +1,17 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+
   export let title: string,
     marginTop: string = "",
     paddingTop: string = "",
     alignItems: string = "center",
     justifyContent: string = "left",
-    prependVisible: boolean = false
+    prependVisible: boolean = false,
+    prependRoute: string | undefined = undefined
 
   function handleBackClick() {
-    window.history.back()
+    if(!prependRoute) window.history.back()
+    else goto(prependRoute)
   }
   import Icon from "@likable-hair/svelte/media/Icon.svelte";
 </script>

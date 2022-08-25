@@ -12,7 +12,7 @@
   function handleSubmit() {
     loading = true
     let service = new EventService({ fetch })
-    if(!!event.start && !!event.end && !!event.name && !!event.description) {
+    if(!!event.start && !!event.end && !!event.name) {
       service.create({
         start: event.start,
         end: event.end,
@@ -25,8 +25,12 @@
         loading = false
         window.history.back()
       })
+    } else {
+      console.log('incomplete event')
     }
   }
+
+  $: confirmDisabled = !event || !event.start || !event.end || !event.name
 
   function handleCancel() {
     window.history.back()
@@ -51,9 +55,10 @@
     style:margin-top="20px"
   >
     <EventForm
-      event={event}
+      bind:event={event}
     ></EventForm>
     <ConfirmOrCancelButtons
+      confirmDisable={confirmDisabled}
       loading={loading}
       on:confirm-click={handleSubmit}
       on:cancel-click={handleCancel}

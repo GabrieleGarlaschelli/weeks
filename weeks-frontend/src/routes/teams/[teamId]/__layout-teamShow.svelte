@@ -62,6 +62,7 @@
       title={$team.name}
       paddingTop={mAndDown ? "15px" : "40px"}
       prependVisible={true}
+      prependRoute="/teams"
     >
       <svelte:fragment slot="append">
         <OptionMenu

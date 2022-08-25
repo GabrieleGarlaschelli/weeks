@@ -10,7 +10,8 @@
   import EventsService from "$lib/services/events/events.service"
 
   export let team: Team,
-    selectedDate: Date = new Date()
+    selectedDate: Date = new Date(),
+    selectedEvents: Event[] = []
 
 
   let dayGroupedEvents: {
@@ -98,6 +99,23 @@
     selectedDate = selection.toJSDate()
   }
 
+  function isGreaterThan(array: any[] | undefined, num: number) {
+    if(!!array) return array.length > num
+    else return false
+  }
+
+  $: {
+    if(!!selectedDate) {
+      let key = DateTime.now().set({
+        day: selectedDate.getDate(),
+        month: selectedDate.getMonth() + 1,
+        year: selectedDate.getFullYear()
+      }).toFormat('yyyyMMdd')
+
+      selectedEvents = dayGroupedEvents[key] || []
+    }
+  }
+
   import colors from "$lib/stores/colors";
   import Calendar from "@likable-hair/svelte/dates/Calendar.svelte"
   import Icon from "@likable-hair/svelte/media/Icon.svelte"
@@ -131,7 +149,7 @@
       bind:visibleYear={visibleYear}
       bind:selectedDate={selectedDate}
       locale="it"
-      height="auto"
+      height={mAndDown ? "200px" : "auto"}
       gridGap="0px"
     >
       <div
@@ -139,6 +157,7 @@
         let:dayStat
         let:selected
         class="day-slot"
+        style:border-color={$colors.thinContrast}
         on:click={() => handleDayClick(dayStat)}
       >
         {#if !mAndDown}
@@ -147,9 +166,29 @@
               day: dayStat.dayOfMonth,
               month: dayStat.month + 1,
               year: dayStat.year
-            }).toFormat('yyyyMMdd')] || [] as event}
-              {event.name}
+            }).toFormat('yyyyMMdd')]?.slice(0, 2) || [] as event}
+              <div style:position="relative">
+                <div 
+                  class="event-post"
+                  style:background-color={$colors.tertiary}
+                  style:color={$colors.contrast}
+                >
+                  {event.name}
+                </div>
+              </div>
             {/each}
+            {#if isGreaterThan(dayGroupedEvents[DateTime.now().set({
+              day: dayStat.dayOfMonth,
+              month: dayStat.month + 1,
+              year: dayStat.year
+            }).toFormat('yyyyMMdd')], 2)}
+              <div
+                style:margin-left="5px"
+                style:font-size=".8rem"
+              >
+                and more
+              </div>
+            {/if}
           </div>
           <div
             class="add-new"
@@ -161,8 +200,14 @@
               color={$colors.background}
             ></Icon>
           </div>
+        {:else if isGreaterThan(dayGroupedEvents[DateTime.now().set({
+              day: dayStat.dayOfMonth,
+              month: dayStat.month + 1,
+              year: dayStat.year
+            }).toFormat('yyyyMMdd')], 0)}
+          <div class="dot"></div>
         {/if}
-        <div 
+        <div
           class="day-of-month"
           style:color={selected ? $colors.primary : $colors.contrast}
         >
@@ -183,6 +228,16 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+    }
+
+    .dot {
+      background-color: var(--global-primary-color);
+      height: 4px;
+      width: 4px;
+      border-radius: 50%;
+      top: 27px;
+      position: absolute;
     }
 
     .day-of-month {
@@ -202,7 +257,7 @@
 
     .day-slot {
       border: 1px solid;
-      height: 120px;
+      height: 130px;
       position: relative;
     }
 
@@ -234,5 +289,30 @@
 
   .month-name {
     font-size: 1.5rem;
+  }
+
+  .event-post::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0px;
+    height: 38px;
+    width: 3px;
+    border-radius: 2px 2px 0px 0px;
+    background-color: var(--global-primary-color);
+  }
+
+  .event-post {
+    font-size: .9rem;
+    word-break: keep-all;
+    margin: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-right: 4px;
+    padding-left: 8px;
+    text-overflow: clip;
+    overflow: hidden;
+    border-radius: 3px;
+    height: 30px;
   }
 </style>

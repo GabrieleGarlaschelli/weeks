@@ -42,7 +42,6 @@ import LabelAndTextarea from "../LabelAndTextarea.svelte";
       .startOf('millisecond')
       .startOf('minute')
       .toJSDate()
-    console.log(event)
   }
 </script>
 

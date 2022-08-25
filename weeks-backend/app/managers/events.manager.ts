@@ -169,6 +169,7 @@ export default class EventsManager {
         name: params.data.name,
         description: params.data.description,
         status: params.data.status || 'confirmed',
+        createdByUserId: user.id
       }, {
         client: trx
       })

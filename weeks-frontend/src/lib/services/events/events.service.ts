@@ -52,12 +52,13 @@ export default class EventsService extends FetchBasedService {
     start: Date,
     end: Date,
     name: string,
-    description: string
+    description?: string
     team: {
       id: number
     }
   }): Promise<Event[]> {
     if (!browser) throw new Error('only available in browser')
+    console.log(params)
 
     let response = await this.post({
       url: '/events',
