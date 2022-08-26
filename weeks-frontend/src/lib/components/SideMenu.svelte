@@ -25,11 +25,12 @@
       title: "Teams",
       icon: "mdi-account-group",
       name: 'teams'
-    }, {
-      title: "Notifiche",
-      icon: "mdi-alarm",
-      name: 'notifications'
-    }
+    }, 
+    // {
+    //   title: "Notifiche",
+    //   icon: "mdi-alarm",
+    //   name: 'notifications'
+    // }
   ]
   let selectedMenu: string
 

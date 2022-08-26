@@ -36,7 +36,7 @@
   items={[
     {name: 'home', title: 'Home'},
     {name: 'teams', title: 'Teams'},
-    {name: 'notifications', title: 'Notifiche'},
+    // {name: 'notifications', title: 'Notifiche'},
     {name: 'logout', title: 'Logout'}
   ]}
   bind:openDrawer={opened}
