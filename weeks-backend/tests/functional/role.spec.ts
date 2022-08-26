@@ -26,12 +26,21 @@ test.group('Roles', (group) => {
     let teamAndOwner = teamsAndOwners[0]
     const response = await client.post('/roles').json({
       name: 'Allenatore',
-      team: teamAndOwner.team
+      team: teamAndOwner.team,
+      cans: {
+        Team: {
+          update: true
+        },
+        Invitation: {
+          accept: true
+        }
+      }
     }).loginAs(teamAndOwner.owner)
 
     const role = response.body()
     response.assertAgainstApiSpec()
     assert.equal(role.name, 'Allenatore', 'should have the right name')
+    assert.isTrue(role.cans.Team.update, 'should has set the cans')
   })
 
   test('get a paginated list of roles for an existing teams', async ({ client, assert }) => {
@@ -80,13 +89,19 @@ test.group('Roles', (group) => {
 
     let role = response.body()
     response = await client.put('/roles/' + role.id).json({
-      name: 'Massaggiatore (stagione estiva)'
+      name: 'Massaggiatore (stagione estiva)',
+      cans: {
+        Team: {
+          create: true
+        }
+      }
     }).loginAs(teamAndOwner.owner)
 
     response.assertAgainstApiSpec()
     const roleResponse = response.body()
     assert.equal(roleResponse.id, role.id, "should return the correct role")
     assert.equal(roleResponse.name, 'Massaggiatore (stagione estiva)', "should have updated correctly")
+    assert.isTrue(roleResponse.cans.Team.create, 'should has set the cans')
   })
 
   test('destroy an existing role', async ({ client, assert }) => {

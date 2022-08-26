@@ -160,7 +160,7 @@ components:
           type: string
         cans:
           nullable: true
-          type: string
+          type: object
         team:
           nullable: true
           $ref: "#/components/schemas/Team"

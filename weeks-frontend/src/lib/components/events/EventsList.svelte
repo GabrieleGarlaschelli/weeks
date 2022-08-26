@@ -5,6 +5,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { DateTime } from 'luxon';
+  import CansService from '$lib/services/roles/cans.service';
 
   export let events: Event[] = [],
     team: { id: number } | undefined = undefined
@@ -22,7 +23,7 @@
   }
 
   function handleEventClick(event: Event) {
-    if(!!team) {
+    if(!!team && CansService.can('Event', 'update')) {
       goto(`/teams/${team.id}/events/${event.id}/edit`)
     }
   }
@@ -40,7 +41,7 @@
       <div
         class="event-post"
         on:click={() => handleEventClick(event)}
-        class:clickable={!!team}
+        class:clickable={!!team && CansService.can('Event', 'update')}
       >
         <div class="title">{event.name}</div>
         <div class="time">{formattedTime(event)}</div>
@@ -52,7 +53,7 @@
         {/if}
       </div>
     {/each}
-    {#if !!team}
+    {#if !!team && CansService.can('Event', 'create')}
       <div class="plus-container">
         <Icon 
           name="mdi-plus"

@@ -1,15 +1,83 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page, session } from "$app/stores"
   import { onMount } from "svelte"
   import { goto } from "$app/navigation";
   import TeamService from "$lib/services/teams/teams.service"
   import team from "$lib/stores/teams/teamsShow"
+  import teamCans from "$lib/stores/teams/teamsCans"
+  import CansService from '$lib/services/roles/cans.service';
+  import type { Option } from '$lib/components/common/OptionSelector.svelte'
+  import type { Tab } from '@likable-hair/svelte/navigation/TabSwitcher.svelte'
 
-  let selectedTab: string = 'general'
+  let selectedTab: string = 'general',
+    options: Option[] = [],
+    tabs: Tab[] = []
 
   onMount(async () => {
     let service = new TeamService({ fetch })
     $team = await service.show({ id: parseInt($page.params.teamId) })
+
+    let currentTeammates = $team.teammates.find((teammate) => {
+      return teammate.userId == $session.currentUser.id
+    })
+
+    $teamCans = {
+      cans: currentTeammates?.role?.cans,
+      owner: $team.ownerId == $session.currentUser.id
+    }
+
+    options = [ ]
+
+    if(CansService.can('Team', 'update'))
+      options.push({
+        name: 'edit', 
+        label: 'Modifica',
+        icon: 'mdi-pencil'
+      },)
+
+    if(CansService.can('Team', 'invite'))
+      options.push({
+        name: 'inviteUser', 
+        label: 'Invita utente',
+        icon: 'mdi-account-plus'
+      })
+
+    if(CansService.can('Event', 'create')) 
+      options.push({
+        name: 'addEvent', 
+        label: 'Aggiungi evento',
+        icon: 'mdi-calendar-plus'
+      })
+    
+    if(CansService.can('Team', 'destroy'))
+      options.push({
+        name: 'delete', 
+        label: 'Elimina',
+        icon: 'mdi-delete',
+        color: '#ad0000'
+      })
+    
+    tabs = [
+      {
+        name: 'general',
+        label: 'Generale'
+      },
+      {
+        name: 'teammates',
+        label: 'Partecipanti'
+      }
+    ]
+
+    if(CansService.can('Role', 'update')) 
+      tabs.push({
+        name: 'roles',
+        label: 'Ruoli'
+      })
+    
+    tabs.push({
+      name: 'calendar',
+      label: 'Calendario'
+    })
   })
 
   function handleOptionClick(event: any) {
@@ -65,56 +133,17 @@
       prependRoute="/teams"
     >
       <svelte:fragment slot="append">
-        <OptionMenu
-          options={
-            [
-              {
-                name: 'edit', 
-                label: 'Modifica',
-                icon: 'mdi-pencil'
-              },
-              {
-                name: 'inviteUser', 
-                label: 'Invita utente',
-                icon: 'mdi-account-plus'
-              },
-              {
-                name: 'addEvent', 
-                label: 'Aggiungi evento',
-                icon: 'mdi-calendar-plus'
-              },
-              {
-                name: 'delete', 
-                label: 'Elimina',
-                icon: 'mdi-delete',
-                color: '#ad0000'
-              },
-            ]
-          }
-          on:option-click={handleOptionClick}
-        ></OptionMenu>
+        {#if options.length > 0}
+          <OptionMenu
+            options={options}
+            on:option-click={handleOptionClick}
+          ></OptionMenu>
+        {/if}
       </svelte:fragment>
     </PageTitle>
 
     <StandardTabSwitcher
-      tabs={[
-        {
-          name: 'general',
-          label: 'Generale'
-        },
-        {
-          name: 'teammates',
-          label: 'Partecipanti'
-        },
-        {
-          name: 'roles',
-          label: 'Ruoli'
-        },
-        {
-          name: 'calendar',
-          label: 'Calendario'
-        },
-      ]}
+      tabs={tabs}
       marginTop="10px"
       marginBottom="10px"
       bind:selected={selectedTab}

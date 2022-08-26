@@ -103,6 +103,7 @@ export default class AuthService extends FetchBasedService {
 
 
     return {
+      id: response.id,
       email: response.email,
       name: response.name,
       avatarUrl: response.avatarUrl,

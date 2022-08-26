@@ -88,6 +88,9 @@ export default class AuthorizationManager {
       update: AuthorizationManager._canUpdateRole,
       destroy: AuthorizationManager._canUpdateRole,
       view: AuthorizationManager._canViewRole,
+    },
+    Event: {
+      create: AuthorizationManager._canCreateEvent
     }
 
   }
@@ -235,7 +238,7 @@ export default class AuthorizationManager {
     params: { actor: User, entities: Entities },
     context?: { trx?: TransactionClientContract }
   ): Promise<boolean> {
-    if (!params.entities.role?.id) throw new Error('team must be defined')
+    if (!params.entities.role?.id) throw new Error('role must be defined')
     let roleId: number = params.entities.role.id
 
     const userBelongs = await UserModel.query({
@@ -253,7 +256,7 @@ export default class AuthorizationManager {
     params: { actor: User, entities: Entities },
     context?: { trx?: TransactionClientContract }
   ): Promise<boolean> {
-    if (!params.entities.role?.id) throw new Error('team must be defined')
+    if (!params.entities.role?.id) throw new Error('role must be defined')
     let roleId: number = params.entities.role.id
 
     const userBelongs = await UserModel.query({
@@ -262,6 +265,30 @@ export default class AuthorizationManager {
       builder.whereHas('roles', rolesBuilder => {
         rolesBuilder.where('roles.id', roleId)
       })
+    }).where('users.id', params.actor.id)
+
+    return userBelongs.length != 0
+  }
+
+  private static async _canCreateEvent(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.team?.id) throw new Error('team must be defined')
+    let teamId: number = params.entities.team.id
+
+    const userBelongs = await UserModel.query({
+      client: context?.trx
+    }).whereHas('teams', (builder) => {
+      builder
+        .where('teams.id', teamId)
+        .where(teamsBuilder => {
+          teamsBuilder
+            .whereHas('roles', rolesBuilder => {
+              rolesBuilder.whereRaw("cast(roles.cans->'Event'->>'create' as BOOLEAN) = true")
+            })
+            .orWhere('ownerId', params.actor.id)
+        })
     }).where('users.id', params.actor.id)
 
     return userBelongs.length != 0

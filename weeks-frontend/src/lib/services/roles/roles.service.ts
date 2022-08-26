@@ -14,6 +14,38 @@ export type PaginatedRoles = {
   meta: PaginationData
 }
 
+export const resources = ['Team', 'Invitation', 'Event', 'Convocation', 'EventSession', 'Role']
+export type Resource =
+  'Team' |
+  'Invitation' |
+  'Event' |
+  'Convocation' |
+  'EventSession' |
+  'Role'
+
+export const actionsForResources: {[key: string]: string[]} = {
+  'Team': ['update', 'invite', 'removeUser', 'destroy'],
+  'Event': [ 'create', 'update' ],
+  'Role': [ 'update' ]
+}
+
+export type Action =
+  'update' |
+  'destroy' |
+  'create' |
+  'view' |
+  'invite' |
+  'removeUser' |
+  'accept' |
+  'reject' |
+  'discard'
+
+export type RoleCans = {
+  [key: string]: {
+    [key: string]: boolean
+  }
+}
+
 export default class RolesService extends FetchBasedService {
   constructor(params: {
     fetch: any
@@ -71,6 +103,7 @@ export default class RolesService extends FetchBasedService {
   public async update(params: {
     id: number,
     name?: string,
+    cans?: RoleCans
   }): Promise<Role> {
     let response = await this.put({
       url: '/roles/' + params.id,
@@ -88,5 +121,40 @@ export default class RolesService extends FetchBasedService {
     })
 
     return response
+  }
+
+  public static getActionsForResource(resource: string): string[] {
+    return actionsForResources[resource]
+  }
+
+  public static translateResource(resource: string): string {
+    let translationMapping: {
+      [key: string]: string
+    } = {
+      'Team': 'Team',
+      'Invitation': 'Inviti',
+      'Event': 'Eventi',
+      'Convocation': 'Convocazioni',
+      'EventSession': 'Sessioni',
+      'Role': 'Ruoli'
+    }
+    return translationMapping[resource]
+  }
+
+  public static translateActions(action: string): string {
+    let translationMapping: {
+      [key: string]: string
+    } = {
+      'update': 'Modificare',
+      'destroy': 'Eliminare',
+      'create': 'Creare',
+      'view': 'Visualizzare',
+      'invite': 'Invitare',
+      'removeUser': 'Rimuovere utenti',
+      'accept': 'Accettare',
+      'reject': 'Rifiutare',
+      'discard': 'Annullare'
+    }
+    return translationMapping[action]
   }
 }

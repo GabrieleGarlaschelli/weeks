@@ -13,4 +13,5 @@
   backgroundColor="trasparent"
   borderHoverColor={$colors.lightContrast}
   focusShadow={"2px " + $colors.thinContrast}
+  on:change
 ></Checkbox>

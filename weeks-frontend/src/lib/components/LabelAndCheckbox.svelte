@@ -4,7 +4,8 @@
 
   export let label: string,
     id: string,
-    value: boolean = false
+    value: boolean = false,
+    textColor: string = $colors.lightContrast
 </script>
 
 
@@ -12,11 +13,12 @@
   <StandardCheckbox
     bind:value={value}
     id={id}
+    on:change
   ></StandardCheckbox>
   <slot name="label">
     <label 
       style:margin-left="0.7rem"
-      style:color={$colors.lightContrast}
+      style:color={textColor}
       for={id}
     >
       <slot name="text">

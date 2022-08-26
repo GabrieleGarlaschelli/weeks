@@ -6,6 +6,7 @@
   import { page } from "$app/stores"
   import { onMount } from "svelte"
   import RoleService from "$lib/services/roles/roles.service"
+  import CansService from '$lib/services/roles/cans.service';
 
   let role: Role
   onMount(async () => {
@@ -35,31 +36,35 @@
   import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte';
 </script>
 
-<MediaQuery
-  let:mAndDown
->
-  <PageTitle
-    title={role?.name || ''}
-    paddingTop={mAndDown ? "15px" : "40px"}
-    prependVisible={true}
-  ></PageTitle>
+{#if CansService.can('Role', 'update')}  
+  <MediaQuery
+    let:mAndDown
+  >
+    <PageTitle
+      title={role?.name || ''}
+      paddingTop={mAndDown ? "15px" : "40px"}
+      prependVisible={true}
+    ></PageTitle>
 
-  {#if !!role}
-    <div 
-      style:margin-top="20px"
-    >
-      <RoleForm
-        mode="update"
-        role={role}
-      ></RoleForm>
-      <ConfirmOrCancelButtons
-        on:confirm-click={handleConfirmClick}
-        on:cancel-click={handleCancelClick}
-        loading={loading}
-      ></ConfirmOrCancelButtons>
-    </div>
-  {:else}
-    no team
-  {/if}
-</MediaQuery>
+    {#if !!role}
+      <div 
+        style:margin-top="20px"
+      >
+        <RoleForm
+          mode="update"
+          role={role}
+        ></RoleForm>
+        <ConfirmOrCancelButtons
+          on:confirm-click={handleConfirmClick}
+          on:cancel-click={handleCancelClick}
+          loading={loading}
+        ></ConfirmOrCancelButtons>
+      </div>
+    {:else}
+      no team
+    {/if}
+  </MediaQuery>
+{:else}
+  Non puoi accedere a questa pagina :(
+{/if}
 

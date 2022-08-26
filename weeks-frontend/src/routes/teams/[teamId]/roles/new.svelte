@@ -2,7 +2,7 @@
   import RolesService from '$lib/services/roles/roles.service'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
-
+  import CansService from '$lib/services/roles/cans.service';
 
   let role: {
     name?: string,
@@ -32,28 +32,32 @@
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte';
   import RoleForm from '$lib/components/roles/RoleForm.svelte';
-  
 </script>
 
-<MediaQuery
-  let:mAndDown
->
-  <PageTitle
-    title="Nuovo ruolo"
-    paddingTop={mAndDown ? "15px" : "40px"}
-    prependVisible={true}
-  ></PageTitle>
 
-  <div 
-    style:margin-top="20px"
+{#if CansService.can('Role', 'update')}
+  <MediaQuery
+    let:mAndDown
   >
-    <RoleForm
-      role={role}
-    ></RoleForm>
-    <ConfirmOrCancelButtons
-      on:cancel-click={handleCancel}
-      on:confirm-click={handleSubmit}
-      loading={loading}
-    ></ConfirmOrCancelButtons>
-  </div>
-</MediaQuery>
+    <PageTitle
+      title="Nuovo ruolo"
+      paddingTop={mAndDown ? "15px" : "40px"}
+      prependVisible={true}
+    ></PageTitle>
+
+    <div 
+      style:margin-top="20px"
+    >
+      <RoleForm
+        role={role}
+      ></RoleForm>
+      <ConfirmOrCancelButtons
+        on:cancel-click={handleCancel}
+        on:confirm-click={handleSubmit}
+        loading={loading}
+      ></ConfirmOrCancelButtons>
+    </div>
+  </MediaQuery>
+{:else}
+  Non puoi accedere a questa pagina :(
+{/if}

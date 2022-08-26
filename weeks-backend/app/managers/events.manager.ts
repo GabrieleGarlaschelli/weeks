@@ -10,6 +10,7 @@ import FrequencyModel from 'App/Models/Frequency';
 import type Event from 'App/Models/Event'
 import HttpContext from '@ioc:Adonis/Core/HttpContext'
 import { validator } from "@ioc:Adonis/Core/Validator"
+import AuthorizationManager from './authorization.manager';
 
 export type Context = {
   user?: {
@@ -150,6 +151,20 @@ export default class EventsManager {
         schema: new CreateEventValidator().schema,
         data: {
           ...params.data,
+        }
+      })
+
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'create',
+          resource: 'Event',
+          entities: {
+            team: params.data.team
+          }
+        },
+        context: {
+          trx: trx
         }
       })
 

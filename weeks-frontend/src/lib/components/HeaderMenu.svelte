@@ -3,14 +3,24 @@
 </script>
 
 <script lang="ts">
-  export let opened: boolean = false
   import { goto } from "$app/navigation";
+  import AuthService from "$lib/services/auth/auth.service";
+
+  export let opened: boolean = false
 
   function handleItemClick(event: CustomEvent) {
     opened = false
     if(event.detail.item.name == 'home') goto('/')
-    if(event.detail.item.name == 'teams') goto('/teams') 
-    if(event.detail.item.name == 'notifications') goto('/notifications')
+    else if(event.detail.item.name == 'teams') goto('/teams') 
+    else if(event.detail.item.name == 'notifications') goto('/notifications')
+    else if(event.detail.item.name == 'logout') handleLogout()
+  }
+
+  function handleLogout() {
+    const service = new AuthService({ fetch })
+    service.logout().then(() => {
+      goto("/auth/Login")
+    })
   }
 
   import { session } from "$app/stores";
@@ -27,6 +37,7 @@
     {name: 'home', title: 'Home'},
     {name: 'teams', title: 'Teams'},
     {name: 'notifications', title: 'Notifiche'},
+    {name: 'logout', title: 'Logout'}
   ]}
   bind:openDrawer={opened}
   on:item-click={handleItemClick}

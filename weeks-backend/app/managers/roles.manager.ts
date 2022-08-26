@@ -7,6 +7,7 @@ import type Role from 'App/Models/Role'
 import { ModelObject } from '@ioc:Adonis/Lucid/Orm';
 import HttpContext from '@ioc:Adonis/Core/HttpContext'
 import AuthorizationManager from './authorization.manager';
+import type { RoleCans } from 'App/Models/Role';
 
 export type Context = {
   user?: {
@@ -20,7 +21,8 @@ export type CreateParams = {
     name: string,
     team: {
       id: number
-    }
+    },
+    cans: RoleCans
   },
   context?: Context
 }
@@ -29,6 +31,7 @@ export type UpdateParams = {
   data: {
     id: number,
     name?: string,
+    cans?: RoleCans
   },
   context?: Context
 }
@@ -126,6 +129,7 @@ export default class RolesManager {
 
       const createdRole = await RoleModel.create({
         name: params.data.name,
+        cans: params.data.cans,
         teamId: params.data.team.id
       }, {
         client: trx
@@ -200,6 +204,18 @@ export default class RolesManager {
       })
 
       if (!!params.data.name) role.name = params.data.name
+      if (!!params.data.cans) {
+        let existingCans = role.cans
+        for(let [resource, value] of Object.entries(params.data.cans)) {
+          for (let [action, finalValue] of Object.entries(params.data.cans[resource])) {
+            if (!existingCans) existingCans = {}
+            if (!existingCans[resource]) existingCans[resource] = {}
+            existingCans[resource][action] = finalValue
+          }
+        }
+
+        role.cans = existingCans
+      }
 
       const results = await role.save()
       if (!params.context?.trx) await trx.commit()

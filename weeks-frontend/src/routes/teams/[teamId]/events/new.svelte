@@ -5,6 +5,7 @@
 <script lang="ts">
   import { page } from "$app/stores"
   import EventService from "$lib/services/events/events.service"
+  import CansService from "$lib/services/roles/cans.service"
 
   let event: Event = { },
     loading: boolean = false
@@ -42,26 +43,30 @@
   import EventForm from "$lib/components/events/EventForm.svelte";
 </script>
 
-<MediaQuery
-  let:mAndDown
->
-  <PageTitle
-    title="Nuovo evento"
-    paddingTop={mAndDown ? "15px" : "40px"}
-    prependVisible={true}
-  ></PageTitle>
-
-  <div 
-    style:margin-top="20px"
+{#if CansService.can('Event', 'create')}
+  <MediaQuery
+    let:mAndDown
   >
-    <EventForm
-      bind:event={event}
-    ></EventForm>
-    <ConfirmOrCancelButtons
-      confirmDisable={confirmDisabled}
-      loading={loading}
-      on:confirm-click={handleSubmit}
-      on:cancel-click={handleCancel}
-    ></ConfirmOrCancelButtons>
-  </div>
-</MediaQuery>
+    <PageTitle
+      title="Nuovo evento"
+      paddingTop={mAndDown ? "15px" : "40px"}
+      prependVisible={true}
+    ></PageTitle>
+
+    <div 
+      style:margin-top="20px"
+    >
+      <EventForm
+        bind:event={event}
+      ></EventForm>
+      <ConfirmOrCancelButtons
+        confirmDisable={confirmDisabled}
+        loading={loading}
+        on:confirm-click={handleSubmit}
+        on:cancel-click={handleCancel}
+      ></ConfirmOrCancelButtons>
+    </div>
+  </MediaQuery>
+{:else}
+  <div>Non puoi accedere a questa pagina :(</div>
+{/if}

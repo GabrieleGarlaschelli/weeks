@@ -6,6 +6,7 @@
   import { page } from "$app/stores"
   import { onMount } from "svelte"
   import EventsService from "$lib/services/events/events.service"
+  import CansService from '$lib/services/roles/cans.service';
 
   let event: Event
 
@@ -48,52 +49,56 @@
   import OptionMenu from "$lib/components/common/OptionMenu.svelte";
 </script>
 
-<MediaQuery
-  let:mAndDown
->
-  <PageTitle
-    title={event?.name || ''}
-    paddingTop={mAndDown ? "15px" : "40px"}
-    prependVisible={true}
+{#if CansService.can('Event', 'update')}  
+  <MediaQuery
+    let:mAndDown
   >
-    <svelte:fragment slot="append">
-      <OptionMenu
-        options={
-          [
-            {
-              name: 'save', 
-              label: 'Salva',
-              icon: 'mdi-floppy'
-            },
-            {
-              name: 'delete', 
-              label: 'Elimina',
-              icon: 'mdi-delete',
-              color: '#ad0000'
-            },
-          ]
-        }
-        on:option-click={handleOptionClick}
-      ></OptionMenu>
-    </svelte:fragment>
-  </PageTitle>
-
-  {#if !!event}
-    <div 
-      style:margin-top="20px"
+    <PageTitle
+      title={event?.name || ''}
+      paddingTop={mAndDown ? "15px" : "40px"}
+      prependVisible={true}
     >
-      <EventForm
-        mode="update"
-        event={event}
-      ></EventForm>
-      <ConfirmOrCancelButtons
-        on:confirm-click={handleConfirmClick}
-        on:cancel-click={handleCancelClick}
-        loading={loading}
-      ></ConfirmOrCancelButtons>
-    </div>
-  {:else}
-    no event
-  {/if}
-</MediaQuery>
+      <svelte:fragment slot="append">
+        <OptionMenu
+          options={
+            [
+              {
+                name: 'save', 
+                label: 'Salva',
+                icon: 'mdi-floppy'
+              },
+              {
+                name: 'delete', 
+                label: 'Elimina',
+                icon: 'mdi-delete',
+                color: '#ad0000'
+              },
+            ]
+          }
+          on:option-click={handleOptionClick}
+        ></OptionMenu>
+      </svelte:fragment>
+    </PageTitle>
+
+    {#if !!event}
+      <div 
+        style:margin-top="20px"
+      >
+        <EventForm
+          mode="update"
+          event={event}
+        ></EventForm>
+        <ConfirmOrCancelButtons
+          on:confirm-click={handleConfirmClick}
+          on:cancel-click={handleCancelClick}
+          loading={loading}
+        ></ConfirmOrCancelButtons>
+      </div>
+    {:else}
+      no event
+    {/if}
+  </MediaQuery>
+{:else}
+  Non puoi visualizzare questa pagina :(
+{/if}
 

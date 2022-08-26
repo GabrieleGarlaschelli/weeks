@@ -2,6 +2,12 @@ import Team from 'App/Models/Team';
 import { CamelCaseBaseModel } from './CamelCaseBaseModel'
 import { DateTime } from 'luxon'
 import { BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import type { Action, Resource } from 'App/managers/authorization.manager';
+export type RoleCans = {
+  [resource in Resource]?: {
+    [action in Action]?: boolean
+  }
+}
 
 export default class Role extends CamelCaseBaseModel {
   @column({ isPrimary: true })
@@ -11,7 +17,7 @@ export default class Role extends CamelCaseBaseModel {
   public name: string
 
   @column()
-  public cans: Object
+  public cans: RoleCans
 
   @column()
   public teamId: number

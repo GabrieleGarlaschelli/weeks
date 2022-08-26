@@ -7,6 +7,7 @@
   import { goto } from '$app/navigation';
   import { createEventDispatcher } from 'svelte';
   import InvitationsService from '$lib/services/invitations/invitations.service'
+  import CansService from '$lib/services/roles/cans.service';
 
   let dispatch = createEventDispatcher<{
     "destroy": { },
@@ -99,13 +100,15 @@
     <div
       style:flex-grow="1"
     ></div>
-    <div
-      style:margin-left="10px"
-    >
-      <StandardButton
-        on:click={inviteUser}
-      >Invita</StandardButton>
-    </div>
+    {#if CansService.can('Team', 'invite')}  
+      <div
+        style:margin-left="10px"
+      >
+        <StandardButton
+          on:click={inviteUser}
+        >Invita</StandardButton>
+      </div>
+    {/if}
   </div>
 {/if}
 
@@ -142,7 +145,7 @@
       slot="appendLastColumn" 
       let:item
     >
-      {#if (!!team.ownerId && item.user.id != team.ownerId) || !team.ownerId}
+      {#if ((!!team.ownerId && item.user.id != team.ownerId) || !team.ownerId) && CansService.can('Team', 'removeUser')}
         <Icon 
           name="mdi-delete"
           click

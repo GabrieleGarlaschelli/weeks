@@ -20,7 +20,8 @@ export default class RolesController {
     return await manager.create({
       data: {
         name: request.body().name,
-        team: request.body().team
+        team: request.body().team,
+        cans: request.input('cans')
       }
     })
   }
@@ -40,6 +41,7 @@ export default class RolesController {
       data: {
         id: params.id,
         name: request.input('name'),
+        cans: request.input('cans')
       }
     })
   }

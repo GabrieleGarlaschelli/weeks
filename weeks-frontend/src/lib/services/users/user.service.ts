@@ -1,6 +1,7 @@
 import { FetchBasedService } from "../base/fetchBased.service";
 
 export type User = {
+  id: number,
   email: string
   name: string,
   avatarUrl: string,

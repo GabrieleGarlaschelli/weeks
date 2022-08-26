@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import EventsService from "$lib/services/events/events.service"
   import { goto } from "$app/navigation";
+  import CansService from '$lib/services/roles/cans.service';
 
   export let team: Team,
     selectedDate: Date = new Date(),
@@ -37,6 +38,7 @@
           .startOf('hour')
           .startOf('minute')
           .startOf('millisecond')
+          .minus({ days: 7 })
           .toJSDate(),
         to: DateTime.now()
           .set({
@@ -48,6 +50,7 @@
           .endOf('hour')
           .endOf('minute')
           .endOf('millisecond')
+          .plus({ days: 7})
           .toJSDate(),
         team: {
           id: team.id
@@ -195,18 +198,20 @@
               </div>
             {/if}
           </div>
-          <div
-            class="add-new"
-            style:background-color={$colors.primary}
-          >
-            <Icon
-              name="mdi-plus"
-              size={10}
-              color={$colors.background}
-              click
-              on:click={() => handlePlusClick(dayStat)}
-            ></Icon>
-          </div>
+          {#if CansService.can('Event', 'create')}
+            <div
+              class="add-new"
+              style:background-color={$colors.primary}
+            >
+              <Icon
+                name="mdi-plus"
+                size={10}
+                color={$colors.background}
+                click
+                on:click={() => handlePlusClick(dayStat)}
+              ></Icon>
+            </div>
+          {/if}
         {:else if isGreaterThan(dayGroupedEvents[DateTime.now().set({
               day: dayStat.dayOfMonth,
               month: dayStat.month + 1,
