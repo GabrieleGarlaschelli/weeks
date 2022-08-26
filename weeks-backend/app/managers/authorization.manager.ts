@@ -262,9 +262,15 @@ export default class AuthorizationManager {
     const userBelongs = await UserModel.query({
       client: context?.trx
     }).whereHas('teams', (builder) => {
-      builder.whereHas('roles', rolesBuilder => {
-        rolesBuilder.where('roles.id', roleId)
-      })
+      builder
+        .whereIn('teams.id', RoleModel.query().select('teamId').where('roles.id', roleId))
+        .where(teamsBuilder => {
+          teamsBuilder
+            .whereHas('roles', rolesBuilder => {
+              rolesBuilder.whereRaw("cast(roles.cans->'Event'->>'create' as BOOLEAN) = true")
+            })
+            .orWhere('ownerId', params.actor.id)
+        })
     }).where('users.id', params.actor.id)
 
     return userBelongs.length != 0
