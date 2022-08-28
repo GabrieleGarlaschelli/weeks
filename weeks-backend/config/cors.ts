@@ -45,7 +45,8 @@ const corsConfig: CorsConfig = {
   |
   */
   origin: [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://weeks.likablehair.it'
   ],
   // origin: '*',
 
