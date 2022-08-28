@@ -1,4 +1,3 @@
-import RoleModel from 'App/Models/Role';
 import { DateTime } from 'luxon';
 import Database, { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 import { CreateTeamValidator, UpdateTeamValidator } from 'App/Validators/teams'

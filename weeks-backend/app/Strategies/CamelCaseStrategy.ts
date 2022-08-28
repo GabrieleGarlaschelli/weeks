@@ -7,11 +7,11 @@ export class CamelCaseNameStrategy extends SnakeCaseNamingStrategy {
     return string.pluralize(string.snakeCase(model.name))
   }
 
-  public columnName(model: LucidModel, attributeName: string): string {
+  public columnName(_model: LucidModel, attributeName: string): string {
     return string.camelCase(attributeName)
   }
 
-  public serializedName(model: LucidModel, attributeName: string): string {
+  public serializedName(_model: LucidModel, attributeName: string): string {
     return string.camelCase(attributeName)
   }
 

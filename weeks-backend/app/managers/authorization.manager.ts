@@ -1,11 +1,7 @@
 import { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 
 import UserModel from 'App/Models/User'
-import TeamModel from 'App/Models/Team'
 import InvitationModel from 'App/Models/Invitation'
-import EventModel from 'App/Models/Event'
-import EventSessionModel from 'App/Models/EventSession'
-import ConvocationModel from 'App/Models/Convocation'
 import RoleModel from 'App/Models/Role'
 
 import type User from 'App/Models/User'
@@ -113,8 +109,8 @@ export default class AuthorizationManager {
   }
 
   private static async _generalCanFunction(
-    params: { actor: User, entities: Entities },
-    context?: { trx?: TransactionClientContract }
+    _params: { actor: User, entities: Entities },
+    _context?: { trx?: TransactionClientContract }
   ): Promise<boolean> {
     return false
   }
@@ -220,7 +216,7 @@ export default class AuthorizationManager {
 
   private static async _canDiscardInvitation(
     params: { actor: User, entities: Entities },
-    context?: { trx?: TransactionClientContract }
+    _context?: { trx?: TransactionClientContract }
   ): Promise<boolean> {
     if (!params.entities.invitation?.id) throw new Error('invitation must be defined')
     let invitationId: number = params.entities.invitation.id

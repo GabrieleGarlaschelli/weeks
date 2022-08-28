@@ -1,5 +1,3 @@
-import Logger from '@ioc:Adonis/Core/Logger';
-import { ModelObject } from '@ioc:Adonis/Lucid/Orm';
 import { DateTime } from 'luxon';
 import Database, { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 import { CreateEventValidator, CreateEventWithFrequencyValidator, UpdateEventValidator } from 'App/Validators/events'

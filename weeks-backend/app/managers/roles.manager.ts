@@ -206,7 +206,7 @@ export default class RolesManager {
       if (!!params.data.name) role.name = params.data.name
       if (!!params.data.cans) {
         let existingCans = role.cans
-        for(let [resource, value] of Object.entries(params.data.cans)) {
+        for(let [resource, _value] of Object.entries(params.data.cans)) {
           for (let [action, finalValue] of Object.entries(params.data.cans[resource])) {
             if (!existingCans) existingCans = {}
             if (!existingCans[resource]) existingCans[resource] = {}

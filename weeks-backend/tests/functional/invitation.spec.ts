@@ -1,9 +1,7 @@
 import TeammateModel from 'App/Models/Teammate';
-import InvitationModel from 'App/Models/Invitation';
 import UserModel from 'App/Models/User'
 import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
-import type Invitation from 'App/Models/Invitation'
 import { test } from '@japa/runner'
 import { TeamFactory, UserFactory } from 'Database/factories'
 
