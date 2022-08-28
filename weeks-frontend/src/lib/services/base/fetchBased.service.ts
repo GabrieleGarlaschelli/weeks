@@ -36,7 +36,7 @@ export abstract class FetchBasedService {
   }) {
     if(!params.fetch) throw new Error("service must have a definition of fetch");
     
-    this.fetch = params.fetch
+    this.fetch = params.fetch.bind(window)
     if(!!params.urls) {
       this.urls = params.urls
     } else {
