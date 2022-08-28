@@ -16,5 +16,3 @@ docker-compose*
 *.md
 .git
 .gitignore
-
-*!.
