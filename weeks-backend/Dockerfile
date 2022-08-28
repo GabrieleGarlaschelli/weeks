@@ -1,9 +1,9 @@
 FROM node:16
 WORKDIR /app
 COPY . .
-RUN ls -la
 RUN rm -rf node_modules
 RUN npm install
+RUN ls -la
 RUN npm run build
 RUN cd build && npm ci --production
 
