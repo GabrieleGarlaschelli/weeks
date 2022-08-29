@@ -11,7 +11,7 @@ FROM base AS dependencies
 COPY --chown=node:node ./package*.json ./
 RUN npm ci
 COPY --chown=node:node . .
-RUN cd /home/node/app && node ace migration:run
+RUN node ace migration:run
 
 FROM dependencies AS build
 RUN cat .env
