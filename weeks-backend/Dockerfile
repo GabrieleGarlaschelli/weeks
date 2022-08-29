@@ -31,6 +31,7 @@ ENV PG_DB_NAME=$PG_DB_NAME
 ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
 ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
 
+RUN cd /home/node/app/build && node ace migration:run
 COPY --chown=node:node ./package*.json ./
 RUN npm ci --production
 COPY --chown=node:node --from=build /home/node/app/build .
