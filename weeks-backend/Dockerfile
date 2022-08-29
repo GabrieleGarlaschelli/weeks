@@ -17,9 +17,20 @@ RUN cat .env
 RUN node ace build --production
 
 FROM base AS production
-ENV NODE_ENV=production
 ENV PORT=$PORT
 ENV HOST=0.0.0.0
+ENV NODE_ENV=production
+ENV APP_KEY=$APP_KEY
+ENV DRIVE_DISK=local
+ENV DB_CONNECTION=pg
+ENV PG_HOST=$PG_HOST
+ENV PG_PORT=$PG_PORT
+ENV PG_USER=$PG_USER
+ENV PG_PASSWORD=$PG_PASSWORD
+ENV PG_DB_NAME=$PG_DB_NAME
+ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
+
 COPY --chown=node:node ./package*.json ./
 RUN npm ci --production
 COPY --chown=node:node --from=build /home/node/app/build .
