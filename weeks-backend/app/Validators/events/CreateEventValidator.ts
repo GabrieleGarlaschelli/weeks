@@ -14,7 +14,12 @@ export default class CreateEventValidator {
     status: schema.enum.nullableAndOptional(['confirmed', 'notConfirmed']),
     team: schema.object().members({
       id: schema.number()
-    })
+    }),
+    convocations: schema.array.nullableAndOptional().members(
+      schema.object().members({
+        teammateId: schema.number()
+      })
+    )
   })
 
   public messages: CustomMessages = {}

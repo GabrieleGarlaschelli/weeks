@@ -11,13 +11,19 @@ export default class Convocation extends CamelCaseBaseModel {
   @column()
   public notes: string
 
+  @column()
+  public eventId: number
+
   @hasOne(() => Event, {
     foreignKey: 'eventId'
   })
   public event: HasOne<typeof Event>
 
+  @column()
+  public teammateId: number
+
   @hasOne(() => Teammate, {
-    foreignKey: 'teamId'
+    foreignKey: 'teammateId'
   })
   public teammate: HasOne<typeof Teammate>
 

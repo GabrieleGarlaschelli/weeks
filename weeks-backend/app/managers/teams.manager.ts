@@ -3,7 +3,7 @@ import Database, { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 import { CreateTeamValidator, UpdateTeamValidator } from 'App/Validators/teams'
 import { validator } from "@ioc:Adonis/Core/Validator"
 import TeamModel from 'App/Models/Team'
-import UserModel from 'App/Models/User';
+import UserModel from 'App/Models/User'
 import TeammateModel from 'App/Models/Teammate';
 import type Team from 'App/Models/Team'
 import { ModelObject } from '@ioc:Adonis/Lucid/Orm';

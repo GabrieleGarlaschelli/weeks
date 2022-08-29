@@ -3,6 +3,7 @@ import { TransactionClientContract } from '@ioc:Adonis/Lucid/Database'
 import UserModel from 'App/Models/User'
 import InvitationModel from 'App/Models/Invitation'
 import RoleModel from 'App/Models/Role'
+import EventModel from 'App/Models/Event'
 
 import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
@@ -29,7 +30,8 @@ export type Action =
   'removeUser' |
   'accept' |
   'reject' |
-  'discard' 
+  'discard' |
+  'convocate'
 
 export type Entities = {
   team?: Pick<Team, 'id'>,
@@ -86,7 +88,8 @@ export default class AuthorizationManager {
       view: AuthorizationManager._canViewRole,
     },
     Event: {
-      create: AuthorizationManager._canCreateEvent
+      create: AuthorizationManager._canCreateEvent,
+      convocate: AuthorizationManager._canConvocateToEvent
     }
 
   }
@@ -296,4 +299,35 @@ export default class AuthorizationManager {
     return userBelongs.length != 0
   }
 
+  private static async _canConvocateToEvent(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.event?.id) throw new Error('event must be defined')
+    let eventId: number = params.entities.event.id
+
+    let results = await EventModel.query({
+      client: context?.trx
+    }).where('id', eventId).first()
+
+    let event: Event
+    if(!results) return false
+    else event = results
+
+    const userBelongs = await UserModel.query({
+      client: context?.trx
+    }).whereHas('teams', (builder) => {
+      builder
+        .where('teams.id', event.teamId)
+        .where(teamsBuilder => {
+          teamsBuilder
+            .whereHas('roles', rolesBuilder => {
+              rolesBuilder.whereRaw("cast(roles.cans->'Event'->>'create' as BOOLEAN) = true")
+            })
+            .orWhere('ownerId', params.actor.id)
+        })
+    }).where('users.id', params.actor.id)
+
+    return userBelongs.length != 0
+  }
 }

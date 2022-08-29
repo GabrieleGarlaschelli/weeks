@@ -19,15 +19,6 @@ export type SetRoleParams = {
   context?: Context
 }
 
-export type InviteUserParams = {
-  data: {
-    user: {
-      email: string
-    }
-  },
-  context?: Context
-}
-
 export default class TeammatesManager {
   constructor() {
   }

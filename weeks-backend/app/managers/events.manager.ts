@@ -9,6 +9,7 @@ import type Event from 'App/Models/Event'
 import HttpContext from '@ioc:Adonis/Core/HttpContext'
 import { validator } from "@ioc:Adonis/Core/Validator"
 import AuthorizationManager from './authorization.manager';
+import ConvocationManager from './convocation.manager';
 
 export type Context = {
   user?: {
@@ -39,7 +40,10 @@ export type CreateParams = {
     status?: 'confirmed' | 'notConfirmed',
     team: {
       id: number
-    }
+    },
+    convocations?: {
+      teammateId: number
+    }[]
   },
   context?: Context
 }
@@ -188,6 +192,21 @@ export default class EventsManager {
       })
 
       await createdEvent.related('team').associate(team)
+
+      if(!!params.data.convocations) {
+        let manager = new ConvocationManager()
+        await manager.convocate({
+          data: {
+            teammates: params.data.convocations?.map(el => { 
+              return { id: el.teammateId } 
+            }),
+            event: createdEvent
+          },
+          context: {
+            trx: trx
+          }
+        })
+      }
 
       if (!params.context?.trx) await trx.commit()
       return createdEvent
