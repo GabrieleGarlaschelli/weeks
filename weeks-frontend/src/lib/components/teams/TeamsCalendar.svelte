@@ -104,6 +104,7 @@
   }
 
   function handlePlusClick(dayStat: DateStat) {
+    console.log(dayStat)
     goto(`/teams/${team.id}/events/new`)
   }
 

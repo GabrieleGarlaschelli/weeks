@@ -5,6 +5,8 @@
     name?: string,
     description?: string
   }
+
+  import type { Teammate } from '$lib/services/teams/teams.service' 
 </script>
 
 <script lang="ts">
@@ -12,18 +14,26 @@
   import StandardDatepicker from "$lib/components/common/StandardDatepicker.svelte"
   import StandardTimePicker from "$lib/components/common/StandardTimePicker.svelte"
   import { DateTime } from "luxon";
-  import LabelAndTextarea from "../LabelAndTextarea.svelte";
+  import LabelAndTextarea from "$lib/components/LabelAndTextarea.svelte";
+  import TeammatesChecklist from '$lib/components/teammates/TeammatesChecklist.svelte';
+  import CollapsableSection from '$lib/components/common/CollapsableSection.svelte';
 
   export let event: Event = { },
+    convocations: {
+      [key: number]: boolean
+    } = {},
     mode: 'create' | 'update' = 'create',
     padding: string | undefined = undefined,
     margin: string | undefined = undefined,
     width: string | undefined = undefined,
-    height: string | undefined = undefined
+    height: string | undefined = undefined,
+    teammates: Teammate[] | undefined = undefined
 
   let startTime: string, 
     endTime: string,
     date: Date
+
+  
 
   $: {
     if(!!event.start && !startTime) {
@@ -55,6 +65,7 @@
         .toJSDate()
     }
   }
+
 </script>
 
 <form
@@ -97,6 +108,18 @@
     name="description"
     bind:value={event.description}
   ></LabelAndTextarea>
+  {#if mode == 'create' && teammates}
+    <div style:margin-top="20px">
+      <CollapsableSection
+        title="Convocazioni"
+      >
+        <TeammatesChecklist
+          bind:value={convocations}
+          bind:teammates={teammates}
+        ></TeammatesChecklist>
+      </CollapsableSection>
+    </div>
+  {/if}
 </form>
 
 

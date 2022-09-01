@@ -55,7 +55,10 @@ export default class EventsService extends FetchBasedService {
     description?: string
     team: {
       id: number
-    }
+    },
+    convocations: {
+      teammateId: number
+    }[]
   }): Promise<Event[]> {
     if (!browser) throw new Error('only available in browser')
     console.log(params)
