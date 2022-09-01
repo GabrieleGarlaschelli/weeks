@@ -302,6 +302,8 @@
 
   .month-name {
     font-size: 1.5rem;
+    min-width: 200px;
+    text-align: center;
   }
 
   .event-post::before {

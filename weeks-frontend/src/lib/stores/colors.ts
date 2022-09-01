@@ -26,13 +26,13 @@ let lighColors: Colors = {
 
 let darkColors: Colors = {
   primary: '#197BAA',
-  secondary: '#40A3D1', 
-  tertiary: '#87C4E0',
-  background: '#143342',
-  contrast: '#EFF2F3',
+  secondary: '#206484', 
+  tertiary: '#568ba3',
+  background: '#0b1920',
+  contrast: '#cccccc',
   lightContrast: '#A3A3A3',
   thinContrast: '#314954',
-  warning: '#AD0000'
+  warning: '#e04747'
 }
 
 const store = derived<typeof theme, Colors>(theme, $theme => $theme == 'light' ? lighColors : darkColors)

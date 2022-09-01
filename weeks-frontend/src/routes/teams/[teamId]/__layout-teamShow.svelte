@@ -4,6 +4,7 @@
   import { goto } from "$app/navigation";
   import TeamService from "$lib/services/teams/teams.service"
   import team from "$lib/stores/teams/teamsShow"
+  import colors from "$lib/stores/colors";
   import teamCans from "$lib/stores/teams/teamsCans"
   import CansService from '$lib/services/roles/cans.service';
   import type { Option } from '$lib/components/common/OptionSelector.svelte'
@@ -54,7 +55,7 @@
         name: 'delete', 
         label: 'Elimina',
         icon: 'mdi-delete',
-        color: '#ad0000'
+        color: $colors.warning
       })
     
     tabs = [
