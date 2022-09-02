@@ -89,7 +89,9 @@ export default class AuthorizationManager {
     },
     Event: {
       create: AuthorizationManager._canCreateEvent,
-      convocate: AuthorizationManager._canConvocateToEvent
+      update: AuthorizationManager._canUpdateEvent,
+      convocate: AuthorizationManager._canConvocateToEvent,
+      destroy: AuthorizationManager._canDestroyEvent
     }
 
   }
@@ -282,21 +284,58 @@ export default class AuthorizationManager {
     if (!params.entities.team?.id) throw new Error('team must be defined')
     let teamId: number = params.entities.team.id
 
-    const userBelongs = await UserModel.query({
-      client: context?.trx
-    }).whereHas('teams', (builder) => {
-      builder
-        .where('teams.id', teamId)
-        .where(teamsBuilder => {
-          teamsBuilder
-            .whereHas('roles', rolesBuilder => {
-              rolesBuilder.whereRaw("cast(roles.cans->'Event'->>'create' as BOOLEAN) = true")
-            })
-            .orWhere('ownerId', params.actor.id)
-        })
-    }).where('users.id', params.actor.id)
+    return await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: teamId },
+      action: 'create',
+      resource: 'Event'
+    }, context)
+  }
 
-    return userBelongs.length != 0
+  private static async _canUpdateEvent(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.event?.id) throw new Error('event must be defined')
+    let eventId: number = params.entities.event.id
+
+    let results = await EventModel.query({
+      client: context?.trx
+    }).where('id', eventId).first()
+
+    let event: Event
+    if (!results) return false
+    else event = results
+
+    return await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: event.teamId },
+      action: 'update',
+      resource: 'Event'
+    }, context)
+  }
+
+  private static async _canDestroyEvent(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.event?.id) throw new Error('event must be defined')
+    let eventId: number = params.entities.event.id
+
+    let results = await EventModel.query({
+      client: context?.trx
+    }).where('id', eventId).first()
+
+    let event: Event
+    if (!results) return false
+    else event = results
+
+    return await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: event.teamId },
+      action: 'destroy',
+      resource: 'Event'
+    }, context)
   }
 
   private static async _canConvocateToEvent(
@@ -314,20 +353,43 @@ export default class AuthorizationManager {
     if(!results) return false
     else event = results
 
-    const userBelongs = await UserModel.query({
+    return await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: event.teamId },
+      action: 'create',
+      resource: 'Event'
+    }, context)
+  }
+}
+
+
+class Helpers {
+  public static async userCanInTeam(
+    params: { 
+      user: User, 
+      team: { id: number } 
+      action: Action,
+      resource: Resource
+    },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    const userHasRole = await UserModel.query({
       client: context?.trx
     }).whereHas('teams', (builder) => {
       builder
-        .where('teams.id', event.teamId)
+        .where('teams.id', params.team.id)
         .where(teamsBuilder => {
           teamsBuilder
             .whereHas('roles', rolesBuilder => {
-              rolesBuilder.whereRaw("cast(roles.cans->'Event'->>'create' as BOOLEAN) = true")
+              rolesBuilder.whereRaw("cast(roles.cans->:resource->>:action as BOOLEAN) = true", {
+                resource: params.resource,
+                action: params.action
+              })
             })
-            .orWhere('ownerId', params.actor.id)
+            .orWhere('ownerId', params.user.id)
         })
-    }).where('users.id', params.actor.id)
+    }).where('users.id', params.user.id)
 
-    return userBelongs.length != 0
+    return userHasRole.length != 0
   }
 }

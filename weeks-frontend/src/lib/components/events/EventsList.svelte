@@ -24,7 +24,7 @@
 
   function handleEventClick(event: Event) {
     if(!!team && CansService.can('Event', 'update')) {
-      goto(`/teams/${team.id}/events/${event.id}/edit`)
+      goto(`/teams/${team.id}/events/${event.id}/general`)
     }
   }
 

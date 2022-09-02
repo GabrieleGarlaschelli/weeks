@@ -231,6 +231,20 @@ export default class EventsManager {
         }
       })
 
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'create',
+          resource: 'Event',
+          entities: {
+            team: params.data.event.team
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
       // check if team exists and user belongs to it
       await TeamModel.query({
           client: trx
@@ -383,6 +397,20 @@ export default class EventsManager {
         }
       })
 
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'update',
+          resource: 'Event',
+          entities: {
+            event: params.data 
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
       // check if event exists and belongs to user teams
       const event = await EventModel.query()
         .where('events.id', params.data.id)
@@ -443,6 +471,20 @@ export default class EventsManager {
     if (!trx) trx = await Database.transaction()
 
     try {
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'destroy',
+          resource: 'Event',
+          entities: {
+            event: params.data
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
       if(!!params.data.deleteAllFrequency) {
         let events = await EventModel.query({ client: trx })
           .whereIn('frequencyId', eventBuilder => {

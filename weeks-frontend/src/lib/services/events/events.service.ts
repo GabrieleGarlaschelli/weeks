@@ -1,6 +1,7 @@
 import { FetchBasedService } from "../base/fetchBased.service";
 import { browser } from "$app/env";
 import type { Team } from "$lib/services/teams/teams.service"
+import type { User } from "$lib/services/users/user.service"
 
 export type Event = {
   id: number,
@@ -14,6 +15,7 @@ export type Event = {
   team: Team,
   createdAt: Date,
   updatedAt: Date,
+  createdBy: User
 }
 
 export default class EventsService extends FetchBasedService {

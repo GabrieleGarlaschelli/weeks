@@ -6,6 +6,7 @@
     padding: string | undefined = undefined
 
   import Card from '@likable-hair/svelte/common/Card.svelte'
+  import colors from '$lib/stores/colors'
 </script>
 
 <Card
@@ -14,6 +15,7 @@
   maxHeight={maxHeight}
   maxWidth={maxWidth}
   padding={padding}
+  backgroundColor={$colors.background}
 >
   <svelte:fragment slot="header">
     <slot name="header"></slot>

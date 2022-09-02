@@ -25,7 +25,7 @@ export type Resource =
 
 export const actionsForResources: {[key: string]: string[]} = {
   'Team': ['update', 'invite', 'removeUser', 'destroy'],
-  'Event': [ 'create', 'update' ],
+  'Event': [ 'create', 'update', 'destroy' ],
   'Role': [ 'update' ]
 }
 
