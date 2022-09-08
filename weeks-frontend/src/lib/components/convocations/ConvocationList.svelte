@@ -60,32 +60,32 @@
 
 {#each convocations as convocation}
   <div 
-    style:margin-top="10px"
+    style:margin-top="20px"
     style:display="flex"
-    style:align-items="center"
+    class="convocation-container"
   >
-    <div class="name-column">
-      <UserAvatar
-        src={convocation.teammate.user.avatarUrl}
-        username={convocation.teammate.user.name}
-        description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
-      ></UserAvatar>
-    </div>
-    <div 
-      class="chip-column"
-      style:margin-left="40px"
-    >
-      <StandardChip
-        warning={convocation.confirmationStatus == 'denied'}
+    <div class="info-container">
+      <div class="name-column">
+        <UserAvatar
+          src={convocation.teammate.user.avatarUrl}
+          username={convocation.teammate.user.name}
+          description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
+        ></UserAvatar>
+      </div>
+      <div 
+        class="chip-column"
       >
-        <span style:font-weight="700">{translateConfirmationStatus(convocation.confirmationStatus)}</span>
-      </StandardChip>
+        <StandardChip
+          warning={convocation.confirmationStatus == 'denied'}
+        >
+          <span style:font-weight="700">{translateConfirmationStatus(convocation.confirmationStatus)}</span>
+        </StandardChip>
+      </div>
     </div>
     {#if convocation.teammate.userId == $session.currentUser.id || CansService.can('Convocation', 'confirm') || CansService.can('Convocation', 'deny')}
       <div 
-        style:margin-left="20px"
-        style:display="flex"
-        style:gap="20px"
+        
+        class="confirm-button-container"
       >
         {#if !loading}
           {#if CansService.can('Convocation', 'confirm') || convocation.teammate.userId == $session.currentUser.id}
@@ -113,10 +113,27 @@
 {/each}
 
 <style>
-  @media (max-width: 768px){
+  @media (max-width: 768px) {
+    .convocation-container {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+      background-color: var(--global-thin-contrast-color);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .confirm-button-container {
+      width: 100%;
+      margin-top: 20px;
+    }
   }
 
   @media (min-width: 769px){
+    .convocation-container {
+      align-items: center;
+    }
+
     .name-column {
       width: 300px
     }
@@ -125,5 +142,16 @@
       width: 200px;
       display: flex;
     }
+  }
+
+  .info-container {
+    display: flex;
+  }
+
+  .confirm-button-container {
+    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px
   }
 </style>
