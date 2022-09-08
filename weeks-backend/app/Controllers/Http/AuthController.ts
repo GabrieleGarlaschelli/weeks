@@ -45,14 +45,10 @@ export default class AuthController {
   public async googleCallback({ auth, ally, response }: HttpContextContract) {
     const google = ally.use('google')
 
-    console.log('init google')
-    console.log(google)
 
     if (google.accessDenied()) {
-      console.log('access denied')
       throw new Error("Access denied");
     } else if (google.stateMisMatch()) {
-      console.log('state mismatch')
       throw new Error('Request expired. Retry again');
     } else if (google.hasError()) {
       console.log('error on google')
@@ -78,6 +74,6 @@ export default class AuthController {
     console.log('callback url', Env.get('GOOGLE_CALLBACK_URL'))
     console.log('token json', token.toJSON())
 
-    response.redirect().withQs(token.toJSON()).toPath(Env.get('GOOGLE_CALLBACK_URL') || 'http://localhost:3000/auth/google/callback')
+    response.redirect().withQs(token.toJSON()).toPath(Env.get('GOOGLE_FRONTEND_CALLBACK_URL') || 'http://localhost:3000/auth/google/callback')
   }
 }
