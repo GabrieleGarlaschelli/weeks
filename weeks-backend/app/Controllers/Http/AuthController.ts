@@ -39,6 +39,8 @@ export default class AuthController {
 
 
   public async googleRedirect({ ally }: HttpContextContract) {
+    console.log('client id', Env.get('GOOGLE_CLIENT_ID'))
+    console.log('client secret', Env.get('GOOGLE_CLIENT_SECRET'))
     return ally.use('google').redirect()
   }
 
