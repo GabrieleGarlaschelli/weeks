@@ -51,14 +51,10 @@ export default class AuthController {
     } else if (google.stateMisMatch()) {
       throw new Error('Request expired. Retry again');
     } else if (google.hasError()) {
-      console.log('error on google')
-      console.log(google.getError())
       throw google.getError()
     }
 
     const googleUser = await google.user()
-
-    console.log('google user', googleUser)
 
     const user = await User.firstOrCreate({
       email: googleUser.email || undefined,
@@ -70,9 +66,6 @@ export default class AuthController {
     const token = await auth.use('api').login(user, {
       expiresIn: '7days'
     })
-
-    console.log('callback url', Env.get('GOOGLE_CALLBACK_URL'))
-    console.log('token json', token.toJSON())
 
     response.redirect().withQs(token.toJSON()).toPath(Env.get('GOOGLE_FRONTEND_CALLBACK_URL') || 'http://localhost:3000/auth/google/callback')
   }
