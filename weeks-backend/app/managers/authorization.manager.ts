@@ -362,7 +362,7 @@ export default class AuthorizationManager {
     return await Helpers.userCanInTeam({
       user: params.actor,
       team: { id: event.teamId },
-      action: 'create',
+      action: 'convocate',
       resource: 'Event'
     }, context)
   }

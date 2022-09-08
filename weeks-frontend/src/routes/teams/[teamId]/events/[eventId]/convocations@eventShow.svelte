@@ -1,7 +1,12 @@
 <script lang="ts">
+  import ConvocateDialog from "$lib/components/convocations/ConvocateDialog.svelte";
   import ConvocationList from "$lib/components/convocations/ConvocationList.svelte";
   import type { Convocation } from "$lib/services/convocations/convocations.service";
+  import type { Teammate } from "$lib/services/teams/teams.service";
   import event from '$lib/stores/events/eventShow'
+  import team from '$lib/stores/teams/teamsShow'
+  import Icon from "@likable-hair/svelte/media/Icon.svelte";
+  import CansService from "$lib/services/roles/cans.service";
 
   function handleConfirmOrDeny(e: CustomEvent<{ convocation: Convocation }>) {
     if(!!$event) {
@@ -11,6 +16,35 @@
       }
     }
   }
+
+  let convocationDialogOpen: boolean = false
+  function openDialog() {
+    convocationDialogOpen = true
+  }
+
+
+  function handleConvocate(e: CustomEvent<{
+    convocations: Convocation[],
+    teammates: Pick<Teammate, 'id'>[]
+  }>) {
+    if(!!$event) {
+      $event.convocations = [
+        ...$event.convocations,
+        ...e.detail.convocations
+      ]
+    }
+    convocationDialogOpen = false
+  }
+
+  function handleUnConvocate(e: CustomEvent<{
+    convocation: Convocation
+  }>) {
+    if(!!$event) {
+      $event.convocations = $event.convocations.filter((c) => c.id != e.detail.convocation.id)
+    }
+  }
+
+  $: teammatesToConvocate = !!$team ? $team.teammates.filter((tm) => !!$event && !$event.convocations.map(c => c.teammateId).includes(tm.id)) : []
 </script>
 
 <div style:margin-top="20px">
@@ -18,5 +52,30 @@
     convocations={$event?.convocations}
     on:confirm={handleConfirmOrDeny}
     on:deny={handleConfirmOrDeny}
+    on:unConvocate={handleUnConvocate}
   ></ConvocationList>
 </div>
+
+{#if CansService.can('Event', 'convocate')}
+  <div 
+    style:margin-top="20px"
+    style:width="100%"
+    style:display="flex"
+    style:justify-content="center"
+  >
+    <Icon
+      name="mdi-plus"
+      click
+      on:click={openDialog}
+    ></Icon>
+  </div>
+{/if}
+
+{#if !!$event}  
+  <ConvocateDialog
+    bind:open={convocationDialogOpen}
+    teammates={teammatesToConvocate}
+    on:convocate={handleConvocate}
+    event={$event}
+  ></ConvocateDialog>
+{/if}

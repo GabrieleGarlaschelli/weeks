@@ -576,6 +576,66 @@ paths:
           required: true
           schema:
             type: integer
+  /events/{eventId}/convocate:
+    post:
+      summary: Convocate a teammate in an event.
+      responses:
+        '200':
+          description: The created convocations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Convocation"
+      parameters:
+        - name: eventId
+          in: path
+          description: The event to convocate to
+          required: true
+          schema:
+            type: integer
+        - name: teammates
+          in: query
+          description: The teammates to convocate
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id: 
+                  type: integer
+  /events/{eventId}/unConvocate:
+    post:
+      summary: Delete convocation of a teammate in an event.
+      responses:
+        '200':
+          description: The created convocations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Convocation"
+      parameters:
+        - name: eventId
+          in: path
+          description: The event to un convocate from.
+          required: true
+          schema:
+            type: integer
+        - name: teammates
+          in: query
+          description: The teammates to convocate.
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id: 
+                  type: integer
   /events/createWithFrequency:
     post:
       summary: Create a new event repeating over time.

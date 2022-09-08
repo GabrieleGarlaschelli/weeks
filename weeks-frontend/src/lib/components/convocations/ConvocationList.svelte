@@ -20,6 +20,12 @@
     'deny': {
       convocation: Convocation
     },
+    'unConvocate': {
+      convocation: Convocation
+    },
+    'convocate': {
+      convocation: Convocation
+    },
   }>()
 
   export let convocations: Convocation[] = []
@@ -28,6 +34,7 @@
     if(!confirmationStatus) return 'Non specificato'
 
     let mappers: any = {
+      'pending': 'Non specificato',
       'confirmed': 'Presenza confermata',
       'denied': 'Presenza rifiutata'
     }
@@ -54,6 +61,25 @@
       dispatch('deny', { convocation: newConvocation })
     }).finally(() => {
       loading = false
+    })
+  }
+
+  function unConvocate(convocation: Convocation) {
+    loading = true
+    let service = new ConvocationsService({ fetch })
+    service.unConvocate({
+      event: {
+        id: convocation.eventId
+      },
+      teammates: [
+        {
+          id: convocation.teammateId
+        }
+      ]
+    }).then(() => {
+      loading = false
+      console.log('dispatch unconvocate')
+      dispatch('unConvocate', { convocation: convocation })
     })
   }
 </script>
@@ -100,6 +126,13 @@
               name="mdi-close"
               click
               on:click={() => denyConvocation(convocation)}
+            ></Icon>
+          {/if}
+          {#if CansService.can('Event', 'convocate')}
+            <Icon
+              name="mdi-delete"
+              click
+              on:click={() => unConvocate(convocation)}
             ></Icon>
           {/if}
         {:else}

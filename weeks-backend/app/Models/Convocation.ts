@@ -26,7 +26,11 @@ export default class Convocation extends CamelCaseBaseModel {
   })
   public confirmedBy: BelongsTo<typeof User>
 
-  @column()
+  @column({
+    serialize: (value) => {
+      return parseInt(value)
+    }
+  })
   public eventId: number
 
   @belongsTo(() => Event, {

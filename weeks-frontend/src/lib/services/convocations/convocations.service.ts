@@ -44,12 +44,55 @@ export default class ConvocationsService extends FetchBasedService {
     return response
   }
 
-
   public async deny(params: {
     id: number
   }): Promise<Convocation> {
     let response = await this.post({
       url: '/convocations/' + params.id + '/deny'
+    })
+
+    return response
+  }
+
+
+  public async convocate(params: {
+    event: {
+      id: number
+    },
+    teammates: {
+      id: number
+    }[]
+  }): Promise<Convocation[]> {
+    if(!params.event) throw new Error('event not specified')
+    else if(!params.teammates || params.teammates.length == 0) throw new Error('teammates null or empty')
+
+    let response = await this.post({
+      url: '/events/' + params.event.id + '/convocate',
+      body: {
+        teammates: params.teammates
+      }
+    })
+
+    return response
+  }
+
+
+  public async unConvocate(params: {
+    event: {
+      id: number
+    },
+    teammates: {
+      id: number
+    }[]
+  }): Promise<Convocation> {
+    if (!params.event) throw new Error('event not specified')
+    else if (!params.teammates || params.teammates.length == 0) throw new Error('teammates null or empty')
+
+    let response = await this.post({
+      url: '/events/' + params.event.id + '/unConvocate',
+      body: {
+        teammates: params.teammates
+      }
     })
 
     return response

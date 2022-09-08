@@ -144,6 +144,7 @@ export default class InvitationsManager {
       if (!params.context?.trx) await trx.commit()
       await invitation.load('invitedBy')
       await invitation.load('team')
+      await invitation.load('role')
       return invitation
     } catch (error) {
       if (!params.context?.trx) await trx.rollback()

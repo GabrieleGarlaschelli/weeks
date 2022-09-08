@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import EventsManager from 'App/managers/events.manager'
+import ConvocationsManager from 'App/managers/convocations.manager';
 
 export default class EventsController {
   public async index({ request }: HttpContextContract) {
@@ -75,6 +76,32 @@ export default class EventsController {
       data: {
         id: params.id,
         deleteAllFrequency: request.input('deleteAllFrequency')  
+      }
+    })
+  }
+
+  public async convocate({ request, params }: HttpContextContract) {
+    let manager = new ConvocationsManager()
+    return await manager.convocate({
+      data: {
+        teammates: request.input('teammates'),
+        event: {
+          id: params.id
+        },
+        notes: request.input('notes')
+      }
+    })
+  }
+
+  public async unConvocate({ request, params }: HttpContextContract) {
+    let manager = new ConvocationsManager()
+    return await manager.unConvocate({
+      data: {
+        teammates: request.input('teammates'),
+        event: {
+          id: params.id
+        },
+        notes: request.input('notes')
       }
     })
   }

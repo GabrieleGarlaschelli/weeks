@@ -23,7 +23,7 @@
   }
 
   function handleEventClick(event: Event) {
-    if(!!team && CansService.can('Event', 'update')) {
+    if(!!team) {
       goto(`/teams/${team.id}/events/${event.id}/general`)
     }
   }
@@ -41,7 +41,7 @@
       <div
         class="event-post"
         on:click={() => handleEventClick(event)}
-        class:clickable={!!team && CansService.can('Event', 'update')}
+        class:clickable={!!team}
       >
         <div class="title">{event.name}</div>
         <div class="time">{formattedTime(event)}</div>

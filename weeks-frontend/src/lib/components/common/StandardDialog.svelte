@@ -18,6 +18,7 @@
   <StandardCard
     height="auto"
     padding={cardPadding}
+    maxHeight="90vh"
   >
     <div 
       slot="header" 
