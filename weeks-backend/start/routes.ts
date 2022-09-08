@@ -64,3 +64,6 @@ Route.resource('eventSessions', 'EventSessionsController')
   .middleware({
     '*': ['auth:api']
   })
+
+Route.post('/convocations/:id/confirm', 'ConvocationsController.confirm').middleware('auth:api')
+Route.post('/convocations/:id/deny', 'ConvocationsController.deny').middleware('auth:api')

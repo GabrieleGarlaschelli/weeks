@@ -4,6 +4,7 @@ import UserModel from 'App/Models/User'
 import InvitationModel from 'App/Models/Invitation'
 import RoleModel from 'App/Models/Role'
 import EventModel from 'App/Models/Event'
+import ConvocationModel from 'App/Models/Convocation'
 
 import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
@@ -31,7 +32,9 @@ export type Action =
   'accept' |
   'reject' |
   'discard' |
-  'convocate'
+  'convocate' |
+  'confirm' |
+  'deny'
 
 export type Entities = {
   team?: Pick<Team, 'id'>,
@@ -92,8 +95,11 @@ export default class AuthorizationManager {
       update: AuthorizationManager._canUpdateEvent,
       convocate: AuthorizationManager._canConvocateToEvent,
       destroy: AuthorizationManager._canDestroyEvent
+    },
+    Convocation: {
+      confirm: AuthorizationManager._canConfirmConvocation,
+      deny: AuthorizationManager._canDenyConvocation
     }
-
   }
 
   constructor() { }
@@ -359,6 +365,71 @@ export default class AuthorizationManager {
       action: 'create',
       resource: 'Event'
     }, context)
+  }
+
+
+  private static async _canConfirmConvocation(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if(!params.entities.convocation?.id) throw new Error('convocation must be defined')
+    let convocationId: number = params.entities.convocation.id
+
+    let convocationBelongsToUser = await ConvocationModel.query({ client: context?.trx })
+      .where('id', convocationId)
+      .whereHas('teammate', teammateBuilder => {
+        teammateBuilder.where('userId', params.actor.id)
+      })
+
+    let convocation = await ConvocationModel.query({client: context?.trx})
+      .where('id', convocationId)
+      .preload('event')
+      .first()
+    
+    if(!convocation) return false
+
+    let canConfirmOtherConvocations = await Helpers.userCanInTeam({
+      user: params.actor,
+      team: {
+        id: convocation.event.teamId
+      },
+      action: 'confirm',
+      resource: 'Convocation'
+    })
+
+    return convocationBelongsToUser.length != 0 || canConfirmOtherConvocations
+  }
+
+  private static async _canDenyConvocation(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.convocation?.id) throw new Error('convocation must be defined')
+    let convocationId: number = params.entities.convocation.id
+
+    let convocationBelongsToUser = await ConvocationModel.query({ client: context?.trx })
+      .where('id', convocationId)
+      .whereHas('teammate', teammateBuilder => {
+        teammateBuilder.where('userId', params.actor.id)
+      })
+
+    let convocation = await ConvocationModel.query({ client: context?.trx })
+      .where('id', convocationId)
+      .preload('event')
+      .first()
+
+    if (!convocation) return false
+
+    let canConfirmOtherConvocations = await Helpers.userCanInTeam({
+      user: params.actor,
+      team: {
+        id: convocation.event.teamId
+      },
+      action: 'deny',
+      resource: 'Convocation'
+    })
+
+    return convocationBelongsToUser.length != 0 || canConfirmOtherConvocations
   }
 }
 

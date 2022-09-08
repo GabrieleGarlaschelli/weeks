@@ -172,6 +172,28 @@ components:
         updatedAt: 
           type: string
           format: date-time
+    Convocation:
+      type: object
+      properties:
+        id:
+          type: integer
+        notes:
+          type: string
+          nullable: true
+        eventId:
+          type: integer
+        teammateId:
+          type: integer
+        confirmationStatus:
+          type: string
+        teamId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
 
 paths:
   /auth/login:
@@ -716,3 +738,23 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Role"
+  /convocations/{convocationId}/confirm:
+    post:
+      summary: Confirm a convocation.
+      responses:
+        '200':
+          description: The new convocation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Convocation"
+  /convocations/{convocationId}/deny:
+    post:
+      summary: Deny a convocation.
+      responses:
+        '200':
+          description: The new convocation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Convocation"

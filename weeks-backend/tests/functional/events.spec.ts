@@ -107,6 +107,32 @@ test.group('Events', (group) => {
     
   })
 
+  test('get an event', async ({ client, assert }) => {
+    let response = await client.post('/events').json({
+      event: {
+        name: "Evento casuale",
+        start: DateTime.local(2022, 5, 15, 9, 0, 0),
+        end: DateTime.local(2022, 5, 15, 11, 0, 0),
+        description: "Descrizione dell'evento",
+        status: 'confirmed',
+        team: {
+          id: team.id
+        },
+        convocations: [
+          { teammateId: teammateToConvocate.id }
+        ]
+      }
+    }).loginAs(loggedInUser)
+
+    const createdEvent = response.body()
+
+    response = await client.get('/events/' + createdEvent.id).loginAs(loggedInUser)
+
+    const events = response.body()
+    response.assertAgainstApiSpec()
+    assert.isTrue(!!events, 'should find and event')
+  })
+
   test('get a list of events', async ({ client, assert }) => {
     await client.post('/events').json({
       event: {

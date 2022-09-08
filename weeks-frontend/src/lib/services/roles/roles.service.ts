@@ -26,7 +26,8 @@ export type Resource =
 export const actionsForResources: {[key: string]: string[]} = {
   'Team': ['update', 'invite', 'removeUser', 'destroy'],
   'Event': [ 'create', 'update', 'destroy' ],
-  'Role': [ 'update' ]
+  'Role': [ 'update' ],
+  'Convocation': [ 'confirm', 'deny' ]
 }
 
 export type Action =
@@ -38,7 +39,9 @@ export type Action =
   'removeUser' |
   'accept' |
   'reject' |
-  'discard'
+  'discard' |
+  'confirm' |
+  'deny'
 
 export type RoleCans = {
   [key: string]: {
@@ -153,7 +156,8 @@ export default class RolesService extends FetchBasedService {
       'removeUser': 'Rimuovere utenti',
       'accept': 'Accettare',
       'reject': 'Rifiutare',
-      'discard': 'Annullare'
+      'discard': 'Annullare',
+      'confirm': 'Confermare'
     }
     return translationMapping[action]
   }

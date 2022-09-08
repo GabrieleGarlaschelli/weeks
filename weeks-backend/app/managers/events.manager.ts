@@ -9,7 +9,7 @@ import type Event from 'App/Models/Event'
 import HttpContext from '@ioc:Adonis/Core/HttpContext'
 import { validator } from "@ioc:Adonis/Core/Validator"
 import AuthorizationManager from './authorization.manager';
-import ConvocationManager from './convocation.manager';
+import ConvocationManager from './convocations.manager';
 
 export type Context = {
   user?: {
@@ -532,6 +532,13 @@ export default class EventsManager {
         .whereHas('team', teamBuilder => {
           teamBuilder.whereHas('teammateUsers', userBuilder => {
             userBuilder.where('users.id', user.id)
+          })
+        })
+        .preload('convocations', builder => {
+          builder.preload('teammate', builder => {
+            builder
+              .preload('user')
+              .preload('role')
           })
         })
         .preload('createdBy')

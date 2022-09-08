@@ -1,5 +1,6 @@
 <script lang="ts">
   export let username: string,
+    description: string = "",
     src: string
   
   import colors from '$lib/stores/colors'
@@ -13,7 +14,8 @@
 >
   <DescriptiveAvatar
     direction="row"
-    title={mAndUp ? username : ""}
+    title={username}
+    description={description}
     src={src}
     width={mAndUp ? undefined : "30px"}
     height={mAndUp ? undefined : "30px"}
@@ -25,8 +27,8 @@
         ></Avatar>
       {:else}
         <div
-          style:width={mAndUp ? "40px" : "30px"}
-          style:height={mAndUp ? "40px" : "30px"}
+          style:width={"40px"}
+          style:height={"40px"}
           style:background-color={$colors.tertiary}
           style:font-size={mAndUp ? "1.5rem" : "1.2rem"}
           style:font-weight="700"

@@ -44,7 +44,7 @@
 >
   <div slot="append">
     <UserAvatar
-      username={$session?.currentUser?.name}
+      username={""}
       src={$session?.currentUser?.avatarUrl}
     ></UserAvatar>
   </div>

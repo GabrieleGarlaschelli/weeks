@@ -1,8 +1,9 @@
 import { CamelCaseBaseModel } from './CamelCaseBaseModel';
 import { DateTime } from 'luxon'
-import { column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import Event from 'App/Models/Event'
 import Teammate from 'App/Models/Teammate'
+import User from 'App/Models/User'
 
 export default class Convocation extends CamelCaseBaseModel {
   @column({ isPrimary: true })
@@ -12,20 +13,34 @@ export default class Convocation extends CamelCaseBaseModel {
   public notes: string
 
   @column()
+  public confirmationStatus: 'confirmed' | 'denied' | 'pending'
+
+  @column.dateTime({ autoCreate: true })
+  public updateConfirmationAt: DateTime
+
+  @column()
+  public confirmedByUserId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'confirmedByUserId'
+  })
+  public confirmedBy: BelongsTo<typeof User>
+
+  @column()
   public eventId: number
 
-  @hasOne(() => Event, {
+  @belongsTo(() => Event, {
     foreignKey: 'eventId'
   })
-  public event: HasOne<typeof Event>
+  public event: BelongsTo<typeof Event>
 
   @column()
   public teammateId: number
 
-  @hasOne(() => Teammate, {
+  @belongsTo(() => Teammate, {
     foreignKey: 'teammateId'
   })
-  public teammate: HasOne<typeof Teammate>
+  public teammate: BelongsTo<typeof Teammate>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
