@@ -45,9 +45,14 @@ export default class AuthController {
   public async googleCallback({ auth, ally, response }: HttpContextContract) {
     const google = ally.use('google')
 
+    console.log('init google')
+    console.log(google)
+
     if (google.accessDenied()) {
+      console.log('access denied')
       throw new Error("Access denied");
     } else if (google.stateMisMatch()) {
+      console.log('state mismatch')
       throw new Error('Request expired. Retry again');
     } else if (google.hasError()) {
       console.log('error on google')
@@ -56,6 +61,8 @@ export default class AuthController {
     }
 
     const googleUser = await google.user()
+
+    console.log('google user', googleUser)
 
     const user = await User.firstOrCreate({
       email: googleUser.email || undefined,
