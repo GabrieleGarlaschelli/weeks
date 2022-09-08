@@ -18,7 +18,7 @@
       // had to set the timeout because redirection was going too fast
       setTimeout(() => {
         goto('/')
-      }, 200);
+      }, 400);
     }
   })
 </script>
