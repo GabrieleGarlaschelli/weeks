@@ -8,7 +8,9 @@
   import { createEventDispatcher } from 'svelte';
 
   let dispatch = createEventDispatcher<{
-    "discard": { },
+    "discard": { 
+      invitation: Invitation
+    },
   }>()
 
   export let invitations: Invitation[] = []
@@ -46,7 +48,9 @@
     confirmDialogOpen = false
 
     if(!!discardingInvitation) {
-      dispatch('discard')
+      dispatch('discard', {
+        invitation: discardingInvitation
+      })
     }
   }
 

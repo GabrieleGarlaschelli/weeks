@@ -25,7 +25,7 @@ export default class InvitationsService extends FetchBasedService {
   public async inviteUser(params: {
     team: { id: number },
     user: { email: string },
-    role: { id: number }
+    role?: { id: number }
   }): Promise<Invitation> {
     if (!browser) throw new Error('only available in browser')
 
@@ -82,6 +82,19 @@ export default class InvitationsService extends FetchBasedService {
 
     let response = await this.post({
       url: '/invitations/reject',
+      body: params
+    })
+
+    return response
+  }
+
+  public async discardInvitation(params: {
+    invitation: { id: number }
+  }): Promise<Invitation> {
+    if (!browser) throw new Error('only available in browser')
+
+    let response = await this.post({
+      url: '/invitations/discard',
       body: params
     })
 

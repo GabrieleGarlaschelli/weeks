@@ -7,7 +7,7 @@
   import team from '$lib/stores/teams/teamsShow'
   import colors from '$lib/stores/colors'
   import UserService from '$lib/services/users/user.service'
-  import InvitationsService from "$lib/services/invitations/invitations.service";
+  import InvitationsService, { type Invitation } from "$lib/services/invitations/invitations.service";
   import CansService from '$lib/services/roles/cans.service';
 
   let searchText: string, results: User[]
@@ -25,9 +25,27 @@
       service.inviteUser({
         team: { id: $team.id },
         user: { email: user.email },
-        role: { id: parseInt(selectedRoles[0].value) }
-      }).then(() => {
+        role: !!selectedRoles && !!selectedRoles.length ? { id: parseInt(selectedRoles[0].value) } : undefined
+      }).then((result) => {
+        console.log(result)
+        if(!!$team && !!$team.invitations) {
+          $team.invitations = [
+            ...$team.invitations,
+            result
+          ]
+        }
         userInvited = true
+      })
+    }
+  }
+
+  function handleInvitationDiscard(event: CustomEvent<{ invitation: Invitation }>) {
+    if(!!$team) {
+      let service = new InvitationsService({ fetch })
+      service.discardInvitation({
+        invitation: event.detail.invitation
+      }).then((newInvitation) => {
+        if(!!$team) $team.invitations = $team.invitations?.filter(el => el.id != event.detail.invitation.id)
       })
     }
   }
@@ -40,7 +58,8 @@
   import LinkButton from "$lib/components/LinkButton.svelte"
   import RolesAutocomplete from '$lib/components/roles/RolesAutocomplete.svelte';
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
-import Subhead from '$lib/components/typography/Subhead.svelte';
+  import Subhead from '$lib/components/typography/Subhead.svelte';
+import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.svelte';
 </script>
 
 
@@ -158,6 +177,7 @@ import Subhead from '$lib/components/typography/Subhead.svelte';
     <div style:margin-top="10px">
       <InvitationList
         invitations={$team?.invitations}
+        on:discard={handleInvitationDiscard}
       ></InvitationList>
     </div>
   </MediaQuery>
