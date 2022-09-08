@@ -39,8 +39,6 @@ export default class AuthController {
 
 
   public async googleRedirect({ ally }: HttpContextContract) {
-    console.log('client id', Env.get('GOOGLE_CLIENT_ID'))
-    console.log('client secret', Env.get('GOOGLE_CLIENT_SECRET'))
     return ally.use('google').redirect()
   }
 
@@ -52,6 +50,8 @@ export default class AuthController {
     } else if (google.stateMisMatch()) {
       throw new Error('Request expired. Retry again');
     } else if (google.hasError()) {
+      console.log('error on google')
+      console.log(google.getError())
       throw google.getError()
     }
 
@@ -67,6 +67,9 @@ export default class AuthController {
     const token = await auth.use('api').login(user, {
       expiresIn: '7days'
     })
+
+    console.log('callback url', Env.get('GOOGLE_CALLBACK_URL'))
+    console.log('token json', token.toJSON())
 
     response.redirect().withQs(token.toJSON()).toPath(Env.get('GOOGLE_CALLBACK_URL') || 'http://localhost:3000/auth/google/callback')
   }
