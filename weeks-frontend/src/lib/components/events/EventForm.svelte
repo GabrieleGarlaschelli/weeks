@@ -17,6 +17,7 @@
   import LabelAndTextarea from "$lib/components/LabelAndTextarea.svelte";
   import TeammatesChecklist from '$lib/components/teammates/TeammatesChecklist.svelte';
   import CollapsableSection from '$lib/components/common/CollapsableSection.svelte';
+import LinkButton from "../LinkButton.svelte";
 
   export let event: Event = { },
     convocations: {
@@ -63,6 +64,15 @@
         .startOf('millisecond')
         .startOf('second')
         .toJSDate()
+    }
+  }
+
+  function selectAll() {
+    if(!!teammates) {
+      convocations = {}
+      for(let i = 0; i < teammates.length; i += 1) {
+        convocations[teammates[i].id] = true
+      }
     }
   }
 
@@ -113,6 +123,9 @@
       <CollapsableSection
         title="Convocazioni"
       >
+        <LinkButton
+          on:click={selectAll}
+        >Seleziona tutti</LinkButton>
         <TeammatesChecklist
           bind:value={convocations}
           bind:teammates={teammates}
