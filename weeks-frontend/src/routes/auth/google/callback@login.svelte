@@ -5,6 +5,7 @@
   import AuthService from "$lib/services/auth/auth.service"
 
   onMount(async () => {
+    console.log('callback search params', $page.url.searchParams)
     let token = $page.url.searchParams.get('token')
     let expiresAt = $page.url.searchParams.get('expires_at')
 
