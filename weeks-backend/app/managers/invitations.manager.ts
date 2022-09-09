@@ -142,9 +142,9 @@ export default class InvitationsManager {
       await invitation.related('team').associate(team)
 
       if (!params.context?.trx) await trx.commit()
-      await invitation.load('invitedBy')
-      await invitation.load('team')
-      await invitation.load('role')
+      if (!!invitation.invitedByUserId) await invitation.load('invitedBy')
+      if (!!invitation.teamId) await invitation.load('team')
+      if (!!invitation.roleId) await invitation.load('role')
       return invitation
     } catch (error) {
       if (!params.context?.trx) await trx.rollback()
