@@ -100,6 +100,19 @@ test.group('Invitations', (group) => {
       .where('userId', invitedUser.id)
 
     assert.isTrue(teammate.length > 0, 'should have created the teammate')
+
+
+    await client.post('/invitations/accept').json({
+      invitation: {
+        id: invitationToAccept.id
+      }
+    }).loginAs(invitedUser)
+
+    teammate = await TeammateModel.query()
+      .where('teamId', team.id)
+      .where('userId', invitedUser.id)
+
+    assert.isTrue(teammate.length == 1, 'should have not duplicate the invitation')
   })
 
   test('reject an invitations', async ({ client, assert }) => {

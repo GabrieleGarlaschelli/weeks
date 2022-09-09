@@ -238,6 +238,13 @@ export default class TeamsManager {
       if (!params.data.team || !params.data.team.id) throw new Error('team must be defined')
       if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
 
+      let existingTeammates = await TeammateModel.query({
+          client: trx
+        }).where('teamId', params.data.team.id)
+        .where('userId', params.data.user.id)
+
+      if(existingTeammates.length != 0) return
+
       const team = await TeamModel.findOrFail(params.data.team.id, {
         client: trx
       })
