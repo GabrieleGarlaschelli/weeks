@@ -8,12 +8,14 @@
     width: string = "auto"
 
   import SimpleTable from "@likable-hair/svelte/common/SimpleTable.svelte"
+  import colors from '$lib/stores/colors';
 </script>
 
 <SimpleTable
   headers={headers}
   items={items}
   width={width}
+  headerColor={$colors.thinContrast}
 >
   <svelte:fragment slot="appendLastColumn" let:item>
     <slot name="appendLastColumn" item={item}></slot>
