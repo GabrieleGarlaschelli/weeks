@@ -12,7 +12,8 @@
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year')
+    visibleYear: number = DateTime.now().get('year'),
+    isWeek: boolean = false
 
   onMount(() => {
     loadEvents()
@@ -55,20 +56,23 @@
       events = loadedEvents
     })
   }
-  import EventsCalendar from "../events/EventsCalendar.svelte";
+
+  $: if(!!visibleMonth && !!visibleYear) loadEvents()
+  import EventsViewer from "$lib/components/events/EventsViewer.svelte";
 </script>
 
 
-<EventsCalendar
+<EventsViewer
   bind:events={events}
   bind:selectedDate={selectedDate}
   bind:team={team}
   bind:selectedEvents={selectedEvents}
   bind:visibleMonth={visibleMonth}
   bind:visibleYear={visibleYear}
+  bind:isWeek={isWeek}
 >
   <svelte:fragment slot="header-append">
     <slot name="header-append">
     </slot>
   </svelte:fragment>
-</EventsCalendar>
+</EventsViewer>

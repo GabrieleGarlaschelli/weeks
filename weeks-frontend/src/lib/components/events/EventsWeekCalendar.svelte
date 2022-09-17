@@ -15,7 +15,8 @@
     selectedEvents: Event[] = [],
     events: Event[],
     visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year')
+    visibleYear: number = DateTime.now().get('year'),
+    visibleDay: number = DateTime.now().get('day')
 
 
   let dayGroupedEvents: {
@@ -154,81 +155,6 @@
         <slot name="header-append"></slot>
       </div>
     {/if}
-    <Calendar
-      bind:visibleMonth={visibleMonth}
-      bind:visibleYear={visibleYear}
-      bind:selectedDate={selectedDate}
-      locale="it"
-      height={mAndDown ? "200px" : "auto"}
-      gridGap="0px"
-    >
-      <div
-        slot="day"
-        let:dayStat
-        let:selected
-        class="day-slot"
-        style:border-color={$colors.thinContrast}
-        on:click={() => handleDayClick(dayStat)}
-      >
-        {#if !mAndDown}
-          <div>
-            {#each dayGroupedEvents[DateTime.now().set({
-              day: dayStat.dayOfMonth,
-              month: dayStat.month + 1,
-              year: dayStat.year
-            }).toFormat('yyyyMMdd')]?.slice(0, 2) || [] as event}
-              <div style:position="relative">
-                <div 
-                  class="event-post"
-                  style:background-color={$colors.tertiary}
-                  style:color={$colors.contrast}
-                >
-                  {event.name}
-                </div>
-              </div>
-            {/each}
-            {#if isGreaterThan(dayGroupedEvents[DateTime.now().set({
-              day: dayStat.dayOfMonth,
-              month: dayStat.month + 1,
-              year: dayStat.year
-            }).toFormat('yyyyMMdd')], 2)}
-              <div
-                style:margin-left="5px"
-                style:font-size=".8rem"
-              >
-                and more
-              </div>
-            {/if}
-          </div>
-          {#if CansService.can('Event', 'create')}
-            <div
-              class="add-new"
-              style:background-color={$colors.primary}
-            >
-              <Icon
-                name="mdi-plus"
-                size={10}
-                color={$colors.background}
-                click
-                on:click={() => handlePlusClick(dayStat)}
-              ></Icon>
-            </div>
-          {/if}
-        {:else if isGreaterThan(dayGroupedEvents[DateTime.now().set({
-              day: dayStat.dayOfMonth,
-              month: dayStat.month + 1,
-              year: dayStat.year
-            }).toFormat('yyyyMMdd')], 0)}
-          <div class="dot"></div>
-        {/if}
-        <div
-          class="day-of-month"
-          style:color={selected ? $colors.primary : $colors.contrast}
-        >
-          {dayStat.dayOfMonth}
-        </div>
-      </div>
-    </Calendar>
   </div>
 </MediaQuery>
 

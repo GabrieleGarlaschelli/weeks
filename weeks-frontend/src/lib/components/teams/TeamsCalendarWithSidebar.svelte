@@ -17,6 +17,8 @@
     selectedDate = undefined
   }
 
+  let isWeek: boolean = false
+
   import TeamsCalendar from "$lib/components/teams/TeamsCalendar.svelte";
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import EventsList from "$lib/components/events/EventsList.svelte";
@@ -24,7 +26,7 @@
 </script>
 
 <MediaQuery 
-  let:sAndDown
+  let:mAndDown
 >
   {#if team}
     <div
@@ -33,9 +35,10 @@
       <TeamsCalendar
         bind:selectedDate={selectedDate}
         bind:selectedEvents={selectedEvents}
+        bind:isWeek={isWeek}
         team={team}
       ></TeamsCalendar>
-      {#if !sAndDown}
+      {#if !mAndDown && !isWeek}
         <div 
           class="event-drawer"
           class:opened={!!selectedDate}
@@ -62,7 +65,7 @@
         </div>
       {/if}
     </div>
-    {#if sAndDown}
+    {#if mAndDown && !isWeek}
       <div class="hr"></div>
       <div class="title-container">
         <div class="title">
