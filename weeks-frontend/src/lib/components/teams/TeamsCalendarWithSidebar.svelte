@@ -24,7 +24,7 @@
 </script>
 
 <MediaQuery 
-  let:mAndDown
+  let:sAndDown
 >
   {#if team}
     <div
@@ -35,7 +35,7 @@
         bind:selectedEvents={selectedEvents}
         team={team}
       ></TeamsCalendar>
-      {#if !mAndDown}
+      {#if !sAndDown}
         <div 
           class="event-drawer"
           class:opened={!!selectedDate}
@@ -62,7 +62,7 @@
         </div>
       {/if}
     </div>
-    {#if mAndDown}
+    {#if sAndDown}
       <div class="hr"></div>
       <div class="title-container">
         <div class="title">
