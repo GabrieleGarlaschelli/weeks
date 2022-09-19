@@ -17,7 +17,7 @@
   import LabelAndTextarea from "$lib/components/LabelAndTextarea.svelte";
   import TeammatesChecklist from '$lib/components/teammates/TeammatesChecklist.svelte';
   import CollapsableSection from '$lib/components/common/CollapsableSection.svelte';
-import LinkButton from "../LinkButton.svelte";
+  import LinkButton from "../LinkButton.svelte";
 
   export let event: Event = { },
     convocations: {
@@ -31,18 +31,15 @@ import LinkButton from "../LinkButton.svelte";
     teammates: Teammate[] | undefined = undefined
 
   let startTime: string, 
-    endTime: string,
-    date: Date
-
-  
+    endTime: string
 
   $: {
     if(!!event.start && !startTime) {
       startTime = DateTime.fromJSDate(new Date(event.start)).toFormat("HH:mm")
     }
     
-    if(!!startTime && !!date) {
-      event.start = DateTime.fromJSDate(date).set({
+    if(!!startTime && !!event.start) {
+      event.start = DateTime.fromJSDate(event.start).set({
           hour: parseInt(startTime.split(':')[0]),
           minute: parseInt(startTime.split(':')[1])
         })
@@ -56,8 +53,8 @@ import LinkButton from "../LinkButton.svelte";
       endTime = DateTime.fromJSDate(new Date(event.end)).toFormat("HH:mm")
     }
     
-    if(!!endTime && !!date) {
-      event.end = DateTime.fromJSDate(date).set({
+    if(!!endTime && !!event.start) {
+      event.end = DateTime.fromJSDate(event.start).set({
           hour: parseInt(endTime.split(':')[0]),
           minute: parseInt(endTime.split(':')[1])
         })
@@ -90,7 +87,7 @@ import LinkButton from "../LinkButton.svelte";
         label="Data"
         placeholder="Data "
         name="startDate"
-        bind:value={date}
+        bind:value={event.start}
       ></StandardDatepicker>
     </div>
     <div>

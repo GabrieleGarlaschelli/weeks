@@ -30,6 +30,13 @@
         owner: $team.ownerId == $session.currentUser.id
       }
     }
+
+    let startParams: string | null = $page.url.searchParams.get('start')
+    if(!!startParams) {
+      event = {
+        start: DateTime.fromISO(startParams).toJSDate()
+      }
+    }
   })
 
   function handleSubmit() {
@@ -63,6 +70,12 @@
     }
   }
 
+  $: {
+    let startParams: string | null = $page.url.searchParams.get('start')
+    if(!!startParams) {
+      event.start = DateTime.fromISO(startParams).toJSDate()
+    }
+  }
   $: confirmDisabled = !event || !event.start || !event.end || !event.name
 
   function handleCancel() {
@@ -80,6 +93,7 @@
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte';
   import EventForm from "$lib/components/events/EventForm.svelte";
+	import { DateTime } from 'luxon';
 </script>
 
 {#if authorized}

@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import CansService from '$lib/services/roles/cans.service';
+  import qs from 'qs'
 
   export let team: Team,
     selectedDate: Date = new Date(),
@@ -75,7 +76,13 @@
   }
 
   function handlePlusClick(dayStat: DateStat) {
-    goto(`/teams/${team.id}/events/new`)
+    let date = DateTime.now().set({
+      day: dayStat.dayOfMonth,
+      month: dayStat.month + 1,
+      year: dayStat.year
+    }).toJSDate()
+
+    goto(`/teams/${team.id}/events/new?${qs.stringify({ start: date })}`)
   }
 
   function isGreaterThan(array: any[] | undefined, num: number) {
