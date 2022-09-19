@@ -79,6 +79,11 @@
       name: 'calendar',
       label: 'Calendario'
     })
+
+    tabs.push({
+      name: 'eventsList',
+      label: 'Lista eventi'
+    })
   })
 
   function handleOptionClick(event: any) {
@@ -100,6 +105,8 @@
       goto(`/teams/${$team?.id}/roles`)
     } else if(selectedTab == 'calendar') {
       goto(`/teams/${$team?.id}/calendar`)
+    } else if(selectedTab == 'eventsList') {
+      goto(`/teams/${$team?.id}/eventsList`)
     }
   }
 
@@ -114,6 +121,8 @@
     selectedTab = 'roles'
   } else if($page.url.href.endsWith('calendar')) {
     selectedTab = 'calendar'
+  } else if($page.url.href.endsWith('eventsList')) {
+    selectedTab = 'eventsList'
   }
   
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"

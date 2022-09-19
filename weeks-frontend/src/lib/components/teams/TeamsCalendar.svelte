@@ -12,8 +12,7 @@
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year'),
-    isWeek: boolean = false
+    visibleYear: number = DateTime.now().get('year')
 
   onMount(() => {
     loadEvents()
@@ -61,7 +60,6 @@
   import EventsViewer from "$lib/components/events/EventsViewer.svelte";
 </script>
 
-
 <EventsViewer
   bind:events={events}
   bind:selectedDate={selectedDate}
@@ -69,7 +67,6 @@
   bind:selectedEvents={selectedEvents}
   bind:visibleMonth={visibleMonth}
   bind:visibleYear={visibleYear}
-  bind:isWeek={isWeek}
 >
   <svelte:fragment slot="header-append">
     <slot name="header-append">
