@@ -11,8 +11,8 @@
   export let team: Team,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
-    visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year')
+    visibleYear: number = DateTime.now().get('year'),
+    visibleWeek: number = DateTime.now().get('weekNumber')
 
   onMount(() => {
     loadEvents()
@@ -23,29 +23,25 @@
     let service = new EventsService({ fetch })
     service.list({
       filters: {
-        from: DateTime.now()
-          .set({
-            month: visibleMonth + 1,
-            year: visibleYear
+        from: DateTime.fromObject({
+            weekday: 1,
+            weekNumber: visibleWeek,
+            weekYear: visibleYear
           })
-          .startOf('month')
           .startOf('day')
           .startOf('hour')
           .startOf('minute')
           .startOf('millisecond')
-          .minus({ days: 7 })
           .toJSDate(),
-        to: DateTime.now()
-          .set({
-            month: visibleMonth + 1,
-            year: visibleYear
+        to: DateTime.fromObject({
+            weekday: 7,
+            weekNumber: visibleWeek,
+            weekYear: visibleYear
           })
-          .endOf('month')
           .endOf('day')
           .endOf('hour')
           .endOf('minute')
           .endOf('millisecond')
-          .plus({ days: 7})
           .toJSDate(),
         team: {
           id: team.id
@@ -56,15 +52,18 @@
     })
   }
 
-  $: if(!!visibleMonth && !!visibleYear) loadEvents()
-  import EventsViewer from "$lib/components/events/EventsViewer.svelte";
+  $: if(!!visibleYear && !!visibleWeek) loadEvents()
+  
+	import EventsWeekList from "../events/EventsWeekList.svelte";
 </script>
 
-<EventsViewer
-  bind:events={events}
-  bind:selectedDate={selectedDate}
-  bind:team={team}
-  bind:selectedEvents={selectedEvents}
-  bind:visibleMonth={visibleMonth}
-  bind:visibleYear={visibleYear}
-></EventsViewer>
+{#if !!events}
+  <EventsWeekList
+    bind:events={events}
+    bind:selectedDate={selectedDate}
+    bind:team={team}
+    bind:selectedEvents={selectedEvents}
+    bind:visibleYear={visibleYear}
+    bind:visibleWeek={visibleWeek}
+  ></EventsWeekList>
+{/if}

@@ -81,8 +81,8 @@
     })
 
     tabs.push({
-      name: 'eventsList',
-      label: 'Lista eventi'
+      name: 'weeks',
+      label: 'Settimane'
     })
   })
 
@@ -105,8 +105,8 @@
       goto(`/teams/${$team?.id}/roles`)
     } else if(selectedTab == 'calendar') {
       goto(`/teams/${$team?.id}/calendar`)
-    } else if(selectedTab == 'eventsList') {
-      goto(`/teams/${$team?.id}/eventsList`)
+    } else if(selectedTab == 'weeks') {
+      goto(`/teams/${$team?.id}/weeks`)
     }
   }
 
@@ -121,8 +121,8 @@
     selectedTab = 'roles'
   } else if($page.url.href.endsWith('calendar')) {
     selectedTab = 'calendar'
-  } else if($page.url.href.endsWith('eventsList')) {
-    selectedTab = 'eventsList'
+  } else if($page.url.href.endsWith('weeks')) {
+    selectedTab = 'weeks'
   }
   
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"

@@ -84,6 +84,9 @@ export default class EventsService extends FetchBasedService {
       url: '/events/' + params.id
     })
 
+    response.start = new Date(response.start)
+    response.end = new Date(response.end)
+
     return response
   }
 

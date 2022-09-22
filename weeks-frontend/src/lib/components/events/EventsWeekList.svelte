@@ -1,0 +1,309 @@
+<script lang="ts" context="module">
+  import type { Team } from "$lib/services/teams/teams.service"
+  import type { DateStat } from "@likable-hair/svelte/dates/utils"
+  import type { Event } from "$lib/services/events/events.service"
+</script>
+
+<script lang="ts">
+  import { DateTime } from "luxon";
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
+  import CansService from '$lib/services/roles/cans.service';
+
+  export let team: Team,
+    selectedDate: Date = new Date(),
+    selectedEvents: Event[] = [],
+    events: Event[],
+    visibleYear: number = DateTime.now().get('year'),
+    visibleWeek: number = DateTime.now().get('weekNumber')
+
+
+  let dayGroupedEvents: {
+    [key: string]: Event[] | undefined
+  } = {}
+
+  onMount(() => {
+    groupEventByDate()
+  })
+
+  function groupEventByDate() {
+    dayGroupedEvents = {}
+
+    if(!!events && events.length > 0) {
+      for(let i = 0; i < events.length; i += 1) {
+        let dayKey = DateTime.fromJSDate(events[i].start).toFormat('yyyyMMdd')
+        if(!dayGroupedEvents[dayKey]) dayGroupedEvents[dayKey] = []
+        dayGroupedEvents[dayKey]?.push(events[i])
+      }
+
+      dayGroupedEvents = { ...dayGroupedEvents }
+    }
+  }
+
+  let weekName: string = ""
+  $: {
+    let firstDayOfWeek = DateTime.fromObject({
+      weekday: 1,
+      weekNumber: visibleWeek,
+      weekYear: visibleYear
+    }).setLocale('it')
+    .toLocaleString({ 
+      day: 'numeric',
+      month: 'short'
+    })
+
+    let lastDayOfWeek = DateTime.fromObject({
+      weekday: 7,
+      weekNumber: visibleWeek,
+      weekYear: visibleYear
+    }).setLocale('it')
+    .toLocaleString({ 
+      day: 'numeric',
+      month: 'short'
+    })
+
+    weekName = `${firstDayOfWeek} - ${lastDayOfWeek} ${visibleYear}`
+  }
+
+  function nextWeek() {
+    let currentVisibleWeek = DateTime.fromObject({
+      weekday: 1,
+      weekNumber: visibleWeek,
+      weekYear: visibleYear
+    })
+
+    let nextVisibleWeek = currentVisibleWeek.plus({
+      week: 1
+    })
+
+    if(currentVisibleWeek.get('weekYear') != nextVisibleWeek.get('weekYear')) {
+      visibleYear += 1
+      visibleWeek = 1
+    } else {
+      visibleWeek += 1
+    }
+  }
+
+  function previousWeek() {
+    let currentVisibleWeek = DateTime.fromObject({
+      weekday: 1,
+      weekNumber: visibleWeek,
+      weekYear: visibleYear
+    })
+
+    let previousVisibleWeek = currentVisibleWeek.minus({
+      week: 1
+    })
+
+    if(currentVisibleWeek.get('weekYear') != previousVisibleWeek.get('weekYear')) {
+      visibleWeek = previousVisibleWeek.get('weekNumber')
+      visibleYear -= 1
+    } else {
+      visibleWeek -= 1
+    }
+  }
+
+  function getEventsFromWeekDay(weekday: number): Event[] | undefined {
+    let date = DateTime.fromObject({
+      weekNumber: visibleWeek,
+      weekYear: visibleYear,
+      weekday: weekday
+    })
+
+    return dayGroupedEvents[date.toFormat('yyyyMMdd')]
+  }
+
+  function getWeekdayNameFromIndex(weekday: number): string {
+    return DateTime.fromObject({
+      weekNumber: visibleWeek,
+      weekYear: visibleYear,
+      weekday: weekday
+    }).setLocale('it').toLocaleString({
+      weekday: 'long',
+      day: 'numeric'
+    })
+  }
+
+  function getEventTimeRangeString(event: Event): string {
+    let fromTime = DateTime.fromJSDate(event.start).toFormat('HH:mm')
+    let toTime = DateTime.fromJSDate(event.end).toFormat('HH:mm')
+
+    return `${fromTime} - ${toTime}`
+  }
+
+  function handleDayClick(dayStat: DateStat) {
+    let selection = DateTime.now().set({ 
+      day: dayStat.dayOfMonth,
+      month: dayStat.month + 1,
+      year: dayStat.year
+    })
+    selectedDate = selection.toJSDate()
+  }
+
+  function handlePlusClick(dayStat: DateStat) {
+    goto(`/teams/${team.id}/events/new`)
+  }
+
+  function isGreaterThan(array: any[] | undefined, num: number) {
+    if(!!array) return array.length > num
+    else return false
+  }
+
+  $: if(!!events) groupEventByDate()
+  $: {
+    if(!!selectedDate) {
+      let key = DateTime.now().set({
+        day: selectedDate.getDate(),
+        month: selectedDate.getMonth() + 1,
+        year: selectedDate.getFullYear()
+      }).toFormat('yyyyMMdd')
+
+      selectedEvents = dayGroupedEvents[key] || []
+    }
+  }
+
+  import colors from "$lib/stores/colors";
+  import Icon from "@likable-hair/svelte/media/Icon.svelte"
+  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
+</script>
+
+<MediaQuery 
+  let:mAndDown
+>
+  <div
+    style:height="auto"
+    style:width="100%"
+  >
+    {#if mAndDown}
+      <div class="week-switcher">
+        <Icon
+          name="mdi-chevron-left"
+          click
+          on:click={previousWeek}
+        ></Icon>
+        <div>
+          <slot name="options">
+          </slot>
+        </div>
+        <Icon
+          name="mdi-chevron-right"
+          click
+          on:click={nextWeek}
+        ></Icon>
+      </div>
+      <div 
+        class="week-name"
+        style:margin-bottom="20px"
+      >
+        {weekName}
+      </div>
+    {:else}
+      <div class="week-switcher">
+        <Icon
+          name="mdi-chevron-left"
+          click
+          on:click={previousWeek}
+        ></Icon>
+        <Icon
+          name="mdi-chevron-right"
+          click
+          on:click={nextWeek}
+        ></Icon>
+        <div class="week-name">
+          {weekName}
+        </div>
+        <div>
+          <slot name="options">
+          </slot>
+        </div>
+        <slot name="header-append"></slot>
+      </div>
+    {/if}
+    <div class="date-list">
+      {#key dayGroupedEvents}
+        {#each [1, 2, 3, 4, 5, 6, 7] as index}
+          <div class="day-container">
+            <div class="day-name">{getWeekdayNameFromIndex(index)}</div>
+            {#if !!getEventsFromWeekDay(index)}
+              {#each getEventsFromWeekDay(index) || [] as event}
+                <div class="event">
+                  <div class="event-title">{event.name}</div>
+                  <div class="event-subtitle">
+                    <Icon name='mdi-clock' size={10}></Icon>
+                    {getEventTimeRangeString(event)}
+                  </div>
+                  <div 
+                    class="event-description"
+                    style:white-space="pre-wrap"
+                  >
+                    <Icon name='mdi-text' size={10}></Icon>
+                    {event.description}
+                  </div>
+                </div>
+              {/each}
+            {/if}
+          </div>
+        {/each}
+      {/key}
+    </div>
+  </div>
+</MediaQuery>
+
+<style>
+  @media (max-width: 1024px) {
+    .week-switcher {
+      justify-content: space-between;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .week-switcher {
+      justify-content: left;
+      margin-bottom: 20px;
+      margin-top: 20px;
+    }
+  }
+
+  .week-switcher {
+    display: flex;
+    gap: 20px;
+  }
+
+  .week-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .day-container {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .day-name {
+    font-weight: 500;
+    min-width: 130px;
+    font-size: 1.3rem;
+  }
+
+  .event {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+  }
+
+  .event-title {
+    font-weight: 400;
+    font-size: 1.2rem;
+  }
+
+  .event-subtitle {
+    font-weight: 200;
+    font-size: 1rem;
+  }
+</style>
