@@ -30,7 +30,8 @@
     height: string | undefined = undefined,
     teammates: Teammate[] | undefined = undefined
 
-  let startTime: string, 
+  let date: Date | undefined = event.start,
+    startTime: string, 
     endTime: string
 
   $: {
@@ -47,8 +48,7 @@
         .startOf('second')
         .toJSDate()
     }
-  }
-  $: {
+    
     if(!!event.end && !endTime) {
       endTime = DateTime.fromJSDate(new Date(event.end)).toFormat("HH:mm")
     }
@@ -87,7 +87,7 @@
         label="Data"
         placeholder="Data "
         name="startDate"
-        bind:value={event.start}
+        bind:value={date}
       ></StandardDatepicker>
     </div>
     <div>

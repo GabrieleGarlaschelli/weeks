@@ -55,6 +55,7 @@
           </div>
           <div class="events-list">
             <EventsList
+              precompiledDate={selectedDate ? DateTime.fromJSDate(selectedDate) : undefined}
               events={selectedEvents}
               team={team}
             ></EventsList>
@@ -70,6 +71,7 @@
         </div>
       </div>
       <EventsList
+        precompiledDate={selectedDate ? DateTime.fromJSDate(selectedDate) : undefined}
         events={selectedEvents}
         team={team}
       ></EventsList>

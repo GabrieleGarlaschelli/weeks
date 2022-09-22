@@ -2,13 +2,16 @@
   import type { Team } from "$lib/services/teams/teams.service"
   import type { DateStat } from "@likable-hair/svelte/dates/utils"
   import type { Event } from "$lib/services/events/events.service"
+  import type { Option } from '$lib/components/common/OptionSelector.svelte'
 </script>
 
 <script lang="ts">
   import { DateTime } from "luxon";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
+  import colors from "$lib/stores/colors";
   import CansService from '$lib/services/roles/cans.service';
+  import qs from 'qs'
 
   export let team: Team,
     selectedDate: Date = new Date(),
@@ -19,11 +22,35 @@
 
 
   let dayGroupedEvents: {
-    [key: string]: Event[] | undefined
-  } = {}
+      [key: string]: Event[] | undefined
+    } = {},
+    options: Option[] = []
 
   onMount(() => {
     groupEventByDate()
+
+    if(CansService.can('Event', 'update')) {
+      options.push({
+        name: 'edit',
+        label: 'Modifica',
+        icon: 'mdi-pencil'
+      })
+    }
+
+    options.push({
+      name: 'view',
+      label: 'Visualizza',
+      icon: 'mdi-eye'
+    })
+
+    if(CansService.can('Event', 'destroy')) {
+      options.push({
+        name: 'destroy',
+        label: 'Elimina',
+        icon: 'mdi-delete',
+        color: $colors.warning
+      })
+    }
   })
 
   function groupEventByDate() {
@@ -131,23 +158,6 @@
     return `${fromTime} - ${toTime}`
   }
 
-  function handleDayClick(dayStat: DateStat) {
-    let selection = DateTime.now().set({ 
-      day: dayStat.dayOfMonth,
-      month: dayStat.month + 1,
-      year: dayStat.year
-    })
-    selectedDate = selection.toJSDate()
-  }
-
-  function handlePlusClick(dayStat: DateStat) {
-    goto(`/teams/${team.id}/events/new`)
-  }
-
-  function isGreaterThan(array: any[] | undefined, num: number) {
-    if(!!array) return array.length > num
-    else return false
-  }
 
   $: if(!!events) groupEventByDate()
   $: {
@@ -162,9 +172,24 @@
     }
   }
 
-  import colors from "$lib/stores/colors";
+  function handleEventOptionClick(e: CustomEvent<{option: Option}>) {
+
+  }
+
+  function handlePlusClick(weekday: number) {
+    let precompiled = DateTime.fromObject({
+      weekNumber: visibleWeek,
+      weekYear: visibleYear,
+      weekday: weekday
+    })
+
+    goto(`/teams/${team.id}/events/new?${qs.stringify({ start: precompiled.toJSDate() })}`)
+  }
+
   import Icon from "@likable-hair/svelte/media/Icon.svelte"
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
+  import Divider from "$lib/components/Divider.svelte";
+  import OptionMenu from "$lib/components/common/OptionMenu.svelte"
 </script>
 
 <MediaQuery 
@@ -224,25 +249,45 @@
         {#each [1, 2, 3, 4, 5, 6, 7] as index}
           <div class="day-container">
             <div class="day-name">{getWeekdayNameFromIndex(index)}</div>
-            {#if !!getEventsFromWeekDay(index)}
-              {#each getEventsFromWeekDay(index) || [] as event}
-                <div class="event">
-                  <div class="event-title">{event.name}</div>
-                  <div class="event-subtitle">
-                    <Icon name='mdi-clock' size={10}></Icon>
-                    {getEventTimeRangeString(event)}
-                  </div>
-                  <div 
-                    class="event-description"
-                    style:white-space="pre-wrap"
-                  >
-                    <Icon name='mdi-text' size={10}></Icon>
-                    {event.description}
-                  </div>
+            <div style:flex-grow="1">
+              {#if CansService.can('Event', 'create')}
+                <div>
+                  <Icon 
+                    name="mdi-plus"
+                    click
+                    on:click={() => handlePlusClick(index)}
+                  ></Icon>
                 </div>
-              {/each}
-            {/if}
+              {/if}
+              {#if !!getEventsFromWeekDay(index)}
+                {#each getEventsFromWeekDay(index) || [] as event}
+                  <div class="event">
+                    <div class="event-title">
+                      {event.name}
+                      <div style:margin-left="10px">
+                        <OptionMenu
+                          options={options}
+                          on:option-click={handleEventOptionClick}
+                        ></OptionMenu>
+                      </div>
+                    </div>
+                    <div class="event-subtitle">
+                      <Icon name='mdi-clock' size={10}></Icon>
+                      {getEventTimeRangeString(event)}
+                    </div>
+                    <div 
+                      class="event-description"
+                      style:white-space="pre-wrap"
+                    >
+                      <Icon name='mdi-text' size={10}></Icon>
+                      {event.description}
+                    </div>
+                  </div>
+                {/each}
+              {/if}
+            </div>
           </div>
+          <Divider marginLeft="0px"></Divider>
         {/each}
       {/key}
     </div>
@@ -294,16 +339,24 @@
   .event {
     display: flex;
     flex-direction: column;
-    gap: 10px
+    gap: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
   }
 
   .event-title {
-    font-weight: 400;
+    font-weight: 500;
     font-size: 1.2rem;
+    display: flex;
   }
 
   .event-subtitle {
     font-weight: 200;
     font-size: 1rem;
+    margin-left: 15px;
+  }
+
+  .event-description {
+    margin-left: 15px;
   }
 </style>

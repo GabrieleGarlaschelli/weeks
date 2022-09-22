@@ -45,6 +45,8 @@
     >
       <div
         style:background-color={$colors.background}
+        style:font-weight="400"
+        style:font-size="1rem"
       >
         <OptionSelector
           optionHeight="50px"
@@ -66,6 +68,8 @@
     >
       <div 
         style:border-color={$colors.thinContrast}
+        style:font-weight="400"
+        style:font-size="1rem"
         class="menu-card"
       >
         <OptionSelector

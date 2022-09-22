@@ -5,10 +5,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { DateTime } from 'luxon';
+  import qs from 'qs'
   import CansService from '$lib/services/roles/cans.service';
 
   export let events: Event[] = [],
-    team: { id: number } | undefined = undefined
+    team: { id: number } | undefined = undefined,
+    precompiledDate: DateTime | undefined = undefined
 
   function formattedTime(event: Event) {
     let fromTime: string = DateTime.fromJSDate(event.start).setLocale('it').toLocaleString(DateTime.TIME_SIMPLE)
@@ -18,7 +20,11 @@
 
   function handlePlusClick() {
     if(!!team) {
-      goto('/teams/' + team.id + '/events/new')
+      if(!!precompiledDate) {
+        goto(`/teams/${team.id}/events/new?${qs.stringify({ start: precompiledDate.toJSDate() })}`)
+      } else {
+        goto('/teams/' + team.id + '/events/new')
+      }
     }
   }
 

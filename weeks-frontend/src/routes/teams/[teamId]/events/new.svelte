@@ -72,7 +72,7 @@
 
   $: {
     let startParams: string | null = $page.url.searchParams.get('start')
-    if(!!startParams) {
+    if(!!startParams && !event.start) {
       event.start = DateTime.fromISO(startParams).toJSDate()
     }
   }
