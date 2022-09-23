@@ -11,6 +11,7 @@
   import { goto } from "$app/navigation";
   import colors from "$lib/stores/colors";
   import CansService from '$lib/services/roles/cans.service';
+  import EventsService from "$lib/services/events/events.service";
   import qs from 'qs'
 
   export let team: Team,
@@ -172,8 +173,27 @@
     }
   }
 
-  function handleEventOptionClick(e: CustomEvent<{option: Option}>) {
+  let confirmDeletionDialogOpen: boolean = false, deletingEvent: Event | undefined, loadingDelete: boolean = false
+  function handleEventOptionClick(e: CustomEvent<{option: Option}>, event: Event) {
+    if(e.detail.option.name == 'edit' && !!team) {
+      goto(`/teams/${team.id}/events/${event.id}/edit`)
+    } else if(e.detail.option.name == 'view' && !!team) {
+      goto(`/teams/${team.id}/events/${event.id}/general`)
+    } else if(e.detail.option.name == 'destroy' && !!team) {
+      confirmDeletionDialogOpen = true
+      deletingEvent = event
+    }
+  }
 
+  async function handleConfirm() {
+    if(!!deletingEvent) {
+      loadingDelete = true
+      let service = new EventsService({ fetch })
+      await service.destroy({ id: deletingEvent.id })
+      loadingDelete = false
+      confirmDeletionDialogOpen = false
+      events = events.filter((ev) => ev.id != deletingEvent?.id)
+    }
   }
 
   function handlePlusClick(weekday: number) {
@@ -187,9 +207,10 @@
   }
 
   import Icon from "@likable-hair/svelte/media/Icon.svelte"
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
-  import Divider from "$lib/components/Divider.svelte";
+  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
+  import Divider from "$lib/components/Divider.svelte"
   import OptionMenu from "$lib/components/common/OptionMenu.svelte"
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 </script>
 
 <MediaQuery 
@@ -267,7 +288,7 @@
                       <div style:margin-left="10px">
                         <OptionMenu
                           options={options}
-                          on:option-click={handleEventOptionClick}
+                          on:option-click={(e) => handleEventOptionClick(e, event)}
                         ></OptionMenu>
                       </div>
                     </div>
@@ -293,6 +314,16 @@
     </div>
   </div>
 </MediaQuery>
+
+<ConfirmDialog
+  confirmText="Elimina"
+  cancelText="Annulla"
+  title="Cancella evento"
+  description={`Sei sicuro di voler cancellare l'evento ${deletingEvent?.name}?`}
+  bind:open={confirmDeletionDialogOpen}
+  on:cancel-click={() => confirmDeletionDialogOpen = false}
+  on:confirm-click={handleConfirm}
+></ConfirmDialog>
 
 <style>
   @media (max-width: 1024px) {
