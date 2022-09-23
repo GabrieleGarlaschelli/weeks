@@ -54,6 +54,7 @@ Route.post('/invitations/discard', 'InvitationsController.discard').middleware('
 
 Route.post('/events', 'EventsController.store').middleware('auth:api')
 Route.post('/events/createWithFrequency', 'EventsController.createWithFrequency').middleware('auth:api')
+Route.post('/events/copyWeek', 'EventsController.copyWeek').middleware('auth:api')
 Route.get('/events', 'EventsController.index').middleware('auth:api')
 Route.put('/events/:id', 'EventsController.update').middleware('auth:api')
 Route.delete('/events/:id', 'EventsController.destroy').middleware('auth:api')

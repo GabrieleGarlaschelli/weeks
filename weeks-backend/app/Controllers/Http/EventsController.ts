@@ -7,8 +7,7 @@ export default class EventsController {
   public async index({ request }: HttpContextContract) {
     const filters = request.input('filters')
 
-
-    if( !!filters) {
+    if(!!filters) {
       if (!!filters.from) filters.from = DateTime.fromISO(filters.from)
       if (!!filters.to) filters.to = DateTime.fromISO(filters.to)
     }
@@ -45,6 +44,25 @@ export default class EventsController {
       data: {
         event: event,
         rule: rule
+      }
+    })
+  }
+
+  public async copyWeek({ request }: HttpContextContract) {
+    const fromWeekNumber = request.input('fromWeekNumber')
+    const fromWeekYear = request.input('fromWeekYear')
+    const toWeekNumber = request.input('toWeekNumber')
+    const toWeekYear = request.input('toWeekYear')
+    const team = request.input('team')
+
+    const manager = new EventsManager()
+    return await manager.copyWeek({
+      data: {
+        fromWeekNumber: fromWeekNumber,
+        fromWeekYear: fromWeekYear,
+        toWeekNumber: toWeekNumber,
+        toWeekYear: toWeekYear,
+        team: team
       }
     })
   }

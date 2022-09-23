@@ -147,10 +147,10 @@ test.group('Events', (group) => {
       }
     }).loginAs(loggedInUser)
 
-    const response = await client.get('/events').json({
+    const response = await client.get('/events').qs({
       filters: {
-        from: DateTime.local(2022, 5, 15),
-        to: DateTime.local(2022, 5, 23),
+        from: DateTime.local(2022, 5, 15).toISO(),
+        to: DateTime.local(2022, 5, 23).toISO(),
       },
     }).loginAs(loggedInUser)
 
@@ -190,6 +190,58 @@ test.group('Events', (group) => {
     const end = DateTime.fromISO(event.end)
     assert.equal(end.get('hour'), 12, "should update the end hour")
     assert.equal(end.get('minute'), 30, "should update the end minute")
+  })
+
+  test('copy a week', async ({ client, assert }) => {
+    let response = await client.post('/events').json({
+      event: {
+        name: "Evento da copiare",
+        start: DateTime.local(2022, 7, 16, 9, 0, 0),
+        end: DateTime.local(2022, 7, 16, 11, 0, 0),
+        description: "Descrizione dell'evento",
+        status: 'confirmed',
+        team: {
+          id: team.id
+        }
+      }
+    }).loginAs(loggedInUser)
+
+    response = await client.post('/events').json({
+      event: {
+        name: "Evento da copiare 2",
+        start: DateTime.local(2022, 7, 17, 15, 0, 0),
+        end: DateTime.local(2022, 7, 17, 17, 0, 0),
+        description: "Descrizione dell'evento",
+        status: 'confirmed',
+        team: {
+          id: team.id
+        }
+      }
+    }).loginAs(loggedInUser)
+
+
+    response = await client.post('/events/copyWeek').json({
+      fromWeekNumber: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekNumber'),
+      fromWeekYear: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekYear'),
+      toWeekNumber: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekNumber') + 1,
+      toWeekYear: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekYear') + 1,
+      team: {
+        id: team.id
+      }
+    }).loginAs(loggedInUser)
+
+    const eventListResponse = await client.get('/events').qs({
+      filters: {
+        from: DateTime.local(2022, 7, 16).toISO(),
+        to: DateTime.local(2022, 7, 30).toISO(),
+      },
+    }).loginAs(loggedInUser)
+
+    eventListResponse.assertAgainstApiSpec()
+    
+    let copiedEvents = eventListResponse.body()
+    assert.isTrue(copiedEvents.length > 0, 'should copy the event')
+    assert.isTrue(!!copiedEvents.find((event) => event.name == 'Evento da copiare'), 'should copy the event')
   })
 
   test('destroy an event', async ({ client, assert }) => {

@@ -84,6 +84,17 @@ export type UpdateParams = {
   context?: Context
 }
 
+export type CopyWeekParams = {
+  data: {
+    fromWeekNumber: number,
+    fromWeekYear: number,
+    toWeekNumber: number,
+    toWeekYear: number,
+    team: { id: number }
+  },
+  context?: Context
+}
+
 export type DeleteParams = {
   data: {
     id: number,
@@ -132,6 +143,7 @@ export default class EventsManager {
         .preload('team')
         .preload('createdBy')
         .preload('frequency')
+        .preload('convocations')
 
       if (!params.context?.trx) await trx.commit()
       return results
@@ -372,6 +384,83 @@ export default class EventsManager {
           .query({ client: trx })
           .whereIn('id', createdEvents.map(event => event.id))
           .preload('team')
+      }
+
+      if (!params.context?.trx) await trx.commit()
+      return results
+    } catch (error) {
+      if (!params.context?.trx) await trx.rollback()
+      throw error
+    }
+  }
+
+  public async copyWeek(params: CopyWeekParams): Promise<Event[]> {
+    const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be defined to create a event')
+
+    let trx = params.context?.trx
+    if (!trx) trx = await Database.transaction()
+
+    try {
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'create',
+          resource: 'Event',
+          entities: {
+            team: params.data.team
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
+      let fromDateFrom = DateTime.fromObject({
+        weekday: 1,
+        weekNumber: params.data.fromWeekNumber,
+        weekYear: params.data.fromWeekYear
+      })
+
+      let toDateFrom = DateTime.fromObject({
+        weekday: 7,
+        weekNumber: params.data.fromWeekNumber,
+        weekYear: params.data.fromWeekYear
+      }).endOf('day')
+
+      let events = await this.list({
+        data: {
+          filters: {
+            from: fromDateFrom,
+            to: toDateFrom
+          },
+        },
+        context: {
+          trx: trx,
+          user: user
+        }
+      })
+
+
+      let results: Event[] = []
+      for(let i = 0; i < events.length; i += 1) {
+        let event = await this.create({
+          data: {
+            start: events[i].start.set({ weekNumber: params.data.toWeekNumber }),
+            end: events[i].end.set({ weekNumber: params.data.toWeekYear }),
+            name: events[i].name,
+            description: events[i].description,
+            status: events[i].status,
+            team: params.data.team,
+            convocations: events[i].convocations.map((el) => {
+              return {
+                teammateId: el.teammateId
+              }
+            })
+          }
+        })
+
+        results.push(event)
       }
 
       if (!params.context?.trx) await trx.commit()

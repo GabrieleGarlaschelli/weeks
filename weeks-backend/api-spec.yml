@@ -702,6 +702,52 @@ paths:
               type: array
               items:
                 type: number
+  /events/copyWeek:
+    post:
+      summary: Copy the events of a week to another.
+      responses:
+        '200':
+          description: The new events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    parameters:
+      - name: fromWeekNumber
+        in: query
+        description: The week number to create from
+        required: true
+        schema:
+          type: integer
+      - name: fromWeekYear
+        in: query
+        description: The week year to create from
+        required: true
+        schema:
+          type: integer
+      - name: toWeekNumber
+        in: query
+        description: The week number to create to
+        required: true
+        schema:
+          type: integer
+      - name: toWeekYear
+        in: query
+        description: The week year to create to
+        required: true
+        schema:
+          type: integer
+      - name: team
+        in: query
+        description: The team to take the event from
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
   /eventSessions:
     post:
       summary: Create a new event session.
