@@ -193,7 +193,7 @@ test.group('Events', (group) => {
   })
 
   test('copy a week', async ({ client, assert }) => {
-    let response = await client.post('/events').json({
+    await client.post('/events').json({
       event: {
         name: "Evento da copiare",
         start: DateTime.local(2022, 7, 16, 9, 0, 0),
@@ -206,7 +206,7 @@ test.group('Events', (group) => {
       }
     }).loginAs(loggedInUser)
 
-    response = await client.post('/events').json({
+    let response = await client.post('/events').json({
       event: {
         name: "Evento da copiare 2",
         start: DateTime.local(2022, 7, 17, 15, 0, 0),
