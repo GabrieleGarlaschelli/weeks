@@ -6,6 +6,7 @@
   export let items: Item[],
     width: string = "300px",
     maxWidth: string = "100%",
+    multiple: boolean = false,
     values: Item[]
 
   import colors from '$lib/stores/colors'
@@ -16,6 +17,7 @@
   bind:values={values}
   width={width}
   maxWidth={maxWidth}
+  multiple={multiple}
   border={`1px ${$colors.thinContrast} solid`}
   textFieldPaddingBottom="2px"
   textFieldPaddingTop="2px"

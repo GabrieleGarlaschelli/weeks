@@ -258,11 +258,7 @@
         <div class="week-name">
           {weekName}
         </div>
-        <div>
-          <slot name="options">
-          </slot>
-        </div>
-        <slot name="header-append"></slot>
+        <slot name="options"></slot>
       </div>
     {/if}
     <div class="date-list">

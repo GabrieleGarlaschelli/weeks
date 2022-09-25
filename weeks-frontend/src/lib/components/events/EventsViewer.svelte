@@ -11,7 +11,7 @@
     selectedEvents: Event[] = [],
     events: Event[],
     visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year'),
+    visibleYear: number = DateTime.now().get('year')
 
   import EventsCalendar from "$lib/components/events/EventsCalendar.svelte";
 </script>

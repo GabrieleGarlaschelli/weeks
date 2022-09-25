@@ -6,7 +6,8 @@ const store = writable<'light' | 'dark'>('light')
 export default store
 
 if(browser) {
-  let theme = Cookies.get('theme')
+  // @ts-ignore
+  let theme: 'light' | 'dark' = Cookies.get('theme')
   if(!!theme) {
     store.set(theme)
   }

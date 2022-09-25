@@ -14,6 +14,9 @@
     visibleYear: number = DateTime.now().get('year'),
     visibleWeek: number = DateTime.now().get('weekNumber')
 
+  let importFromYear = visibleYear,
+    importFromWeek = visibleWeek
+
   onMount(() => {
     loadEvents()
   })
@@ -53,8 +56,15 @@
   }
 
   $: if(!!visibleYear && !!visibleWeek) loadEvents()
+
+  let openImportWeekDialog: boolean = false
+  function handleImportWeekClick() {
+    openImportWeekDialog = true
+  }
   
 	import EventsWeekList from "../events/EventsWeekList.svelte";
+  import Icon from "@likable-hair/svelte/media/Icon.svelte";
+  import TeamImportWeekDialog from "$lib/components/teams/TeamImportWeekDialog.svelte";
 </script>
 
 {#if !!events}
@@ -65,5 +75,23 @@
     bind:selectedEvents={selectedEvents}
     bind:visibleYear={visibleYear}
     bind:visibleWeek={visibleWeek}
-  ></EventsWeekList>
+  >
+    <svelte:fragment slot="options">
+      <Icon
+        name="mdi-import"
+        click
+        on:click={handleImportWeekClick}
+      ></Icon>
+    </svelte:fragment>
+  </EventsWeekList>
+
+  <TeamImportWeekDialog
+    bind:open={openImportWeekDialog}
+    bind:team={team}
+    bind:selectedYear={importFromYear}
+    bind:selectedWeek={importFromWeek}
+    bind:toYear={visibleYear}
+    bind:toWeek={visibleWeek}
+    on:import={loadEvents}
+  ></TeamImportWeekDialog>
 {/if}

@@ -36,6 +36,6 @@
       label={placeholder}
       on:input
       bind:error={error}
-    ></PasswordTextfield>
+    ></PasswordTextfield>    
   {/if}
 </div>

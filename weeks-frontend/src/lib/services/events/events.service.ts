@@ -65,7 +65,6 @@ export default class EventsService extends FetchBasedService {
     }[]
   }): Promise<Event[]> {
     if (!browser) throw new Error('only available in browser')
-    console.log(params)
 
     let response = await this.post({
       url: '/events',
@@ -75,6 +74,25 @@ export default class EventsService extends FetchBasedService {
     })
 
     return response
+  }
+
+  public async copyWeek(params: {
+    fromWeekNumber: number,
+    fromWeekYear: number,
+    toWeekNumber: number,
+    toWeekYear: number,
+    team: { id: number }
+  }): Promise<Event[]> {
+    let response = await this.post({
+      url: '/events/copyWeek',
+      body: params
+    })
+
+    return response.map((el: any) => {
+      el.start = new Date(el.start)
+      el.end = new Date(el.end)
+      return el
+    })
   }
 
   public async show(params: {
