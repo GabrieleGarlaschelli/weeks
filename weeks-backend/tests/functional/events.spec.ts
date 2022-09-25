@@ -206,7 +206,7 @@ test.group('Events', (group) => {
       }
     }).loginAs(loggedInUser)
 
-    let response = await client.post('/events').json({
+    await client.post('/events').json({
       event: {
         name: "Evento da copiare 2",
         start: DateTime.local(2022, 7, 17, 15, 0, 0),
@@ -220,7 +220,7 @@ test.group('Events', (group) => {
     }).loginAs(loggedInUser)
 
 
-    response = await client.post('/events/copyWeek').json({
+    let response = await client.post('/events/copyWeek').json({
       fromWeekNumber: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekNumber'),
       fromWeekYear: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekYear'),
       toWeekNumber: DateTime.local(2022, 7, 16, 15, 0, 0).get('weekNumber') + 1,
@@ -229,6 +229,8 @@ test.group('Events', (group) => {
         id: team.id
       }
     }).loginAs(loggedInUser)
+    
+    response.assertAgainstApiSpec()
 
     const eventListResponse = await client.get('/events').qs({
       filters: {
@@ -237,7 +239,6 @@ test.group('Events', (group) => {
       },
     }).loginAs(loggedInUser)
 
-    eventListResponse.assertAgainstApiSpec()
     
     let copiedEvents = eventListResponse.body()
     assert.isTrue(copiedEvents.length > 0, 'should copy the event')
