@@ -88,7 +88,13 @@ export default class RolesService extends FetchBasedService {
 
     let response = await this.get({
       url: `/teams/${params.team.id}/roles`,
-      params: params
+      params: {
+        page: params.page,
+        perPage: params.perPage,
+        team: {
+          id: params.team.id
+        }
+      }
     })
 
     return response
