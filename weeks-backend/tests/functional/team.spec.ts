@@ -57,4 +57,30 @@ test.group('Teams', (group) => {
     assert.equal(teamResponse.id, team.id, "should update the correct team")
     assert.equal(teamResponse.name, 'il nuovo nome', "should update the team")
   })
+
+  test('update a preference of an existing team', async ({ client, assert }) => {
+    const team = await TeamFactory.with('owner').with('teammateUsers').create()
+    const user = await UserModel.query().whereHas('teams', (builder) => builder.where('teams.id', team.id)).firstOrFail()
+    let response = await client.post('/teams/' + team.id + '/updatePreference').json({
+      preference: 'confirmPresenceByDefault',
+      value: true
+    }).loginAs(user)
+
+    response.assertAgainstApiSpec()
+    const teamResponse = response.body()
+    assert.equal(teamResponse.id, team.id, "should update the correct team")
+    assert.equal(teamResponse.preferences.confirmPresenceByDefault, true, "should update the team preference")
+
+    let error = false
+    try {
+      response = await client.post('/teams/' + team.id + '/updatePreference').json({
+        preference: 'pippo',
+        value: true
+      }).loginAs(user)
+    } catch {
+      error = true
+    }
+
+    assert.isTrue(error, 'unknow preference should not be set')
+  })
 })

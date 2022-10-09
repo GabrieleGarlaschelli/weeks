@@ -34,6 +34,15 @@ export type UpdateParams = {
   context?: Context
 }
 
+export type UpdatePreferenceParams = {
+  data: {
+    id: number,
+    preference: string,
+    value: any,
+  },
+  context?: Context
+}
+
 export type AddUserParams = {
   data: {
     team: {
@@ -222,6 +231,52 @@ export default class TeamsManager {
       if (!params.context?.trx) await trx.commit()
       return results
     } catch(error) {
+      if (!params.context?.trx) await trx.rollback()
+      throw error
+    }
+  }
+
+  public async updatePreference(params: UpdatePreferenceParams): Promise<Team> {
+    const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be update a team')
+
+    let trx = params.context?.trx
+    if (!trx) trx = await Database.transaction()
+
+    try {
+      await AuthorizationManager.canOrFail({
+        data: {
+          actor: user,
+          action: 'update',
+          resource: 'Team',
+          entities: {
+            team: {
+              id: params.data.id
+            }
+          }
+        },
+        context: {
+          trx: trx
+        }
+      })
+
+      if (!params.data.preference) throw new Error('preference key must be defined')
+      else if (!params.data.value) throw new Error('preference value must be defined')
+      else if(![
+        'confirmPresenceByDefault'
+      ].includes(params.data.preference)) throw new Error("unknown preference");
+
+      const team = await TeamModel.findOrFail(params.data.id, {
+        client: trx
+      })
+
+      if(!team.preferences) team.preferences = {}
+      team.preferences[params.data.preference] = params.data.value
+
+      const results = await team.save()
+      if (!params.context?.trx) await trx.commit()
+      return results
+    } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }

@@ -368,6 +368,16 @@ paths:
       responses:
         '200':
           description: No response.
+  /teams/{teamId}/updatePreference:
+    post:
+      summary: Update a preference for a team.
+      responses:
+        '200':
+          description: The team updated.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Team"
   /invitations/inviteUser:
     post:
       summary: Invite a user to a team.

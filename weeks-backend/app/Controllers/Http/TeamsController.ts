@@ -42,6 +42,17 @@ export default class TeamsController {
     })
   }
 
+  public async updatePreference({ request, params }: HttpContextContract) {
+    const manager = new TeamsManager()
+    return await manager.updatePreference({
+      data: {
+        id: params.id,
+        preference: request.input('preference'),
+        value: request.input('value')
+      }
+    })
+  }
+
   public async destroy({ params }: HttpContextContract) {
     const manager = new TeamsManager()
     return await manager.destroy({

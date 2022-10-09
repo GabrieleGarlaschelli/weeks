@@ -51,6 +51,11 @@ export default class Team extends CamelCaseBaseModel {
   })
   public teammateUsers: ManyToMany<typeof User>
 
+  @column()
+  public preferences: {
+    confirmPresenceByDefault?: boolean
+  }
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
