@@ -1,9 +1,3 @@
-<script context="module" lang="ts">
-  export async function load({params, session, stuff}: any) {
-    return {}
-  }
-</script>
-
 <script lang="ts">
   import AuthService from '$lib/services/auth/auth.service'
   import colors from '$lib/stores/colors'

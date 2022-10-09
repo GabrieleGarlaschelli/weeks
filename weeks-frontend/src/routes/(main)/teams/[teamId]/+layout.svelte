@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { page, session } from "$app/stores"
+  import user from "$lib/stores/user";
+  import { page } from "$app/stores"
   import { onMount } from "svelte"
   import { goto } from "$app/navigation";
   import TeamService from "$lib/services/teams/teams.service"
@@ -19,12 +20,12 @@
     $team = await service.show({ id: parseInt($page.params.teamId) })
 
     let currentTeammates = $team.teammates.find((teammate) => {
-      return teammate.userId == $session.currentUser.id
+      return !!$user && teammate.userId == $user?.id
     })
 
     $teamCans = {
       cans: currentTeammates?.role?.cans,
-      owner: $team.ownerId == $session.currentUser.id
+      owner: !!$user && $team.ownerId == $user?.id
     }
 
     options = [ ]

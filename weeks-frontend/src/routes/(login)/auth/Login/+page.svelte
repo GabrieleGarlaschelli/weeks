@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  export async function load({params, session, stuff}: any) {
+  export async function load({params}: any) {
     return {}
   }
 </script>

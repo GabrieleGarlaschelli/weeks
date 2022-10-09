@@ -1,5 +1,5 @@
 import { FetchBasedService } from "../base/fetchBased.service";
-import { browser } from "$app/env";
+import { browser } from "$app/environment";
 
 export type Role = {
   id: number,

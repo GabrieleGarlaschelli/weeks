@@ -1,5 +1,5 @@
 import { FetchBasedService } from "../base/fetchBased.service";
-import { browser } from "$app/env";
+import { browser } from "$app/environment";
 
 import type { Event } from "$lib/services/events/events.service";
 import type { Teammate } from "$lib/services/teams/teams.service";

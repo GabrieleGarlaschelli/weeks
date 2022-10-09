@@ -1,14 +1,14 @@
-import { browser } from "$app/env";
-import { FetchBasedService } from "../base/fetchBased.service";
+import { browser } from "$app/environment";
+import { FetchBasedService } from "$lib/services/base/fetchBased.service";
 import Cookies from 'js-cookie'
-import { session } from "$app/stores";
-import type { User } from "../users/user.service";
+import user from "$lib/stores/user";
+import type { User } from "$lib/services/users/user.service";
 
 export type LoginParams = {
   data: {
     email: string,
     password: string
-  }, 
+  },
   context?: {}
 }
 
@@ -33,7 +33,7 @@ export default class AuthService extends FetchBasedService {
 
 
   async login(params: LoginParams) {
-    if(browser) {
+    if (browser) {
       const response = await this.post({
         url: '/auth/login',
         body: {
@@ -47,7 +47,7 @@ export default class AuthService extends FetchBasedService {
         sameSite: 'strict'
       })
 
-      await this.setSession()
+      await this.setUser()
       return response
     }
   }
@@ -68,13 +68,13 @@ export default class AuthService extends FetchBasedService {
   }
 
   async loginWithGoogle() {
-    if(browser) {
+    if (browser) {
       window.location.href = this.urls.api + '/auth/google/redirect'
     }
   }
 
   async loginWithGoogleCallback(params: { token: string, expiresAt: Date }) {
-    if(browser) {
+    if (browser) {
       console.log('storing', params.token)
       Cookies.set(this.coockieName, params.token, {
         expires: new Date(params.expiresAt),
@@ -83,12 +83,12 @@ export default class AuthService extends FetchBasedService {
     }
   }
 
-  async setSession() {
-    if(browser && this.authCookiePresent()) {
+  async setUser() {
+    if (browser && this.authCookiePresent()) {
       let currentUser: User = await this.me();
-      session.update((session) => {
-        session.currentUser = currentUser
-        return session
+      user.update(user => {
+        user = currentUser
+        return user
       })
     }
   }
@@ -114,8 +114,9 @@ export default class AuthService extends FetchBasedService {
   }
 
   async logout(): Promise<void> {
-    if(this.authCookiePresent()) {
+    if (this.authCookiePresent()) {
       Cookies.remove(this.coockieName)
+      user.set(undefined)
     }
   }
 }

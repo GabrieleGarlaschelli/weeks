@@ -1,5 +1,5 @@
 import { FetchBasedService } from "../base/fetchBased.service";
-import { browser } from "$app/env";
+import { browser } from "$app/environment";
 import type { User } from "../users/user.service";
 import type { Role } from "../roles/roles.service";
 import type { Invitation } from "../invitations/invitations.service";

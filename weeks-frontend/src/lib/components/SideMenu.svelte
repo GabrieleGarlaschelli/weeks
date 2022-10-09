@@ -11,7 +11,7 @@
   import theme from "$lib/stores/theme"
   import AuthService from "$lib/services/auth/auth.service";
   import { goto } from "$app/navigation";
-  import { session } from "$app/stores";
+  import user from "$lib/stores/user";
   import UserAvatar from "./UserAvatar.svelte";
 
 
@@ -116,8 +116,8 @@
   >
     <div style:margin-bottom="20px">
       <UserAvatar
-        username={$session?.currentUser?.name}
-        src={$session?.currentUser?.avatarUrl}
+        username={$user?.name || ""}
+        src={$user?.avatarUrl || ""}
       ></UserAvatar>
     </div>
 

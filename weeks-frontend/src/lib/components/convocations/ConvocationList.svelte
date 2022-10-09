@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  import { session } from '$app/stores'
+  import user from "$lib/stores/user";
   import UserAvatar from "$lib/components/UserAvatar.svelte";
   import StandardChip from '$lib/components/common/StandardChip.svelte';
   import Icon from '@likable-hair/svelte/media/Icon.svelte';
@@ -108,20 +108,20 @@
         </StandardChip>
       </div>
     </div>
-    {#if convocation.teammate.userId == $session.currentUser.id || CansService.can('Convocation', 'confirm') || CansService.can('Convocation', 'deny')}
+    {#if convocation.teammate.userId == $user?.id || CansService.can('Convocation', 'confirm') || CansService.can('Convocation', 'deny')}
       <div 
         
         class="confirm-button-container"
       >
         {#if !loading}
-          {#if CansService.can('Convocation', 'confirm') || convocation.teammate.userId == $session.currentUser.id}
+          {#if CansService.can('Convocation', 'confirm') || convocation.teammate.userId == $user?.id}
             <Icon
               name="mdi-check"
               click
               on:click={() => confirmConvocation(convocation)}
             ></Icon>
           {/if}
-          {#if CansService.can('Convocation', 'deny') || convocation.teammate.userId == $session.currentUser.id}
+          {#if CansService.can('Convocation', 'deny') || convocation.teammate.userId == $user?.id}
             <Icon
               name="mdi-close"
               click

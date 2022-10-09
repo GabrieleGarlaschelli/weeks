@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { goto } from '$app/navigation';
-  import { session, page } from "$app/stores"
+  import { page } from "$app/stores"
   import AuthService from "$lib/services/auth/auth.service"
 
   onMount(async () => {

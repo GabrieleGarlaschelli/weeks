@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { session, page } from "$app/stores"
+  import user from '$lib/stores/user'
+  import { page } from "$app/stores"
   import AuthService from "$lib/services/auth/auth.service"
   import { goto, beforeNavigate  } from "$app/navigation";
   import "$lib/css/global.css"
@@ -21,7 +22,7 @@
   })
 
   beforeNavigate(async ({from, to}) => {
-    await checkAuth(to?.pathname || '/')
+    await checkAuth(to?.url.pathname || '/')
   })
 
   let loginPath: string = '/auth/Login'
@@ -30,16 +31,16 @@
   let defaultPath: string = '/'
   async function checkAuth(destinationUrl: string) {
     const authService = new AuthService({ fetch })
-    if(!!$session.currentUser) return
-    else if(!$session.currentUser && authService.authCookiePresent()) {
-      await authService.setSession()
+    if(!!$user) return
+    else if(!$user && authService.authCookiePresent()) {
+      await authService.setUser()
 
       if(
         destinationUrl == loginPath || 
         destinationUrl == callbackGooglePath ||
         destinationUrl == signupPath
       ) goto(defaultPath)
-    } else if(!$session.currentUser && !authService.authCookiePresent()) {
+    } else if(!$user && !authService.authCookiePresent()) {
       if(
         destinationUrl != loginPath && 
         destinationUrl != callbackGooglePath &&

@@ -12,7 +12,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/kit": "next",
+		"@sveltejs/kit": "1.0.0-next.511",
 		"@types/luxon": "^3.0.0",
 		"@types/nprogress": "^0.2.0",
 		"@types/qs": "^6.9.7",
@@ -32,7 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@likable-hair/svelte": "^0.0.61",
+		"@likable-hair/svelte": "^0.0.65",
 		"@sveltejs/adapter-node": "^1.0.0-next.87",
 		"@types/cookie": "^0.5.1",
 		"@types/js-cookie": "^3.0.2",

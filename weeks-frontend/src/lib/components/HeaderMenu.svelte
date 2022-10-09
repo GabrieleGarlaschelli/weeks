@@ -23,7 +23,7 @@
     })
   }
 
-  import { session } from "$app/stores";
+  import user from "$lib/stores/user";
   import colors from "$lib/stores/colors";
   import HeaderMenu from "@likable-hair/svelte/navigation/HeaderMenu.svelte";
   import UserAvatar from "./UserAvatar.svelte";
@@ -45,7 +45,7 @@
   <div slot="append">
     <UserAvatar
       username={""}
-      src={$session?.currentUser?.avatarUrl}
+      src={$user?.avatarUrl || ""}
     ></UserAvatar>
   </div>
 </HeaderMenu>
