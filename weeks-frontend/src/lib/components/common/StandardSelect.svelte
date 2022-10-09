@@ -25,8 +25,16 @@
 
 <style>
   .select {
-    height: 30px;
+    height: 35px;
     color: var(--global-contrast-color);
     background-color: var(--global-background-color);
+    width: 100%;
+    border-color: var(--global-thin-contrast-color);
+    border-radius: 5px;
+    padding: 5px;
+  }
+
+  .select:focus {
+    outline: none;
   }
 </style>
