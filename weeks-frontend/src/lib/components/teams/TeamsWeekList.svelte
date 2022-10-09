@@ -75,6 +75,8 @@
     bind:selectedEvents={selectedEvents}
     bind:visibleYear={visibleYear}
     bind:visibleWeek={visibleWeek}
+    on:nextWeek
+    on:previousWeek
   >
     <svelte:fragment slot="options">
       <Icon

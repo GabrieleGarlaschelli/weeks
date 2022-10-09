@@ -7,7 +7,7 @@
 
 <script lang="ts">
   import { DateTime } from "luxon";
-  import { onMount } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import { goto } from "$app/navigation";
   import colors from "$lib/stores/colors";
   import CansService from '$lib/services/roles/cans.service';
@@ -20,6 +20,17 @@
     events: Event[],
     visibleYear: number = DateTime.now().get('year'),
     visibleWeek: number = DateTime.now().get('weekNumber')
+
+  let dispatch = createEventDispatcher<{
+    'nextWeek': {
+      visibleWeek: number,
+      visibleYear: number
+    },
+    'previousWeek': {
+      visibleWeek: number,
+      visibleYear: number
+    }
+  }>()
 
 
   let dayGroupedEvents: {
@@ -110,6 +121,10 @@
     } else {
       visibleWeek += 1
     }
+
+    dispatch('nextWeek', {
+      visibleWeek, visibleYear
+    })
   }
 
   function previousWeek() {
@@ -129,6 +144,10 @@
     } else {
       visibleWeek -= 1
     }
+
+    dispatch('previousWeek', {
+      visibleWeek, visibleYear
+    })
   }
 
   function getEventsFromWeekDay(weekday: number): Event[] | undefined {

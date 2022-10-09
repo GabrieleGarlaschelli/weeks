@@ -8,7 +8,7 @@ export default class TeamValidator {
     name: schema.string([
       rules.maxLength(255)
     ]),
-    notes: schema.string(),
+    notes: schema.string.nullableAndOptional(),
     owner: schema.object().members({
       id: schema.number()
     })
