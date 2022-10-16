@@ -176,7 +176,9 @@ export default class TeamsManager {
         teammateQuery.preload('user').preload('role')
       })
       .preload('owner')
-      .preload('roles')
+      .preload('roles', (rolesBuilder) => {
+        rolesBuilder.orderBy('roles.createdAt')
+      })
       .preload('invitations', (invitationBuilder) => {
         invitationBuilder
           .where('status', 'pending')
