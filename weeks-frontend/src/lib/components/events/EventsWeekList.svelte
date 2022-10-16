@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
   import type { Team } from "$lib/services/teams/teams.service"
-  import type { DateStat } from "@likable-hair/svelte/dates/utils"
   import type { Event } from "$lib/services/events/events.service"
   import type { Option } from '$lib/components/common/OptionSelector.svelte'
 </script>
@@ -192,6 +191,10 @@
     }
   }
 
+  function handleEventTitleClick(event: Event) {
+    goto(`/teams/${team.id}/events/${event.id}/general`)
+  }
+
   let confirmDeletionDialogOpen: boolean = false, deletingEvent: Event | undefined, loadingDelete: boolean = false
   function handleEventOptionClick(e: CustomEvent<{option: Option}>, event: Event) {
     if(e.detail.option.name == 'edit' && !!team) {
@@ -299,7 +302,10 @@
                 {#each getEventsFromWeekDay(index) || [] as event}
                   <div class="event">
                     <div class="event-title">
-                      {event.name}
+                      <div 
+                        on:click={() => handleEventTitleClick(event)}
+                        style:cursor="pointer"
+                      >{event.name}</div>
                       <div style:margin-left="10px">
                         <OptionMenu
                           options={options}

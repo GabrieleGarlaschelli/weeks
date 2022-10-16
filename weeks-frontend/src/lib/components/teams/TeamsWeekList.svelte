@@ -17,19 +17,19 @@
   let importFromYear = visibleYear,
     importFromWeek = visibleWeek
 
-  onMount(() => {
-    loadEvents()
+  onMount(async () => {
+    await loadEvents(visibleWeek, visibleYear)
   })
 
   let events: Event[]
-  function loadEvents() {
+  async function loadEvents(vw: number, vy: number) {
     let service = new EventsService({ fetch })
-    service.list({
+    events = await service.list({
       filters: {
         from: DateTime.fromObject({
             weekday: 1,
-            weekNumber: visibleWeek,
-            weekYear: visibleYear
+            weekNumber: vw,
+            weekYear: vy
           })
           .startOf('day')
           .startOf('hour')
@@ -38,8 +38,8 @@
           .toJSDate(),
         to: DateTime.fromObject({
             weekday: 7,
-            weekNumber: visibleWeek,
-            weekYear: visibleYear
+            weekNumber: vw,
+            weekYear: vy
           })
           .endOf('day')
           .endOf('hour')
@@ -50,12 +50,10 @@
           id: team.id
         }
       }
-    }).then((loadedEvents) => {
-      events = loadedEvents
     })
   }
 
-  $: if(!!visibleYear && !!visibleWeek) loadEvents()
+  $: if(!!visibleYear && !!visibleWeek) loadEvents(visibleWeek, visibleYear)
 
   let openImportWeekDialog: boolean = false
   function handleImportWeekClick() {
@@ -94,6 +92,6 @@
     bind:selectedWeek={importFromWeek}
     bind:toYear={visibleYear}
     bind:toWeek={visibleWeek}
-    on:import={loadEvents}
+    on:import={() => loadEvents(visibleWeek, visibleYear)}
   ></TeamImportWeekDialog>
 {/if}

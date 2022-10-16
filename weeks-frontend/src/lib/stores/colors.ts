@@ -50,5 +50,6 @@ store.subscribe((newColors) => {
     document.documentElement.style.setProperty("--global-contrast-color", newColors.contrast);
     document.documentElement.style.setProperty("--global-light-contrast-color", newColors.lightContrast);
     document.documentElement.style.setProperty("--global-thin-contrast-color", newColors.thinContrast);
+    document.documentElement.style.setProperty("--global-warning-color", newColors.warning);
   }
 })
