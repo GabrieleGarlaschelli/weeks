@@ -18,6 +18,9 @@ export default class Role extends CamelCaseBaseModel {
 
   @column()
   public cans: RoleCans
+  
+  @column()
+  public convocable: boolean
 
   @column()
   public teamId: number

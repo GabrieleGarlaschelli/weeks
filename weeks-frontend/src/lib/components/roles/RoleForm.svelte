@@ -3,6 +3,7 @@
 
   export type Role = {
     name?: string,
+    convocable?: boolean,
     team?: { id: number },
     cans?: RoleCans
   }
@@ -96,6 +97,13 @@
       {/if}
     {/each}
   </div>
+  <div class="convocable-flag">
+    <LabelAndCheckbox
+      label="Convocabile"
+      bind:value={role.convocable}
+      id="convocable"
+    ></LabelAndCheckbox>  
+  </div>
 </form>
 
 <style>
@@ -123,6 +131,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    margin-top: 20px;
+  }
+
+  .convocable-flag {
     margin-top: 20px;
   }
 

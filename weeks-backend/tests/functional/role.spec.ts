@@ -27,6 +27,7 @@ test.group('Roles', (group) => {
     const response = await client.post('/roles').json({
       name: 'Allenatore',
       team: teamAndOwner.team,
+      convocable: true,
       cans: {
         Team: {
           update: true
@@ -40,6 +41,7 @@ test.group('Roles', (group) => {
     const role = response.body()
     response.assertAgainstApiSpec()
     assert.equal(role.name, 'Allenatore', 'should have the right name')
+    assert.equal(role.convocable, true, 'should have the right convocable')
     assert.isTrue(role.cans.Team.update, 'should has set the cans')
   })
 
@@ -90,6 +92,7 @@ test.group('Roles', (group) => {
     let role = response.body()
     response = await client.put('/roles/' + role.id).json({
       name: 'Massaggiatore (stagione estiva)',
+      convocable: false,
       cans: {
         Team: {
           create: true
@@ -101,6 +104,7 @@ test.group('Roles', (group) => {
     const roleResponse = response.body()
     assert.equal(roleResponse.id, role.id, "should return the correct role")
     assert.equal(roleResponse.name, 'Massaggiatore (stagione estiva)', "should have updated correctly")
+    assert.equal(roleResponse.convocable, false, "should have updated correctly the convocable")
     assert.isTrue(roleResponse.cans.Team.create, 'should has set the cans')
   })
 

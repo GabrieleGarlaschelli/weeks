@@ -158,6 +158,8 @@ components:
           type: integer
         name:
           type: string
+        convocable:
+          type: boolean
         cans:
           nullable: true
           type: object

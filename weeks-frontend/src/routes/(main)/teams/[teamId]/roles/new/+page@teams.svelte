@@ -6,6 +6,7 @@
 
   let role: {
     name?: string,
+    convocable?: boolean,
     team: { id: number }
   } = {
     team: { id: parseInt($page.params.teamId) }

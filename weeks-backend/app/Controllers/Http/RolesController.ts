@@ -21,7 +21,8 @@ export default class RolesController {
       data: {
         name: request.body().name,
         team: request.body().team,
-        cans: request.input('cans')
+        cans: request.input('cans'),
+        convocable: request.input('convocable')
       }
     })
   }
@@ -41,7 +42,8 @@ export default class RolesController {
       data: {
         id: params.id,
         name: request.input('name'),
-        cans: request.input('cans')
+        cans: request.input('cans'),
+        convocable: request.input('convocable') 
       }
     })
   }

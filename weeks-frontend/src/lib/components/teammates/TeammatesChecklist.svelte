@@ -1,19 +1,31 @@
 <script lang="ts" context="module">
-  import type { Teammate, Team } from '$lib/services/teams/teams.service'
+  import type { Teammate } from '$lib/services/teams/teams.service'
   import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
 </script>
 
 <script lang="ts">
   export let teammates: Teammate[] = [],
     searchable: boolean = false,
+    onlyConvocables: boolean = false,
     value: {
       [key: number]: boolean
     } = { }
 
   let searchText: string
-  $: filteredTeammates = !!searchText ? teammates.filter((teammate) => {
-    return teammate.user.name.toLowerCase().includes(searchText.toLowerCase())
-  }) : teammates
+  $: filteredTeammates = teammates.filter((teammate) => {
+    return (
+      !searchText ||
+      (!!searchText && teammate.user.name.toLowerCase().includes(searchText.toLowerCase()))
+    ) && (
+      !onlyConvocables ||
+      (
+        !!onlyConvocables && (
+          !teammate.role ||
+          teammate.role.convocable
+        )
+      )
+    )
+  })
 
   function handleChange(teammate: Teammate, event: any) {
     value[teammate.id] = event.target.checked

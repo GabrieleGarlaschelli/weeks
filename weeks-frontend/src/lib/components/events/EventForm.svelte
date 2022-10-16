@@ -126,6 +126,7 @@
         <TeammatesChecklist
           bind:value={convocations}
           bind:teammates={teammates}
+          onlyConvocables={true}
         ></TeammatesChecklist>
       </CollapsableSection>
     </div>

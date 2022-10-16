@@ -19,12 +19,6 @@
 
   let headers: Header[] = [
     {
-      value: "id",
-      label: "Id",
-      type: 'number',
-      width: '20px'
-    },
-    {
       value: "name",
       label: "Nome",
       type: 'string',

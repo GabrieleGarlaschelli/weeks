@@ -4,6 +4,7 @@ import { browser } from "$app/environment";
 export type Role = {
   id: number,
   name: string,
+  convocable: boolean,
   cans?: any,
   createdAt: Date,
   updatedAt: Date
@@ -61,6 +62,7 @@ export default class RolesService extends FetchBasedService {
 
   public async create(params: {
     name?: string,
+    convocable?: boolean,
     cans?: any
   }): Promise<Role> {
     if (!browser) throw new Error('only available in browser')
@@ -113,6 +115,7 @@ export default class RolesService extends FetchBasedService {
   public async update(params: {
     id: number,
     name?: string,
+    convocable?: boolean,
     cans?: RoleCans
   }): Promise<Role> {
     let response = await this.put({

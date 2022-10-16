@@ -19,6 +19,7 @@ export type Context = {
 export type CreateParams = {
   data: {
     name: string,
+    convocable?: boolean,
     team: {
       id: number
     },
@@ -31,6 +32,7 @@ export type UpdateParams = {
   data: {
     id: number,
     name?: string,
+    convocable?: boolean,
     cans?: RoleCans
   },
   context?: Context
@@ -87,6 +89,7 @@ export default class RolesManager {
     let results = await RoleModel
       .query()
       .where('teamId', params.data.team.id)
+      .orderBy('createdAt')
       .paginate(params.data.page, params.data.perPage)
 
     return results.toJSON()
@@ -130,6 +133,7 @@ export default class RolesManager {
       const createdRole = await RoleModel.create({
         name: params.data.name,
         cans: params.data.cans,
+        convocable: params.data.convocable,
         teamId: params.data.team.id
       }, {
         client: trx
@@ -204,6 +208,7 @@ export default class RolesManager {
       })
 
       if (!!params.data.name) role.name = params.data.name
+      if (params.data.convocable !== undefined && params.data.convocable !== null) role.convocable = params.data.convocable
       if (!!params.data.cans) {
         let existingCans = role.cans
         for(let [resource, _value] of Object.entries(params.data.cans)) {
