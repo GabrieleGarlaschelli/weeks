@@ -346,6 +346,14 @@ export default class TeamsManager {
         }
       })
 
+      const isTeamOwner = await TeamModel.query({ client: trx }).whereHas('owner', (builder) => {
+        builder.where('users.id', params.data.user.id)
+      }).where('teams.id', params.data.team.id)
+
+      if(isTeamOwner.length > 0) {
+        throw new Error('cannot exit in owned teams')
+      }
+
       const teammate = await TeammateModel.query({ client: trx })
         .where('userId', params.data.user.id)
         .where('teamId', params.data.team.id)

@@ -364,6 +364,12 @@ paths:
                 $ref: "#/components/schemas/Team"
   /teams/{teamId}/removeUser:
     post:
+      summary: Remove the logged in user from a team.
+      responses:
+        '200':
+          description: No response.
+  /teams/{teamId}/exit:
+    post:
       summary: Remove a user from a team.
       responses:
         '200':

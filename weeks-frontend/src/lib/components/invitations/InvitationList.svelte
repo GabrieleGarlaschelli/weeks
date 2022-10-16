@@ -55,10 +55,8 @@
   }
 
   import StandardTable from '$lib/components/common/StandardTable.svelte';
-  import StandardTextfield from '$lib/components/StandardTextfield.svelte';
   import Icon from '@likable-hair/svelte/media/Icon.svelte';
   import colors from '$lib/stores/colors';
-  import StandardButton from '$lib/components/StandardButton.svelte';
   import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 </script>
 

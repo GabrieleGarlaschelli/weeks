@@ -73,4 +73,20 @@ export default class TeamsController {
       }
     })
   }
+
+  public async exit({ params, request, auth }: HttpContextContract) {
+    if(!!auth.user) {
+      const manager = new TeamsManager()
+      return await manager.removeUser({
+        data: {
+          team: {
+            id: params.id
+          },
+          user: auth.user
+        }
+      })
+    } else {
+      throw new Error('user not present in team')
+    }
+  }
 }

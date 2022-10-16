@@ -52,6 +52,16 @@ export default class InvitationsService extends FetchBasedService {
     })
   }
 
+  public async exit(params: {
+    team: { id: number }
+  }): Promise<void> {
+    if (!browser) throw new Error('only available in browser')
+
+    await this.post({
+      url: `/teams/${params.team.id}/exit`,
+    })
+  }
+
   public async invitationToAccept(): Promise<Invitation[]> {
     if (!browser) throw new Error('only available in browser')
 

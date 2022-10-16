@@ -58,6 +58,14 @@
         icon: 'mdi-delete',
         color: $colors.warning
       })
+
+    if(!$teamCans.owner)
+      options.push({
+        name: 'exit',
+        label: 'Esci dal team',
+        icon: 'mdi-delete',
+        color: $colors.warning
+      })
     
     tabs = [
       {
@@ -87,13 +95,15 @@
     })
   })
 
-  function handleOptionClick(event: any) {
+  function handleOptionClick(event: CustomEvent<{option: Option}>) {
     if(event.detail?.option?.name == 'edit' && !!$team) {
       goto('/teams/' + $team.id + '/edit')
     } else if(event.detail?.option?.name == 'inviteUser' && !!$team) {
       goto('/teams/' + $team.id + '/inviteUser')
     } else if(event.detail?.option?.name == 'addEvent' && !!$team) {
       goto('/teams/' + $team.id + '/events/new')
+    } else if(event.detail?.option?.name == 'exit') {
+      exitTeamConfirmDialog = true
     }
   }
 
@@ -125,12 +135,27 @@
   } else if($page.url.href.endsWith('weeks')) {
     selectedTab = 'weeks'
   }
+
+  let exitTeamConfirmDialog: boolean = false
+
+  function confirmTeamExit() {
+    let service = new InvitationsService({ fetch })
+    if(!!$team) {
+      service.exit({
+        team: $team
+      }).then(() => {
+        goto('/teams')
+      })
+    }
+  }
   
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
   import PageTitle from "$lib/components/typography/PageTitle.svelte"
   import StandardTabSwitcher from "$lib/components/common/StandardTabSwitcher.svelte"
   import OptionMenu from "$lib/components/common/OptionMenu.svelte"
   import CircularLoader from "@likable-hair/svelte/loaders/CircularLoader.svelte";
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+	import InvitationsService from "$lib/services/invitations/invitations.service";
 </script>
 
 <MediaQuery
@@ -166,4 +191,15 @@
     <CircularLoader></CircularLoader>
   {/if}
 </MediaQuery>
+
+
+<ConfirmDialog
+  confirmText="Esci"
+  cancelText="Annulla"
+  title="Esci dal team"
+  description={`Sei sicuro di voler uscire dal team ${$team?.name}?`}
+  bind:open={exitTeamConfirmDialog}
+  on:cancel-click={() => exitTeamConfirmDialog = false}
+  on:confirm-click={confirmTeamExit}
+></ConfirmDialog>
 

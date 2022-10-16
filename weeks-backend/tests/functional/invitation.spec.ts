@@ -197,4 +197,33 @@ test.group('Invitations', (group) => {
 
     assert.isTrue(teammate.length == 0, 'should have remove the teammate')
   })
+
+  test('spontaneus exit from a team', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
+    const inviteUserResponse = await client.post('/invitations/inviteUser').json({
+      user: {
+        email: invitedUser.email
+      },
+      team: {
+        id: team.id
+      }
+    }).loginAs(loggedInUser)
+
+    const invitationToAccept = inviteUserResponse.body()
+
+    await client.post('/invitations/accept').json({
+      invitation: {
+        id: invitationToAccept.id
+      }
+    }).loginAs(invitedUser)
+
+    await client.post(`/teams/${team.id}/exit`).loginAs(invitedUser)
+
+    let teammate = await TeammateModel.query()
+      .where('teamId', team.id)
+      .where('userId', invitedUser.id)
+
+    assert.isTrue(teammate.length == 0, 'should have remove the teammate')
+  })
 })
