@@ -139,7 +139,7 @@ export default class AuthorizationManager {
       team: { id: teamId },
       action: 'update',
       resource: 'Team'
-    })
+    }, context)
 
     return userCanUpdateTeam
   }

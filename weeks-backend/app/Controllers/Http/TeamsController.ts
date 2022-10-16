@@ -74,7 +74,7 @@ export default class TeamsController {
     })
   }
 
-  public async exit({ params, request, auth }: HttpContextContract) {
+  public async exit({ params, auth }: HttpContextContract) {
     if(!!auth.user) {
       const manager = new TeamsManager()
       return await manager.removeUser({
