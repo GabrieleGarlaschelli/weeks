@@ -338,6 +338,9 @@ export default class TeamsManager {
           entities: {
             team: {
               id: params.data.team.id
+            },
+            user: {
+              id: params.data.user.id
             }
           }
         },

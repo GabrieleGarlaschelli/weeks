@@ -43,7 +43,8 @@ export type Entities = {
   eventSession?: Pick<EventSession, 'id'>,
   convocation?: Pick<Convocation, 'id'>,
   invitee?: Pick<User, 'email'>
-  role?: Pick<Role, 'id'>
+  role?: Pick<Role, 'id'>,
+  user?: Pick<User, 'id'>
 }
 
 type CanFunction = (params: {
@@ -77,7 +78,7 @@ export default class AuthorizationManager {
       destroy: AuthorizationManager._canDestroyTeam,
       view: AuthorizationManager._canViewTeam,
       invite: AuthorizationManager._canInviteToTeam,
-      removeUser: AuthorizationManager._canUpdateTeam
+      removeUser: AuthorizationManager._canRemoveUserFromTeam
     },
     Invitation: {
       accept: AuthorizationManager._canAcceptInvitation,
@@ -133,14 +134,33 @@ export default class AuthorizationManager {
     if (!params.entities.team?.id) throw new Error('team must be defined')
     let teamId: number = params.entities.team.id
 
-    const userBelongs = await UserModel.query({
-        client: context?.trx
-      }).whereHas('teams', (builder) => {
-        builder.where('teams.id', teamId)
-      })
-      .where('users.id', params.actor.id)
+    let userCanUpdateTeam = await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: teamId },
+      action: 'update',
+      resource: 'Team'
+    })
 
-    return userBelongs.length != 0
+    return userCanUpdateTeam
+  }
+
+  private static async _canRemoveUserFromTeam(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.team?.id) throw new Error('team must be defined')
+    if (!params.entities.user?.id) throw new Error('user must be defined')
+    let teamId: number = params.entities.team.id
+    let userId: number = params.entities.user.id
+
+    let userCanRemoveUser = await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: teamId },
+      action: 'removeUser',
+      resource: 'Team'
+    }, context)
+
+    return (userCanRemoveUser || params.actor.id == userId)
   }
 
   private static async _canDestroyTeam(
@@ -181,14 +201,15 @@ export default class AuthorizationManager {
   ): Promise<boolean> {
     if (!params.entities.team?.id) throw new Error('team must be defined')
     let teamId: number = params.entities.team.id
+    
+    const userCanInvite = await Helpers.userCanInTeam({
+      user: params.actor,
+      team: {id: teamId},
+      resource: 'Team',
+      action: 'invite'
+    }, context)
 
-    const userBelongs = await UserModel.query({
-      client: context?.trx
-    }).whereHas('teams', (builder) => {
-      builder.where('teams.id', teamId)
-    }).where('users.id', params.actor.id)
-
-    return userBelongs.length != 0
+    return userCanInvite
   }
 
   private static async _canAcceptInvitation(
@@ -366,7 +387,6 @@ export default class AuthorizationManager {
       resource: 'Event'
     }, context)
   }
-
 
   private static async _canConfirmConvocation(
     params: { actor: User, entities: Entities },

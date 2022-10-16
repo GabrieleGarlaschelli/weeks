@@ -1,14 +1,29 @@
 import UserModel from 'App/Models/User'
+import TeamsManager from 'App/managers/teams.manager';
 import type User from 'App/Models/User'
+import type Team from 'App/Models/Team'
 import { test } from '@japa/runner'
 import { TeamFactory } from 'Database/factories'
 
 test.group('Teams', (group) => {
   let loggedInUser: User
+  let team: Team
 
   group.setup(async () => {
-    await TeamFactory.with('owner').with('teammateUsers').createMany(3)
-    loggedInUser = await UserModel.query().has('ownedTeams', '>', 0).firstOrFail()
+    team = await TeamFactory.with('owner').create()
+    await team.load('owner')
+    loggedInUser = team.owner
+
+    let manager = new TeamsManager()
+    team = await manager.create({
+      data: {
+        name: team.name,
+        notes: team.notes
+      },
+      context: {
+        user: loggedInUser,
+      }
+    })
   })
 
   test('create a new team', async ({ client, assert }) => {
@@ -46,11 +61,9 @@ test.group('Teams', (group) => {
   })
 
   test('update an existing team', async ({ client, assert }) => {
-    const team = await TeamFactory.with('owner').with('teammateUsers').create()
-    const user = await UserModel.query().whereHas('teams', (builder) => builder.where('teams.id', team.id)).firstOrFail()
     const response = await client.put('/teams/' + team.id).json({
       name: 'il nuovo nome'
-    }).loginAs(user)
+    }).loginAs(loggedInUser)
 
     response.assertAgainstApiSpec()
     const teamResponse = response.body()
@@ -59,12 +72,10 @@ test.group('Teams', (group) => {
   })
 
   test('update a preference of an existing team', async ({ client, assert }) => {
-    const team = await TeamFactory.with('owner').with('teammateUsers').create()
-    const user = await UserModel.query().whereHas('teams', (builder) => builder.where('teams.id', team.id)).firstOrFail()
     let response = await client.post('/teams/' + team.id + '/updatePreference').json({
       preference: 'confirmPresenceByDefault',
       value: true
-    }).loginAs(user)
+    }).loginAs(loggedInUser)
 
     response.assertAgainstApiSpec()
     const teamResponse = response.body()
@@ -76,7 +87,7 @@ test.group('Teams', (group) => {
       response = await client.post('/teams/' + team.id + '/updatePreference').json({
         preference: 'pippo',
         value: true
-      }).loginAs(user)
+      }).loginAs(loggedInUser)
     } catch {
       error = true
     }
