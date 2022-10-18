@@ -194,6 +194,7 @@
                 >
                   <div
                     style:white-space="nowrap"
+                    style:max-width="100px"
                   >{event.name}</div>
                   <div 
                     style:font-size="0.8rem"

@@ -52,6 +52,7 @@
           <EventsList
             precompiledDate={selectedDate ? DateTime.fromJSDate(selectedDate) : undefined}
             events={selectedEvents}
+            showTeamName
           ></EventsList>
         </div>
       </div>
@@ -67,6 +68,7 @@
     <EventsList
       precompiledDate={selectedDate ? DateTime.fromJSDate(selectedDate) : undefined}
       events={selectedEvents}
+      showTeamName
     ></EventsList>
   {/if}
 </MediaQuery>

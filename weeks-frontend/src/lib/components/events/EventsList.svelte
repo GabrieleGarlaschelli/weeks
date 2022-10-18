@@ -10,7 +10,8 @@
 
   export let events: Event[] = [],
     team: { id: number } | undefined = undefined,
-    precompiledDate: DateTime | undefined = undefined
+    precompiledDate: DateTime | undefined = undefined,
+    showTeamName: boolean = false
 
   function formattedTime(event: Event) {
     let fromTime: string = DateTime.fromJSDate(event.start).setLocale('it').toLocaleString(DateTime.TIME_SIMPLE)
@@ -31,6 +32,8 @@
   function handleEventClick(event: Event) {
     if(!!team) {
       goto(`/teams/${team.id}/events/${event.id}/general`)
+    } else if (!!event.team) {
+      goto(`/teams/${event.team.id}/events/${event.id}/general`)
     }
   }
 
@@ -47,10 +50,17 @@
       <div
         class="event-post"
         on:click={() => handleEventClick(event)}
-        class:clickable={!!team}
+        class:clickable={true}
       >
         <div class="title">{event.name}</div>
-        <div class="time">{formattedTime(event)}</div>
+        <div class="time">{formattedTime(event)}
+          {#if showTeamName}
+            ,
+            <span style:margin-left="3px">
+              {event.team.name}
+            </span>
+          {/if}
+        </div>
         {#if !!event.description}
           <div 
             class="description"
