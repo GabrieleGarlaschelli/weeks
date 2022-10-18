@@ -10,6 +10,10 @@
   import { onMount } from "svelte";
   import TeamsService from "$lib/services/teams/teams.service";
   import { goto } from "$app/navigation";
+	import EventsService, { type Event } from "$lib/services/events/events.service";
+	import { DateTime } from "luxon";
+	import EventsHorizontalList from "$lib/components/events/EventsHorizontalList.svelte";
+	import GlobalCalendarWithSidebar from "$lib/components/profile/GlobalCalendarWithSidebar.svelte";
 
   let teams: Team[] = []
   async function loadTeams() {
@@ -18,12 +22,28 @@
     teams = paginationData.data
   }
 
+  let events: Event[] = [], loadingEvents: boolean = false
+  async function loadNextEvents() {
+    loadingEvents = true
+    let service = new EventsService({ fetch })
+    let results = await service.list({
+      filters: {
+        from: DateTime.now().toJSDate(),
+        to: DateTime.now().plus({ days: 1 }).toJSDate()
+      }
+    })
+
+    loadingEvents = false
+    events = results
+  }
+
   async function handleTeamClick(event: any) {
     goto('/teams/' + event.detail.team.id + '/general')
   }
 
   onMount(() => {
     loadTeams()
+    loadNextEvents()
   })
 </script>
 
@@ -54,6 +74,22 @@
   <div
     style:margin-top="10px"
   >
-    Ops, ancora nessun appuntamento 
+    {#if loadingEvents}
+      Caricamento eventi ...
+    {:else}
+      <EventsHorizontalList
+        events={events}
+      ></EventsHorizontalList>
+    {/if}
+  </div>
+  <Subhead
+    text="Calendario globale"
+    marginTop="30px"
+  ></Subhead>
+  <div
+    style:margin-top="10px"
+    style:padding-bottom="50px"
+  >
+    <GlobalCalendarWithSidebar></GlobalCalendarWithSidebar>
   </div>
 </MediaQuery>

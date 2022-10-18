@@ -11,7 +11,7 @@
   import CansService from '$lib/services/roles/cans.service';
   import qs from 'qs'
 
-  export let team: Team,
+  export let team: Team | undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     events: Event[],
@@ -76,13 +76,15 @@
   }
 
   function handlePlusClick(dayStat: DateStat) {
-    let date = DateTime.now().set({
-      day: dayStat.dayOfMonth,
-      month: dayStat.month + 1,
-      year: dayStat.year
-    }).toJSDate()
-
-    goto(`/teams/${team.id}/events/new?${qs.stringify({ start: date })}`)
+    if(!!team) {
+      let date = DateTime.now().set({
+        day: dayStat.dayOfMonth,
+        month: dayStat.month + 1,
+        year: dayStat.year
+      }).toJSDate()
+  
+      goto(`/teams/${team.id}/events/new?${qs.stringify({ start: date })}`)
+    }
   }
 
   function isGreaterThan(array: any[] | undefined, num: number) {
@@ -190,7 +192,13 @@
                   style:background-color={$colors.tertiary}
                   style:color={$colors.contrast}
                 >
-                  {event.name}
+                  <div
+                    style:white-space="nowrap"
+                  >{event.name}</div>
+                  <div 
+                    style:font-size="0.8rem"
+                    style:font-weight="800"
+                  >{event.team.name}</div>
                 </div>
               </div>
             {/each}
@@ -207,7 +215,7 @@
               </div>
             {/if}
           </div>
-          {#if CansService.can('Event', 'create')}
+          {#if CansService.can('Event', 'create') && !!team}
             <div
               class="add-new"
               style:background-color={$colors.primary}

@@ -6,7 +6,7 @@
 <script lang="ts">
   import { DateTime } from "luxon";
 
-  export let team: Team,
+  export let team: Team | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     events: Event[],

@@ -160,6 +160,40 @@ test.group('Events', (group) => {
     assert.isTrue(events.length > 0, 'should find some events')
   })
 
+  test('not get a list of other team events', async ({ client, assert }) => {
+    let externalTeam = await TeamFactory.with('owner').with('teammateUsers').create()
+
+    let externalLoggedInUser = await UserModel.query().whereHas('teams', builder => {
+      builder.where('teams.id', externalTeam.id)
+    }).firstOrFail()
+
+    externalTeam.ownerId = externalLoggedInUser.id
+    await externalTeam.save()
+
+    await client.post('/events').json({
+      event: {
+        name: "Evento casuale da esterno",
+        start: DateTime.local(2022, 5, 15, 9, 0, 0),
+        end: DateTime.local(2022, 5, 15, 11, 0, 0),
+        description: "Descrizione dell'evento",
+        status: 'confirmed',
+        team: {
+          id: externalTeam.id
+        }
+      }
+    }).loginAs(externalLoggedInUser)
+
+    const response = await client.get('/events').qs({
+      filters: {
+        from: DateTime.local(2022, 5, 15).toISO(),
+        to: DateTime.local(2022, 5, 23).toISO(),
+      },
+    }).loginAs(externalLoggedInUser)
+
+    const events = response.body()
+    assert.isTrue(events.length == 1, 'should find the only team events')
+  })
+
   test('update an event', async ({ client, assert }) => {
     let response = await client.post('/events').json({
       event: {

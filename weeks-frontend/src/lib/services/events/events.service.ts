@@ -33,7 +33,7 @@ export default class EventsService extends FetchBasedService {
     filters: { 
       from: Date,
       to: Date,
-      team: {
+      team?: {
         id: number
       }
     },

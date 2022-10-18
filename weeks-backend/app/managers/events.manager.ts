@@ -139,6 +139,13 @@ export default class EventsManager {
         }
       }
 
+      query = query.whereHas('team', (builder) => {
+        builder.whereHas('teammates', (builder) => {
+            builder.where('teammates.userId', user.id)
+          })
+          .where('ownerId', user.id)
+      })
+
       let results = await query
         .preload('team')
         .preload('createdBy')
