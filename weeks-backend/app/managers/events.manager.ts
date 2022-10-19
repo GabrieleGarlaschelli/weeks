@@ -143,7 +143,7 @@ export default class EventsManager {
         builder.whereHas('teammates', (builder) => {
             builder.where('teammates.userId', user.id)
           })
-          .where('ownerId', user.id)
+          .orWhere('ownerId', user.id)
       })
 
       let results = await query
