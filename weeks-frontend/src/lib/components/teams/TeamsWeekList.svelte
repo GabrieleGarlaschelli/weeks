@@ -23,10 +23,7 @@
 
   let events: Event[]
   async function loadEvents(vw: number, vy: number) {
-    let service = new EventsService({ fetch })
-    events = await service.list({
-      filters: {
-        from: DateTime.fromObject({
+    let from: Date = DateTime.fromObject({
             weekday: 1,
             weekNumber: vw,
             weekYear: vy
@@ -36,7 +33,7 @@
           .startOf('minute')
           .startOf('millisecond')
           .toJSDate(),
-        to: DateTime.fromObject({
+      to: Date = DateTime.fromObject({
             weekday: 7,
             weekNumber: vw,
             weekYear: vy
@@ -45,12 +42,27 @@
           .endOf('hour')
           .endOf('minute')
           .endOf('millisecond')
-          .toJSDate(),
+          .toJSDate() 
+    
+    events = !!events ? events.filter((e) => {
+      return !(e.start > from && e.start < to)
+    }) : []
+
+    let service = new EventsService({ fetch })
+    let newEvents = await service.list({
+      filters: {
+        from: from,
+        to: to,
         team: {
           id: team.id
         }
       }
     })
+
+    events = [
+      ...events,
+      ...newEvents
+    ]
   }
 
   $: if(!!visibleYear && !!visibleWeek) loadEvents(visibleWeek, visibleYear)
