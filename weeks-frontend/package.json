@@ -33,6 +33,8 @@
 	"type": "module",
 	"dependencies": {
 		"@likable-hair/svelte": "^0.0.65",
+		"@sentry/svelte": "^7.16.0",
+		"@sentry/tracing": "^7.16.0",
 		"@sveltejs/adapter-node": "^1.0.0-next.87",
 		"@types/cookie": "^0.5.1",
 		"@types/js-cookie": "^3.0.2",
