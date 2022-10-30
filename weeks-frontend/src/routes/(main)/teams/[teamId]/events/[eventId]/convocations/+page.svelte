@@ -47,7 +47,7 @@
   $: teammatesToConvocate = !!$team ? $team.teammates.filter((tm) => {
     return !!$event && 
       !$event.convocations.map(c => c.teammateId).includes(tm.id) &&
-      tm.role.convocable
+      tm.role?.convocable
     }) : []
 </script>
 
