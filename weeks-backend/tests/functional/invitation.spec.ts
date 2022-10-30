@@ -238,4 +238,39 @@ test.group('Invitations', (group) => {
 
     assert.isTrue(teammate.length == 0, 'should have remove the teammate')
   })
+
+  test('update a teammates', async ({ client, assert }) => {
+    let invitedUser = await UserFactory.create()
+
+    const inviteUserResponse = await client.post('/invitations/inviteUser').json({
+      user: {
+        email: invitedUser.email
+      },
+      team: {
+        id: team.id
+      }
+    }).loginAs(loggedInUser)
+
+    const invitationToAccept = inviteUserResponse.body()
+
+    await client.post('/invitations/accept').json({
+      invitation: {
+        id: invitationToAccept.id
+      }
+    }).loginAs(invitedUser)
+
+    let teammate = await TeammateModel.query()
+      .where('teamId', team.id)
+      .where('userId', invitedUser.id)
+      .firstOrFail()
+
+    let response = await client.put(`/teammates/${teammate.id}`).json({
+      alias: 'alias'
+    }).loginAs(loggedInUser)
+
+    response.assertAgainstApiSpec()
+    await teammate.refresh()
+
+    assert.equal(teammate.alias, 'alias', 'should have update alias')
+  })
 })

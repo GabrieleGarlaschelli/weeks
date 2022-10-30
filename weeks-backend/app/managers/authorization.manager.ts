@@ -5,6 +5,7 @@ import InvitationModel from 'App/Models/Invitation'
 import RoleModel from 'App/Models/Role'
 import EventModel from 'App/Models/Event'
 import ConvocationModel from 'App/Models/Convocation'
+import TeammateModel from 'App/Models/Teammate'
 
 import type User from 'App/Models/User'
 import type Team from 'App/Models/Team'
@@ -13,6 +14,7 @@ import type Event from 'App/Models/Event'
 import type EventSession from 'App/Models/EventSession'
 import type Convocation from 'App/Models/Convocation'
 import type Role from 'App/Models/Role'
+import type Teammate from 'App/Models/Teammate'
 
 export type Resource = 
   'Team' |
@@ -20,7 +22,8 @@ export type Resource =
   'Event' |
   'Convocation' |
   'EventSession' |
-  'Role'
+  'Role' |
+  'Teammate'
 
 export type Action =
   'update' |
@@ -44,7 +47,8 @@ export type Entities = {
   convocation?: Pick<Convocation, 'id'>,
   invitee?: Pick<User, 'email'>
   role?: Pick<Role, 'id'>,
-  user?: Pick<User, 'id'>
+  user?: Pick<User, 'id'>,
+  teammate?: Pick<Teammate, 'id'>
 }
 
 type CanFunction = (params: {
@@ -79,6 +83,9 @@ export default class AuthorizationManager {
       view: AuthorizationManager._canViewTeam,
       invite: AuthorizationManager._canInviteToTeam,
       removeUser: AuthorizationManager._canRemoveUserFromTeam
+    },
+    Teammate: {
+      update: AuthorizationManager._canUpdateTeammate
     },
     Invitation: {
       accept: AuthorizationManager._canAcceptInvitation,
@@ -314,6 +321,25 @@ export default class AuthorizationManager {
     return await Helpers.userCanInTeam({
       user: params.actor,
       team: { id: teamId },
+      action: 'create',
+      resource: 'Event'
+    }, context)
+  }
+
+  private static async _canUpdateTeammate(
+    params: { actor: User, entities: Entities },
+    context?: { trx?: TransactionClientContract }
+  ): Promise<boolean> {
+    if (!params.entities.teammate?.id) throw new Error('teammate must be defined')
+    let teammateId: number = params.entities.teammate.id
+
+    let teammate = await TeammateModel.query({ client: context?.trx })
+      .where('id', teammateId)
+      .firstOrFail()
+
+    return await Helpers.userCanInTeam({
+      user: params.actor,
+      team: { id: teammate.teamId },
       action: 'create',
       resource: 'Event'
     }, context)

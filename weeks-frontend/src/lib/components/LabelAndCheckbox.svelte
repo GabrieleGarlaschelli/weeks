@@ -2,7 +2,7 @@
   import StandardCheckbox from "./StandardCheckbox.svelte";
   import colors from "$lib/stores/colors";
 
-  export let label: string,
+  export let label: string = "",
     id: string,
     value: boolean = false,
     textColor: string = $colors.lightContrast

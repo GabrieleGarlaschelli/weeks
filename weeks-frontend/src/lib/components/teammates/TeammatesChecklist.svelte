@@ -75,10 +75,18 @@
       <LabelAndCheckbox
         id={`check-convocation-${teammate.id}`}
         value={value[teammate.id]}
-        label={teammate.user.name}
         textColor={$colors.contrast}
         on:change={(event) => handleChange(teammate, event)}
-      ></LabelAndCheckbox>
+      >
+        <svelte:fragment slot="text">
+          <span>{teammate.alias || teammate.user.name}</span> 
+          <span 
+            style:margin-left="10px"
+            style:font-weight="200"
+            style:font-size="0.9rem"
+          >{teammate.role?.name}</span>
+        </svelte:fragment>
+      </LabelAndCheckbox>
     </div>
   {/each}
-</div>
+</div> 

@@ -36,6 +36,8 @@ Route.post('/teams/:id/removeUser', 'TeamsController.removeUser').middleware('au
 Route.post('/teams/:id/exit', 'TeamsController.exit').middleware('auth:api')
 Route.post('/teams/:id/updatePreference', 'TeamsController.updatePreference').middleware('auth:api')
 
+Route.put('/teammates/:id', 'TeammatesController.update').middleware('auth:api')
+
 Route.post('/roles', 'RolesController.store').middleware('auth:api')
 Route.get('/teams/:teamId/roles', 'RolesController.index').middleware('auth:api')
 Route.put('/roles/:id', 'RolesController.update').middleware('auth:api')

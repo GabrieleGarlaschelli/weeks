@@ -125,7 +125,8 @@
     selectedTab = 'general'
   } else if(
     $page.url.href.endsWith('teammates') || 
-    $page.url.href.endsWith('inviteUser')
+    $page.url.href.endsWith('inviteUser') ||
+    $page.url.href.includes('teammates')
   ) {
     selectedTab = 'teammates'
   } else if($page.url.href.endsWith('roles')) {

@@ -1,1 +1,1 @@
-export { default as SetRoleValidator } from './SetRoleValidator'
+export { default as UpdateValidator } from './UpdateValidator'

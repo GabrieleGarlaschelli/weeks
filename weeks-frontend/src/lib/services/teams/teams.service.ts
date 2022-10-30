@@ -7,11 +7,12 @@ import type { Invitation } from "../invitations/invitations.service";
 export type Teammate = {
   id: number,
   roleId?: number
-  role: Role,
+  role?: Role,
   teamId: number
   uid?: string
   userId: number,
   user: User,
+  alias?: string,
   createdAt: Date,
   updatedAt: Date,
 }

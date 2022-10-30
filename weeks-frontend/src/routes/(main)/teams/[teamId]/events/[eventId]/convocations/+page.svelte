@@ -44,7 +44,11 @@
     }
   }
 
-  $: teammatesToConvocate = !!$team ? $team.teammates.filter((tm) => !!$event && !$event.convocations.map(c => c.teammateId).includes(tm.id)) : []
+  $: teammatesToConvocate = !!$team ? $team.teammates.filter((tm) => {
+    return !!$event && 
+      !$event.convocations.map(c => c.teammateId).includes(tm.id) &&
+      tm.role.convocable
+    }) : []
 </script>
 
 <div style:margin-top="20px">

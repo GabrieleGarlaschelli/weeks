@@ -139,7 +139,7 @@
 
 
 <MediaQuery
-  let:mAndUp
+  let:lAndUp
 >
   <div class="container">
     <div class="summary">
@@ -157,7 +157,7 @@
       </div>
     </div>
 
-    {#if mAndUp}
+    {#if lAndUp}
       <div class="convocations-list">
         {#each convocations as convocation}
           <div 
@@ -279,7 +279,7 @@
 </MediaQuery>
 
 <style>
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     .convocation-container {
       flex-direction: column;
       gap: 10px;
@@ -295,7 +295,7 @@
     }
   }
 
-  @media (min-width: 769px){
+  @media (min-width: 1025px){
     .convocation-container {
       align-items: center;
     }
