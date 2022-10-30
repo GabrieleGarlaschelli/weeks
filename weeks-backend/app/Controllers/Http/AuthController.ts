@@ -25,6 +25,14 @@ export default class AuthController {
   }
 
   public async signup({ request }: HttpContextContract) {
+    if(!request.input('email')) throw new Error('email required')
+
+    let existingUser = await User.query()
+      .where('email', request.input('email'))
+      .first()
+
+    if(!!existingUser) throw new Error('User already exists')
+
     const manager = new UsersManager()
     await manager.create({
       data: {

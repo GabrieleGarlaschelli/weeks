@@ -9,17 +9,13 @@
     firstname: string = "",
     lastname: string = "",
     userCreated: boolean = false,
+    userNotCreated: boolean = false,
     acceptPrivacy: boolean = false,
     loading: boolean = false
 
   function signup() {
     if(disabled) return
     loading = true
-
-    setTimeout(() => {
-      loading = false
-      userCreated = true
-    }, 1000);
 
     const service = new AuthService({ fetch })
     service.signup({
@@ -31,6 +27,9 @@
     }).then(() => {
       loading = false
       userCreated = true
+    }).catch((error) => {
+      loading = false
+      userNotCreated = true
     })
   }
 
@@ -75,6 +74,19 @@
           style:margin-bottom="15px"
         >L'utente è stato creato con successo, ora puoi eseguire il login.</div>
         <LinkButton on:click={() => goto('/auth/Login')}>Log in</LinkButton>
+      </div>
+    {:else if userNotCreated}
+      <div 
+        style:margin-top="20px"
+        style:margin-bottom="20px"
+        style:display="flex"
+        style:align-items="center"
+        style:flex-direction="column"
+      >
+        <div
+          style:color={$colors.lightContrast}
+          style:margin-bottom="15px"
+        >Oops, qualcosa è andato storto</div>
       </div>
     {:else}
       <div>
