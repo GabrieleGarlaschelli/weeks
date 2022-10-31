@@ -9,7 +9,8 @@ const config = {
 
 	kit: {
 		adapter: adapter({ out: 'build' })
-	}
+	},
+  outDir: '.svelte-kit/cloudflare'
 };
 
 export default config;
