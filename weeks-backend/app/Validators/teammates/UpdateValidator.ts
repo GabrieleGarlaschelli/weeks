@@ -5,9 +5,9 @@ export default class SetRoleValidator {
   constructor(protected ctx?: HttpContextContract) { }
 
   public schema = schema.create({
-    role: schema.object().members({
-      id: schema.number()
-    })
+    id: schema.number(),
+    alias: schema.string.nullableAndOptional(),
+    roleId: schema.number.nullableAndOptional()
   })
 
   public messages: CustomMessages = {}

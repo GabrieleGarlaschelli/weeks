@@ -36,4 +36,5 @@
   textFieldBorderColor="transparent"
   textFieldFocusBorderColor="transparent"
   items={items}
+  on:change
 ></Autocomplete>

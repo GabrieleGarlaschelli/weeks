@@ -50,6 +50,10 @@
     confirmDialogOpen = true
   }
 
+  function handleEditClick(teammate: any) {
+    goto('/teams/' + team.id + '/teammates/' + teammate.id + '/edit')
+  }
+
   function confirmTeammateDeletion() {
     confirmDialogOpen = false
 
@@ -145,6 +149,15 @@
       slot="appendLastColumn" 
       let:item
     >
+      {#if CansService.can('Team', 'update')}
+        <span style:margin-right="10px">
+          <Icon
+            name="mdi-pencil"
+            click
+            on:click={() => handleEditClick(item)}
+          ></Icon>
+        </span>
+      {/if}
       {#if ((!!team.ownerId && item.user.id != team.ownerId) || !team.ownerId) && CansService.can('Team', 'removeUser')}
         <Icon 
           name="mdi-delete"

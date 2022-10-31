@@ -13,6 +13,9 @@ export default class Teammate extends CamelCaseBaseModel {
   public uid: string
 
   @column()
+  public alias: string
+
+  @column()
   public userId: number
 
   @belongsTo(() => User, {

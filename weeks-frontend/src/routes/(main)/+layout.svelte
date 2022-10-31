@@ -71,8 +71,10 @@
 		}
 	}
 
+
   import MediaQuery from '@likable-hair/svelte/common/MediaQuery.svelte'
   import HeaderMenu from "$lib/components/HeaderMenu.svelte";
+	import { browser } from "$app/environment";
 </script>
 
 <svelte:head>

@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import RolesService from '$lib/services/roles/roles.service'
-  export let team: Team,
+  export let team: { id: number },
     width: string | undefined = undefined,
     values: Item[] = []
 
@@ -37,4 +37,5 @@
   width={width}
   items={items}
   bind:values={values}
+  on:change
 ></StandardAutocomplete>

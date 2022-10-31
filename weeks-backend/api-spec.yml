@@ -196,6 +196,29 @@ components:
         updatedAt: 
           type: string
           format: date-time
+    Teammate:
+      type: object
+      properties:
+        id:
+          type: integer
+        roleId:
+          type: integer
+        teamId:
+          type: integer
+        uid:
+          type: string
+          nullable: true
+        userId: 
+          type: integer
+        alias:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt: 
+          type: string
+          format: date-time
 
 paths:
   /auth/login:
@@ -386,6 +409,16 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Team"
+  /teammates/{teammateId}:
+    put:
+      summary: Update a certain teammate.
+      responses:
+        '200':
+          description: The teammate updated.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Teammate"
   /invitations/inviteUser:
     post:
       summary: Invite a user to a team.

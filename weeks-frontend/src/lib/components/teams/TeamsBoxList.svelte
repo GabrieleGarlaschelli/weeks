@@ -75,7 +75,7 @@
   <div class="teams-container">
     {#if loading}
       <CircularLoader></CircularLoader>
-    {:else if teams.length > 0}
+    {:else if teams?.length > 0}
       {#each filteredTeams as team}
         <div 
           style:background-color={$colors.thinContrast}
