@@ -1,12 +1,15 @@
 <script lang="ts" context="module">
   import type { Teammate } from '$lib/services/teams/teams.service'
   import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
+  import type { Chip } from "$lib/components/common/ChipMultipleSelection.svelte"
 </script>
 
 <script lang="ts">
   export let teammates: Teammate[] = [],
+    team: { id: number } | undefined = undefined,
     searchable: boolean = false,
     onlyConvocables: boolean = false,
+    roleFilter: boolean = false,
     value: {
       [key: number]: boolean
     } = { }
@@ -24,6 +27,10 @@
           teammate.role.convocable
         )
       )
+    ) && (
+      !selectedRoles || selectedRoles.length == 0 || (
+        selectedRoles.length > 0 && teammate.roleId && selectedRoles.map(r => r.value).includes(teammate.roleId?.toString())
+      )
     )
   })
 
@@ -31,10 +38,13 @@
     value[teammate.id] = event.target.checked
   }
 
+  let selectedRoles: Chip[] = []
+
   import StandardTextfield from '$lib/components/StandardTextfield.svelte';
   import Icon from '@likable-hair/svelte/media/Icon.svelte';
   import colors from '$lib/stores/colors';
   import LabelAndCheckbox from '../LabelAndCheckbox.svelte';
+  import RoleMultipleSelectorChip from '$lib/components/roles/RoleMultipleSelectorChip.svelte';
 </script>
 
 
@@ -61,6 +71,14 @@
       </svelte:fragment>
     </StandardTextfield>
   </div>
+{/if}
+
+{#if roleFilter && !!team}
+  <RoleMultipleSelectorChip
+    onlyConvocable={true}
+    bind:value={selectedRoles}
+    bind:team={team}
+  ></RoleMultipleSelectorChip>
 {/if}
 
 <div

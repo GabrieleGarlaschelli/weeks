@@ -10,6 +10,7 @@
 
   export let open: boolean = false,
     teammates: Teammate[] = [],
+    team: { id: number } | undefined = undefined,
     event: Pick<Event, 'id'>
 
   let dispatch = createEventDispatcher<{
@@ -64,6 +65,8 @@
     <TeammatesChecklist
       teammates={teammates}
       bind:value={selectedTeammates}
+      bind:team={team}
+      roleFilter={true}
     ></TeammatesChecklist>
   </div>
   <StandardButton

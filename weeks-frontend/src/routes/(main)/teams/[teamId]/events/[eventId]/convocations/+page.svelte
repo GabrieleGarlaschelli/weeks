@@ -76,10 +76,11 @@
   </div>
 {/if}
 
-{#if !!$event}  
+{#if !!$event}
   <ConvocateDialog
     bind:open={convocationDialogOpen}
     teammates={teammatesToConvocate}
+    team={$team}
     on:convocate={handleConvocate}
     event={$event}
   ></ConvocateDialog>
