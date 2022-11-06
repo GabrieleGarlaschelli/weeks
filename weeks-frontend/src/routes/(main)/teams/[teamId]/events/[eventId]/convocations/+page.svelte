@@ -54,6 +54,7 @@
 <div style:margin-top="20px">
   <ConvocationList
     convocations={$event?.convocations}
+    team={$team}
     on:confirm={handleConfirmOrDeny}
     on:deny={handleConfirmOrDeny}
     on:unConvocate={handleUnConvocate}

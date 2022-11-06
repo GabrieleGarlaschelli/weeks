@@ -77,6 +77,8 @@
       event.start = DateTime.fromISO(startParams).toJSDate()
     }
   }
+
+  $: console.log(event)
   $: confirmDisabled = !event || !event.start || !event.end || !event.name
 
   function handleCancel() {

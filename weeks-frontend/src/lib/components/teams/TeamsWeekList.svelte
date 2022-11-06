@@ -43,11 +43,7 @@
           .endOf('minute')
           .endOf('millisecond')
           .toJSDate() 
-    
-    events = !!events ? events.filter((e) => {
-      return !(e.start > from && e.start < to)
-    }) : []
-
+  
     let service = new EventsService({ fetch })
     let newEvents = await service.list({
       filters: {
@@ -58,6 +54,10 @@
         }
       }
     })
+
+    events = !!events ? events.filter((e) => {
+      return !(e.start > from && e.start < to)
+    }) : []
 
     events = [
       ...events,

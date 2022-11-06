@@ -150,7 +150,11 @@ export default class EventsManager {
         .preload('team')
         .preload('createdBy')
         .preload('frequency')
-        .preload('convocations')
+        .preload('convocations', builder => {
+          builder.join('teammates', 'convocations.teammateId', 'teammates.id')
+            .join('users', 'teammates.userId', 'users.id')
+            .orderBy(['teammates.alias', 'users.name'])
+        })
 
       if (!params.context?.trx) await trx.commit()
       return results
@@ -635,7 +639,9 @@ export default class EventsManager {
             builder
               .preload('user')
               .preload('role')
-          })
+          }).join('teammates', 'convocations.teammateId', 'teammates.id')
+            .join('users', 'teammates.userId', 'users.id')
+            .orderByRaw(`COALESCE( NULLIF(teammates.alias,''),NULL), users.name`)
         })
         .preload('createdBy')
         .preload('frequency')

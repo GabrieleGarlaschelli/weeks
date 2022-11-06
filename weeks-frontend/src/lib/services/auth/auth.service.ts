@@ -75,7 +75,6 @@ export default class AuthService extends FetchBasedService {
 
   async loginWithGoogleCallback(params: { token: string, expiresAt: Date }) {
     if (browser) {
-      console.log('storing', params.token)
       Cookies.set(this.coockieName, params.token, {
         expires: new Date(params.expiresAt),
         sameSite: 'strict'

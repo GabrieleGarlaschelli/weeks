@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   import type { Convocation } from "$lib/services/convocations/convocations.service";
+  import type { Chip } from "$lib/components/common/ChipMultipleSelection.svelte"
 </script>
 
 <script lang="ts">
@@ -16,6 +17,7 @@
   import Divider from "$lib/components/Divider.svelte"
   import StandardDialog from '$lib/components/common/StandardDialog.svelte'
 	import OptionSelector, { type Option } from "$lib/components/common/OptionSelector.svelte";
+  import RoleMultipleSelectorChip from "$lib/components/roles/RoleMultipleSelectorChip.svelte"
 
   let dispatch = createEventDispatcher<{
     'confirm': {
@@ -72,7 +74,8 @@
     }
   }
 
-  export let convocations: Convocation[] = []
+  export let convocations: Convocation[] = [],
+    team: { id: number } | undefined
 
   function translateConfirmationStatus(confirmationStatus: string | undefined) {
     if(!confirmationStatus) return 'Non specificato'
@@ -135,6 +138,14 @@
     editingConvocation = convocation
     convocationDetailDialogOpen = true
   }
+
+  let selectedRoles: Chip[] = []
+
+  $: filteredConvocations = convocations.filter((c) => {
+    if(!selectedRoles || selectedRoles.length == 0) return true
+    else if(!!c.teammate.roleId) return selectedRoles.map((chip) => chip.value).includes(c.teammate.roleId?.toString())
+    else return false
+  })
 </script>
 
 
@@ -157,124 +168,139 @@
       </div>
     </div>
 
-    {#if lAndUp}
-      <div class="convocations-list">
-        {#each convocations as convocation}
-          <div 
-            style:display="flex"
-            class="convocation-container"
-          >
-            <div class="info-container">
-              <div class="name-column">
-                <UserAvatar
-                  src={convocation.teammate.user.avatarUrl}
-                  username={convocation.teammate.user.name}
-                  description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
-                ></UserAvatar>
-              </div>
-              <div 
-                class="chip-column"
-              >
-                <StandardChip
-                  warning={convocation.confirmationStatus == 'denied'}
-                >
-                  <span style:font-weight="700">{translateConfirmationStatus(convocation.confirmationStatus)}</span>
-                </StandardChip>
-              </div>
-            </div>
-            {#if convocation.teammate.userId == $user?.id || CansService.can('Convocation', 'confirm') || CansService.can('Convocation', 'deny')}
-              <div 
-                
-                class="confirm-button-container"
-              >
-                {#if !loading}
-                  {#if CansService.can('Convocation', 'confirm') || convocation.teammate.userId == $user?.id}
-                    <Icon
-                      name="mdi-check"
-                      click
-                      on:click={() => confirmConvocation(convocation)}
-                    ></Icon>
-                  {/if}
-                  {#if CansService.can('Convocation', 'deny') || convocation.teammate.userId == $user?.id}
-                    <Icon
-                      name="mdi-close"
-                      click
-                      on:click={() => denyConvocation(convocation)}
-                    ></Icon>
-                  {/if}
-                  {#if CansService.can('Event', 'convocate')}
-                    <Icon
-                      name="mdi-delete"
-                      click
-                      on:click={() => unConvocate(convocation)}
-                    ></Icon>
-                  {/if}
-                {:else}
-                  <CircularLoader
-                    color={$colors.contrast}
-                  ></CircularLoader>
-                {/if}
-              </div>
-            {/if}
-          </div>
-        {/each}
-      </div>
-    {:else}
-      <div
-        style:display="flex"
-        style:flex-direction="column"
-      >
-        {#each convocations as convocation}
-          <div 
-            style:display="flex"
-            style:justify-content="space-between"
-            on:click={() => handleMobileConvocationRowClick(convocation)}
-          >
-            <UserAvatar
-              src={convocation.teammate.user.avatarUrl}
-              username={convocation.teammate.user.name}
-              description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
-            ></UserAvatar>
-            <div class="status-container">
-              <div 
-                class="dot"
-                class:dot-confirmed={convocation.confirmationStatus == 'confirmed'}
-                class:dot-denied={convocation.confirmationStatus == 'denied'}
-                class:dot-pending={convocation.confirmationStatus == 'pending'}
-              ></div>
-            </div>
-          </div>
-          <Divider
-            marginBottom="8px"
-            marginLeft="0px"
-            marginRight="0px"
-            marginTop="8px"
-          ></Divider>
-        {/each}
-      </div>
-
-      {#if !!editingConvocation}
-        <StandardDialog
-          bind:open={convocationDetailDialogOpen}
-          title={editingConvocation?.teammate.user.name}
+    <div>
+      {#if !!team}
+        <div 
+          style:margin-top="10px"
+          style:margin-bottom="20px"
         >
-          <div
-            style:display="flex"
-            style:margin-bottom="10px"
-          >
-            <StandardChip
-              warning={editingConvocation.confirmationStatus == 'denied'}
-            >
-              <span style:font-weight="700">{translateConfirmationStatus(editingConvocation.confirmationStatus)}</span>
-            </StandardChip>
-          </div>
-          <OptionSelector
-            options={editConvocationsOptions}
-            on:option-click={handleConvocationOptionClick}
-          ></OptionSelector>
-        </StandardDialog>
+          <RoleMultipleSelectorChip
+            bind:team={team}
+            bind:value={selectedRoles}
+            onlyConvocable={true}
+          ></RoleMultipleSelectorChip>
+        </div>
       {/if}
-    {/if}
+
+      {#if lAndUp}
+        <div class="convocations-list">
+          {#each filteredConvocations as convocation}
+            <div 
+              style:display="flex"
+              class="convocation-container"
+            >
+              <div class="info-container">
+                <div class="name-column">
+                  <UserAvatar
+                    src={convocation.teammate.user.avatarUrl}
+                    username={convocation.teammate.alias || convocation.teammate.user.name}
+                    description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
+                  ></UserAvatar>
+                </div>
+                <div 
+                  class="chip-column"
+                >
+                  <StandardChip
+                    warning={convocation.confirmationStatus == 'denied'}
+                  >
+                    <span style:font-weight="700">{translateConfirmationStatus(convocation.confirmationStatus)}</span>
+                  </StandardChip>
+                </div>
+              </div>
+              {#if convocation.teammate.userId == $user?.id || CansService.can('Convocation', 'confirm') || CansService.can('Convocation', 'deny')}
+                <div 
+                  
+                  class="confirm-button-container"
+                >
+                  {#if !loading}
+                    {#if CansService.can('Convocation', 'confirm') || convocation.teammate.userId == $user?.id}
+                      <Icon
+                        name="mdi-check"
+                        click
+                        on:click={() => confirmConvocation(convocation)}
+                      ></Icon>
+                    {/if}
+                    {#if CansService.can('Convocation', 'deny') || convocation.teammate.userId == $user?.id}
+                      <Icon
+                        name="mdi-close"
+                        click
+                        on:click={() => denyConvocation(convocation)}
+                      ></Icon>
+                    {/if}
+                    {#if CansService.can('Event', 'convocate')}
+                      <Icon
+                        name="mdi-delete"
+                        click
+                        on:click={() => unConvocate(convocation)}
+                      ></Icon>
+                    {/if}
+                  {:else}
+                    <CircularLoader
+                      color={$colors.contrast}
+                    ></CircularLoader>
+                  {/if}
+                </div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {:else}
+        <div
+          style:display="flex"
+          style:flex-direction="column"
+        >
+          {#each filteredConvocations as convocation}
+            <div 
+              style:display="flex"
+              style:justify-content="space-between"
+              on:click={() => handleMobileConvocationRowClick(convocation)}
+            >
+              <UserAvatar
+                src={convocation.teammate.user.avatarUrl}
+                username={convocation.teammate.alias || convocation.teammate.user.name}
+                description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
+              ></UserAvatar>
+              <div class="status-container">
+                <div 
+                  class="dot"
+                  class:dot-confirmed={convocation.confirmationStatus == 'confirmed'}
+                  class:dot-denied={convocation.confirmationStatus == 'denied'}
+                  class:dot-pending={convocation.confirmationStatus == 'pending'}
+                ></div>
+              </div>
+            </div>
+            <Divider
+              marginBottom="8px"
+              marginLeft="0px"
+              marginRight="0px"
+              marginTop="8px"
+            ></Divider>
+          {/each}
+        </div>
+
+        {#if !!editingConvocation}
+          <StandardDialog
+            bind:open={convocationDetailDialogOpen}
+            title={editingConvocation?.teammate.user.name}
+          >
+            <div
+              style:display="flex"
+              style:margin-bottom="10px"
+            >
+              <StandardChip
+                warning={editingConvocation.confirmationStatus == 'denied'}
+              >
+                <span style:font-weight="700">{translateConfirmationStatus(editingConvocation.confirmationStatus)}</span>
+              </StandardChip>
+            </div>
+            <OptionSelector
+              options={editConvocationsOptions}
+              on:option-click={handleConvocationOptionClick}
+            ></OptionSelector>
+          </StandardDialog>
+        {/if}
+      {/if}
+    </div>
   </div>
 </MediaQuery>
 
