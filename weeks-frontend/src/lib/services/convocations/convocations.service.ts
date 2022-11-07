@@ -51,6 +51,8 @@ export default class ConvocationsService extends FetchBasedService {
       url: '/convocations/' + params.id + '/deny'
     })
 
+    console.log(params.id, 'convocation service')
+
     return response
   }
 

@@ -255,14 +255,14 @@ export default class ConvocationsManager {
       let convocation: Convocation
       if (!!params.data.convocation) {
         convocation = await ConvocationModel.query({
-          client: trx
-        })
+            client: trx
+          })
           .where('id', params.data.convocation.id)
           .firstOrFail()
       } else if (!!params.data.teammate && !!params.data.event) {
         convocation = await ConvocationModel.query({
-          client: trx
-        })
+            client: trx
+          })
           .where('teammateId', params.data.teammate.id)
           .where('eventId', params.data.event.id)
           .firstOrFail()
@@ -284,10 +284,14 @@ export default class ConvocationsManager {
         }
       })
 
+      
+
       convocation.confirmationStatus = 'denied'
       convocation.confirmedByUserId = user.id
       convocation.updateConfirmationAt = DateTime.now()
       let results = await convocation.save()
+
+      console.log(convocation.toJSON())
 
       if (!params.context?.trx) await trx.commit()
       return results
