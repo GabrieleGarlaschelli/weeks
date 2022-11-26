@@ -7,12 +7,6 @@
   import colors from "$lib/stores/colors";
 </script>
 
-
-<!-- <TimePickerTextField
-  placeholder={placeholder}
-  text={value}
-></TimePickerTextField> -->
-
 <label
   style:font-weight="500"
   style:margin-left="3px"
@@ -25,6 +19,7 @@
     style:color={$colors.contrast}
     type="time" 
     class="time-picker" 
+    on:change
   />
 </div>
 

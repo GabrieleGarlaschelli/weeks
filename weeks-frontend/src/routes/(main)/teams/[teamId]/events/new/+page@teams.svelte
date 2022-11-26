@@ -78,7 +78,6 @@
     }
   }
 
-  $: console.log(event)
   $: confirmDisabled = !event || !event.start || !event.end || !event.name
 
   function handleCancel() {

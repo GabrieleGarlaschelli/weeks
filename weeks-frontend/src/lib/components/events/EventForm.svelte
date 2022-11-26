@@ -35,32 +35,20 @@
     endTime: string
 
   $: {
-    if(!!event.start && !startTime) {
+    if(!event.start) {
+      event.start = new Date()
+    }
+
+    if(!event.end) {
+      event.end = DateTime.fromJSDate(event.start).plus({ hours: 1 }).toJSDate()
+    }
+
+    if(!!event.start) {
       startTime = DateTime.fromJSDate(new Date(event.start)).toFormat("HH:mm")
     }
     
-    if(!!startTime && !!event.start) {
-      event.start = DateTime.fromJSDate(event.start).set({
-          hour: parseInt(startTime.split(':')[0]),
-          minute: parseInt(startTime.split(':')[1])
-        })
-        .startOf('millisecond')
-        .startOf('second')
-        .toJSDate()
-    }
-    
-    if(!!event.end && !endTime) {
+    if(!!event.end) {
       endTime = DateTime.fromJSDate(new Date(event.end)).toFormat("HH:mm")
-    }
-    
-    if(!!endTime && !!event.start) {
-      event.end = DateTime.fromJSDate(event.start).set({
-          hour: parseInt(endTime.split(':')[0]),
-          minute: parseInt(endTime.split(':')[1])
-        })
-        .startOf('millisecond')
-        .startOf('second')
-        .toJSDate()
     }
   }
 
@@ -72,6 +60,50 @@
       }
     }
   }
+
+  function handleDatePickerChange(e: CustomEvent<{ date: Date }>) {
+    let newDateStart = event.start
+    if(!newDateStart) newDateStart = new Date()
+
+    event.start = DateTime.fromJSDate(newDateStart).set({
+      month: e.detail.date.getMonth(),
+      year: e.detail.date.getFullYear(),
+      day: e.detail.date.getDate()
+    }).toJSDate()
+
+    let newDateEnd = event.end
+    if(!newDateEnd) newDateEnd = new Date()
+
+    event.end = DateTime.fromJSDate(newDateEnd).set({
+      month: e.detail.date.getMonth(),
+      year: e.detail.date.getFullYear(),
+      day: e.detail.date.getDate()
+    }).toJSDate()
+  }
+
+  function handleStartTimeChange(e: any) {
+    if(!event.start) event.start = new Date()
+    
+    event.start = DateTime.fromJSDate(event.start).set({
+      hour: e.target.value.split(':')[0],
+      minute: e.target.value.split(':')[1],
+    }).toJSDate()
+
+    startTime = e.target.value
+  }
+
+  function handleEndTimeChange(e: any) {
+    if(!event.end) event.end = new Date()
+
+    event.end = DateTime.fromJSDate(event.end).set({
+      hour: e.target.value.split(':')[0],
+      minute: e.target.value.split(':')[1],
+    }).toJSDate()
+
+    endTime = e.target.value
+  }
+
+  $: console.log(event)
 
 </script>
 
@@ -88,20 +120,23 @@
         placeholder="Data "
         name="startDate"
         bind:value={date}
+        on:change={handleDatePickerChange}
       ></StandardDatepicker>
     </div>
     <div>
       <StandardTimePicker
-        bind:value={startTime}
+        value={startTime}
         name="startTime"
         label="Ora inizio"
+        on:change={handleStartTimeChange}
       ></StandardTimePicker>
     </div>
     <div>
       <StandardTimePicker
-        bind:value={endTime}
+        value={endTime}
         name="endTime"
         label="Ora fine"
+        on:change={handleEndTimeChange}
       ></StandardTimePicker>
     </div>
   </div>

@@ -6,12 +6,21 @@
     name: string
   let formattedDate: string = DateTime.fromJSDate(value).setLocale('it').toLocaleString(DateTime.DATE_FULL)
 
+  let dispatch = createEventDispatcher<{
+    'change': {
+      date: Date
+    }
+  }>()
+
   let dialogOpened: boolean = false
   function handleInputFocus() {
     dialogOpened = true
   }
 
   function handleDateSelect() {
+    dispatch('change', {
+      date: value
+    })
     dialogOpened = false
   }
 
@@ -20,6 +29,7 @@
   import StandardDialog from "$lib/components/common/StandardDialog.svelte"
   import DatePicker from "@likable-hair/svelte/dates/DatePicker.svelte"
   import LabelAndTextfield from "$lib/components/LabelAndTextfield.svelte"
+	import { createEventDispatcher } from "svelte";
 </script>
 
 <LabelAndTextfield
