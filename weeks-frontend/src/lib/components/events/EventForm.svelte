@@ -47,8 +47,6 @@
         .startOf('millisecond')
         .startOf('second')
         .toJSDate()
-    } else {
-      event.start = new Date()
     }
     
     if(!!event.end && !endTime) {
@@ -63,8 +61,6 @@
         .startOf('millisecond')
         .startOf('second')
         .toJSDate()
-    } else {
-      event.end = new Date()
     }
   }
 
