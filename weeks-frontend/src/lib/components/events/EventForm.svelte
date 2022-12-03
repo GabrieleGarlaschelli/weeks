@@ -103,8 +103,6 @@
     endTime = e.target.value
   }
 
-  $: console.log(event)
-
 </script>
 
 <form

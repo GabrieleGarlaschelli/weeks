@@ -23,7 +23,7 @@
     let service = new EventService({ fetch })
     $event = await service.show({ id: parseInt($page.params.eventId) })
 
-    if(!$team) {
+    if(!$team || $team.id.toString() != $page.params.teamId) {
       let service = new TeamsService({ fetch })
       $team = await service.show({ id: parseInt($page.params.teamId) })
   
