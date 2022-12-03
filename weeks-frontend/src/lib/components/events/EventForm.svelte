@@ -66,7 +66,7 @@
     if(!newDateStart) newDateStart = new Date()
 
     event.start = DateTime.fromJSDate(newDateStart).set({
-      month: e.detail.date.getMonth(),
+      month: e.detail.date.getMonth() + 1,
       year: e.detail.date.getFullYear(),
       day: e.detail.date.getDate()
     }).toJSDate()
@@ -75,7 +75,7 @@
     if(!newDateEnd) newDateEnd = new Date()
 
     event.end = DateTime.fromJSDate(newDateEnd).set({
-      month: e.detail.date.getMonth(),
+      month: e.detail.date.getMonth() + 1,
       year: e.detail.date.getFullYear(),
       day: e.detail.date.getDate()
     }).toJSDate()
