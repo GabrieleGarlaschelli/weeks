@@ -2,6 +2,8 @@ import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import { string } from '@ioc:Adonis/Core/Helpers'
 import { SimplePaginatorMetaKeys } from '@ioc:Adonis/Lucid/Database'
 import { LucidModel } from '@ioc:Adonis/Lucid/Orm'
+import FipavBot from 'App/Telegram/fipav.bot'
+import TelegramBot from 'node-telegram-bot-api'
 
 export default class AppProvider {
   constructor(protected app: ApplicationContract) {}
@@ -12,6 +14,31 @@ export default class AppProvider {
 
   public async boot() {
     // IoC container is ready
+    const { default: Env } = await import('@ioc:Adonis/Core/Env')
+
+    const token = Env.get('TELEGRAM_FIPAV_BOT_TOKEN')
+    const publicUrl = Env.get('PUBLIC_URL')
+
+    if(!!token) {
+      new FipavBot({ token })
+    } else if(!!publicUrl && !!token) {
+      const { default: Route } = await import('@ioc:Adonis/Core/Route')
+
+      let fipavBot = new FipavBot({
+        token,
+        webHookUrl: `${publicUrl}/bot${token}`
+      })
+
+      Route.post(`/bot${token}`, ({ request, response }) => {
+        // @ts-ignore
+        let update: TelegramBot.Update = request.body()
+
+        fipavBot.bot.processUpdate(update)
+        response.send(200)
+      })
+    } else {
+      console.warn('missing telegram bot token')
+    }
   }
 
   public async ready() {
