@@ -19,9 +19,7 @@ export default class AppProvider {
     const token = Env.get('TELEGRAM_FIPAV_BOT_TOKEN')
     const publicUrl = Env.get('PUBLIC_URL')
 
-    if(!!token) {
-      new FipavBot({ token })
-    } else if(!!publicUrl && !!token) {
+    if(!!publicUrl && !!token) {
       const { default: Route } = await import('@ioc:Adonis/Core/Route')
 
       let fipavBot = new FipavBot({
@@ -36,6 +34,8 @@ export default class AppProvider {
         fipavBot.bot.processUpdate(update)
         response.send(200)
       })
+    } else if(!!token) {
+      new FipavBot({ token })
     } else {
       console.warn('missing telegram bot token')
     }
