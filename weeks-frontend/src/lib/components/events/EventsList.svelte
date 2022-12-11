@@ -7,9 +7,11 @@
   import { DateTime } from 'luxon';
   import qs from 'qs'
   import CansService from '$lib/services/roles/cans.service';
+  import colors from '$lib/stores/colors';
 
   export let events: Event[] = [],
     team: { id: number } | undefined = undefined,
+    teammate: Teammate | undefined = undefined,
     precompiledDate: DateTime | undefined = undefined,
     showTeamName: boolean = false
 
@@ -37,11 +39,16 @@
     }
   }
 
+  function isConvocated(event: Event): boolean {
+    return !!teammate && event.convocations.some((c) => !!teammate && c.teammateId == teammate.id)
+  }
+
   $: sortedEvents = !!events ? events.sort((a, b) => {
     return DateTime.fromJSDate(new Date(a.start)).diff(DateTime.fromJSDate(new Date(b.start))).milliseconds
   } ) : []
 
   import Icon from "@likable-hair/svelte/media/Icon.svelte"
+	import type { Teammate } from '$lib/services/teams/teams.service';
 </script>
 
 <div class="events-container">
@@ -66,6 +73,28 @@
             class="description"
             style:white-space="pre-wrap"
           >{event.description}</div>
+        {/if}
+        {#if isConvocated(event)}  
+          <div
+            class="convocated-badge"
+            style:display="flex"
+            style:align-items="center"
+            style:gap="10px"
+            style:margin-bottom="10px"
+          >
+            <Icon 
+              name="mdi-account-check"
+              color={$colors.success}
+              size={15}
+            ></Icon>
+            <span 
+              style:color={$colors.success}
+              style:font-size="0.9rem"
+              style:font-weight="300"
+            >
+              Convocato
+            </span>
+          </div>
         {/if}
       </div>
     {/each}

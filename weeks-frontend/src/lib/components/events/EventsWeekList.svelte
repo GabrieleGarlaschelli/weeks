@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
+  import type { Team, Teammate } from "$lib/services/teams/teams.service"
   import type { Event } from "$lib/services/events/events.service"
   import type { Option } from '$lib/components/common/OptionSelector.svelte'
 </script>
@@ -14,6 +14,7 @@
   import qs from 'qs'
 
   export let team: Team,
+    teammate: Teammate | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     events: Event[],
@@ -228,6 +229,10 @@
     goto(`/teams/${team.id}/events/new?${qs.stringify({ start: precompiled.toJSDate() })}`)
   }
 
+  function isConvocated(event: Event) {
+    return !!teammate && event.convocations.some((c) => !!teammate && c.teammateId == teammate.id)
+  }
+
   import Icon from "@likable-hair/svelte/media/Icon.svelte"
   import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
   import Divider from "$lib/components/Divider.svelte"
@@ -324,6 +329,28 @@
                       <Icon name='mdi-text' size={10}></Icon>
                       {event.description}
                     </div>
+                    {#if isConvocated(event)}  
+                      <div
+                        class="convocated-badge"
+                        style:display="flex"
+                        style:align-items="center"
+                        style:gap="10px"
+                        style:margin-left="10px"
+                      >
+                        <Icon 
+                          name="mdi-account-check"
+                          color={$colors.success}
+                          size={15}
+                        ></Icon>
+                        <span 
+                          style:color={$colors.success}
+                          style:font-size="0.9rem"
+                          style:font-weight="300"
+                        >
+                          Convocato
+                        </span>
+                      </div>
+                    {/if}
                   </div>
                 {/each}
               {/if}

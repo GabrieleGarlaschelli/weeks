@@ -284,14 +284,10 @@ export default class ConvocationsManager {
         }
       })
 
-      
-
       convocation.confirmationStatus = 'denied'
       convocation.confirmedByUserId = user.id
       convocation.updateConfirmationAt = DateTime.now()
       let results = await convocation.save()
-
-      console.log(convocation.toJSON())
 
       if (!params.context?.trx) await trx.commit()
       return results

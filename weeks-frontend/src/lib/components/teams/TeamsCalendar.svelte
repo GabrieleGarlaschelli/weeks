@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
+  import type { Team, Teammate } from "$lib/services/teams/teams.service"
   import type { Event } from "$lib/services/events/events.service"
 </script>
 
@@ -9,6 +9,7 @@
   import EventsService from "$lib/services/events/events.service"
 
   export let team: Team,
+    teammate: Teammate | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleMonth: number = DateTime.now().get('month') - 1,
@@ -64,6 +65,7 @@
   bind:events={events}
   bind:selectedDate={selectedDate}
   bind:team={team}
+  bind:teammate={teammate}
   bind:selectedEvents={selectedEvents}
   bind:visibleMonth={visibleMonth}
   bind:visibleYear={visibleYear}

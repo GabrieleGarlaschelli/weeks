@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
+  import type { Team, Teammate } from "$lib/services/teams/teams.service"
   import type { DateStat } from "@likable-hair/svelte/dates/utils"
   import type { Event } from "$lib/services/events/events.service"
 </script>
@@ -12,6 +12,7 @@
   import qs from 'qs'
 
   export let team: Team | undefined,
+    teammate: Teammate | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     events: Event[],
@@ -90,6 +91,10 @@
   function isGreaterThan(array: any[] | undefined, num: number) {
     if(!!array) return array.length > num
     else return false
+  }
+
+  function isConvocated(event: Event): boolean {
+    return !!teammate && event.convocations.some((c) => !!teammate && c.teammateId == teammate.id)
   }
 
   $: if(!!events) groupEventByDate()

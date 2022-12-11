@@ -1,12 +1,13 @@
 <script lang="ts" context="module">
   import type { Event } from '$lib/services/events/events.service'
-  import type { Team } from '$lib/services/teams/teams.service'
+  import type { Team, Teammate } from '$lib/services/teams/teams.service'
 </script>
 
 <script lang="ts">
   import { DateTime } from 'luxon';
 
-  export let team: Team
+  export let team: Team,
+    teammate: Teammate | undefined = undefined
 
   let selectedDate: Date | undefined,
     selectedEvents: Event[] = []
@@ -34,6 +35,7 @@
         bind:selectedDate={selectedDate}
         bind:selectedEvents={selectedEvents}
         team={team}
+        teammate={teammate}
       ></TeamsCalendar>
       {#if !mAndDown}
         <div 
@@ -58,6 +60,7 @@
               precompiledDate={selectedDate ? DateTime.fromJSDate(selectedDate) : undefined}
               events={selectedEvents}
               team={team}
+              teammate={teammate}
             ></EventsList>
           </div>
         </div>
@@ -74,6 +77,7 @@
         precompiledDate={selectedDate ? DateTime.fromJSDate(selectedDate) : undefined}
         events={selectedEvents}
         team={team}
+        teammate={teammate}
       ></EventsList>
     {/if}
   {/if}

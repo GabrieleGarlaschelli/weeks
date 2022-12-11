@@ -1,6 +1,7 @@
 <script lang="ts">
   import TeamsWeekList from "$lib/components/teams/TeamsWeekList.svelte";
   import team from "$lib/stores/teams/teamsShow"
+  import teammate from "$lib/stores/teams/teamsTeammate"
 	import { onMount } from "svelte";
 
   let visibleWeek: number, visibleYear: number
@@ -17,14 +18,17 @@
     localStorage.setItem('teams:weeks:visibleYear', visibleYear.toString())
     localStorage.setItem('teams:weeks:visibleWeek', visibleWeek.toString())
   }
+
 </script>
 
 {#if !!$team}
   <TeamsWeekList
     team={$team}
+    teammate={$teammate}
     bind:visibleWeek={visibleWeek}
     bind:visibleYear={visibleYear}
     on:nextWeek={handleWeekChange}
     on:previousWeek={handleWeekChange}
+    on:focusToday={handleWeekChange}
   ></TeamsWeekList>
 {/if}

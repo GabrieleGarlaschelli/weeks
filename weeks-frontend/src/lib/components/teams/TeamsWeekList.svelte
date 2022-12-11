@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
+  import type { Team, Teammate } from "$lib/services/teams/teams.service"
   import type { Event } from "$lib/services/events/events.service"
 </script>
 
@@ -7,8 +7,17 @@
   import { DateTime } from "luxon";
   import { onMount } from "svelte";
   import EventsService from "$lib/services/events/events.service"
+  import { createEventDispatcher } from "svelte";
+
+  let dispatch = createEventDispatcher<{
+    'focusToday': {
+      visibleYear: number, 
+      visibleWeek: number
+    }
+  }>()
 
   export let team: Team,
+    teammate: Teammate | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleYear: number = DateTime.now().get('year'),
@@ -71,6 +80,15 @@
   function handleImportWeekClick() {
     openImportWeekDialog = true
   }
+
+  function focusToday() {
+    visibleWeek = DateTime.now().get('weekNumber')
+    visibleYear = DateTime.now().get('weekYear')
+    dispatch('focusToday', {
+      visibleWeek: visibleWeek,
+      visibleYear: visibleYear
+    })
+  }
   
 	import EventsWeekList from "../events/EventsWeekList.svelte";
   import Icon from "@likable-hair/svelte/media/Icon.svelte";
@@ -82,19 +100,33 @@
     bind:events={events}
     bind:selectedDate={selectedDate}
     bind:team={team}
+    bind:teammate={teammate}
     bind:selectedEvents={selectedEvents}
     bind:visibleYear={visibleYear}
     bind:visibleWeek={visibleWeek}
     on:nextWeek
     on:previousWeek
   >
-    <svelte:fragment slot="options">
-      <Icon
-        name="mdi-import"
-        click
-        on:click={handleImportWeekClick}
-      ></Icon>
-    </svelte:fragment>
+    <div 
+      style:display="flex"
+      style:gap="15px"
+      slot="options"
+    >
+      <div>
+        <Icon
+          name="mdi-import"
+          click
+          on:click={handleImportWeekClick}
+        ></Icon>
+      </div>
+      <div>
+        <Icon
+          name="mdi-calendar-today"
+          click
+          on:click={focusToday}
+        ></Icon>
+      </div>
+    </div>
   </EventsWeekList>
 
   <TeamImportWeekDialog

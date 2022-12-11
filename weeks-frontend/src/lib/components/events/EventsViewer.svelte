@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
+  import type { Team, Teammate } from "$lib/services/teams/teams.service"
   import type { Event } from "$lib/services/events/events.service"
 </script>
 
@@ -7,6 +7,7 @@
   import { DateTime } from "luxon";
 
   export let team: Team | undefined = undefined,
+    teammate: Teammate | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     events: Event[],
@@ -20,6 +21,7 @@
 <div style:width="100%">
   <EventsCalendar
     bind:team={team}
+    bind:teammate={teammate}
     bind:selectedDate={selectedDate}
     bind:selectedEvents={selectedEvents}
     bind:events={events}
