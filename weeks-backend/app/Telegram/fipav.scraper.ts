@@ -26,7 +26,7 @@ const fipavUrl = 'http://www.fipavpiacenza.it/risultati-classifiche.aspx'
 export default class FipavScraper {
   constructor() { }
 
-  public async getAvailableTeamsAndChampionship(params?: {
+  public async getAvailableTeamsAndChampionship(_params?: {
     data?: {
       from?: DateTime
     }
