@@ -10,6 +10,10 @@ declare module '@ioc:Adonis/Addons/Ally' {
     google: {
       config: GoogleDriverConfig
       implementation: GoogleDriverContract
+    },
+    googleIos: {
+      config: GoogleDriverConfig
+      implementation: GoogleDriverContract
     }
 	}
 }

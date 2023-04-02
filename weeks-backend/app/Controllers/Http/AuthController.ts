@@ -46,6 +46,38 @@ export default class AuthController {
   }
 
 
+  public async googleiosRedirect({ ally }: HttpContextContract) {
+    return ally.use('googleios').redirect()
+  }
+
+  public async googleiosCallback({ auth, ally, response }: HttpContextContract) {
+    const google = ally.use('googleios')
+
+
+    if (google.accessDenied()) {
+      throw new Error("Access denied");
+    } else if (google.stateMisMatch()) {
+      throw new Error('Request expired. Retry again');
+    } else if (google.hasError()) {
+      throw google.getError()
+    }
+
+    const googleUser = await google.user()
+
+    const user = await User.firstOrCreate({
+      email: googleUser.email || undefined,
+    }, {
+      name: googleUser.name || undefined,
+      avatarUrl: googleUser.avatarUrl || undefined,
+      password: googleUser.token.token
+    })
+    const token = await auth.use('api').login(user, {
+      expiresIn: '7days'
+    })
+
+    response.redirect().withQs(token.toJSON()).toPath(Env.get('GOOGLE_IOS_FRONTEND_CALLBACK_URL') || 'http://localhost:3000/auth/google/callback')
+  }
+
   public async googleRedirect({ ally }: HttpContextContract) {
     return ally.use('google').redirect()
   }
