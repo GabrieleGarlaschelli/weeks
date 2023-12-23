@@ -73,11 +73,17 @@ export default class AuthService extends FetchBasedService {
     }
   }
 
-  async loginWithGoogleCallback(params: { token: string, expiresAt: Date }) {
+  async loginWithGoogleCallback(params: { token: string, expiresAt: Date, refreshToken: string, refreshTokenExpiresAt: Date }) {
     if (browser) {
       Cookies.set(this.coockieName, params.token, {
         expires: new Date(params.expiresAt),
         sameSite: 'strict'
+      })
+
+      Cookies.set(this.refreshCoockieName, params.refreshToken, {
+        expires: new Date(params.refreshTokenExpiresAt),
+        sameSite: 'strict',
+        secure: true
       })
     }
   }

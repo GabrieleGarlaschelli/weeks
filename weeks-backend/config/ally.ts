@@ -28,12 +28,6 @@ const allyConfig: AllyConfig = {
 		clientId: Env.get('GOOGLE_CLIENT_ID'),
 		clientSecret: Env.get('GOOGLE_CLIENT_SECRET'),
     callbackUrl: Env.get('GOOGLE_CALLBACK_URL') || 'http://localhost:3333/auth/google/callback',
-  }, 
-  googleios: {
-    driver: 'google',
-    clientId: Env.get('GOOGLE_IOS_CLIENT_ID'),
-    clientSecret: Env.get('GOOGLE_IOS_CLIENT_SECRET'),
-    callbackUrl: Env.get('GOOGLE_IOS_CALLBACK_URL') || 'http://localhost:3333/auth/googleios/callback',
   }
 }
 

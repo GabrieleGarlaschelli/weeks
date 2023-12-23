@@ -22,11 +22,9 @@ export default Env.rules({
   DRIVE_DISK: Env.schema.enum(['local'] as const),
   NODE_ENV: Env.schema.enum(['development', 'production', 'test'] as const),
   GOOGLE_CLIENT_ID: Env.schema.string(),
+  GOOGLE_IOS_CLIENT_ID: Env.schema.string(),
   GOOGLE_CLIENT_SECRET: Env.schema.string(),
   GOOGLE_CALLBACK_URL: Env.schema.string.optional(),
-  GOOGLE_IOS_CLIENT_ID: Env.schema.string(),
-  GOOGLE_IOS_CLIENT_SECRET: Env.schema.string(),
-  GOOGLE_IOS_CALLBACK_URL: Env.schema.string.optional(),
   TELEGRAM_FIPAV_BOT_TOKEN: Env.schema.string.optional(),
   PUBLIC_URL: Env.schema.string.optional()
 })

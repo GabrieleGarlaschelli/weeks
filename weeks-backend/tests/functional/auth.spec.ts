@@ -49,4 +49,32 @@ test.group('Auth', () => {
 
     await user.delete()
   })
+
+  test('login with refresh token', async ({ client, assert }) => {
+    const user = await UserFactory
+      .merge({
+        email: 'test2@example.com',
+        password: 'passwordtest'
+      })
+      .create()
+
+    let response = await client.post('/auth/login').json({
+      email: 'test2@example.com',
+      password: 'passwordtest',
+      generateRefresh: true
+    })
+
+    let data = response.body()
+    let refreshToken = data.refreshToken
+
+    response = await client.post('/auth/refreshToken').headers({
+      'Authorization': 'Bearer ' + refreshToken
+    })
+
+    response.assertAgainstApiSpec()
+    data = response.body()
+
+    assert.isNotEmpty(data.token, "should generate the api token")
+    await user.delete()
+  })
 })

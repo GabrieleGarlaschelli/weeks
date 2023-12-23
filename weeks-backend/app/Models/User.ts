@@ -1,6 +1,7 @@
 import { CamelCaseBaseModel } from './CamelCaseBaseModel';
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
+import Encryption from '@ioc:Adonis/Core/Encryption'
 import { column, beforeSave, manyToMany, ManyToMany, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import Team from 'App/Models/Team';
 
@@ -30,6 +31,9 @@ export default class User extends CamelCaseBaseModel {
   @column()
   public rememberMeToken?: string
 
+  @column({ serializeAs: null })
+  public googleToken: string
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
@@ -56,5 +60,16 @@ export default class User extends CamelCaseBaseModel {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
+  }
+
+  @beforeSave()
+  public static async encryptGoogleToken(user: User) {
+    if (user.$dirty.googleToken) {
+      user.googleToken = await Encryption.encrypt(user.googleToken)
+    }
+  }
+
+  public getDecryptedGoogleToken(): string | null {
+    return Encryption.decrypt(this.googleToken)
   }
 }

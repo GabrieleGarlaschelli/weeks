@@ -241,6 +241,15 @@ paths:
                     format: date-time
                   expires_in:
                     type: number
+                  userId:
+                    type: number
+                    nullable: true
+                  refreshToken:
+                    type: string
+                    nullable: true
+                  refreshTokenExpiration:
+                    type: string
+                    format: date-time
     parameters:
       - name: email
         in: query
@@ -254,6 +263,26 @@ paths:
         required: true
         schema:
           type: string
+  /auth/refreshToken:
+    post:
+      summary: Return a brand new token to put in the authorization header with the refresh token as a parameter.
+      responses:
+        '200':
+          description: Auth token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  token:
+                    type: string
+                  expires_at:
+                    type: string
+                    format: date-time
+                  expires_in:
+                    type: number
   /auth/signup:
     post:
       summary: Signup and create a new user.

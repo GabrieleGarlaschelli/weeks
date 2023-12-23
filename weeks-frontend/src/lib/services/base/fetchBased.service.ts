@@ -1,6 +1,8 @@
+import { goto } from "$app/navigation";
 import UrlService from "../urls/urls.service";
 import Cookies from 'js-cookie'
 import qs from 'qs'
+import AuthService from '$lib/services/auth/auth.service'
 
 export type PostParams = {
   url: string,
@@ -15,7 +17,8 @@ export type DeleteParams = PostParams
 export type GetParams = {
   url: string,
   params?: string | string[][] | Record<string, any> | URLSearchParams | undefined,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
+  retrying?: boolean
 }
 
 export abstract class FetchBasedService {
@@ -27,6 +30,7 @@ export abstract class FetchBasedService {
   // many random token with random keys in the coockies and save 
   // wich one is the right one
   protected coockieName: string = "token"
+  protected refreshCoockieName: string = "refreshToken"
 
   constructor(params: {
     fetch: any,
@@ -106,7 +110,48 @@ export abstract class FetchBasedService {
       {
         headers: this._calculateHeaders(params.headers),
       }
-    ).then((response: any) => response.json())
+    ).then(async (response: any) => {
+      if(response.status == 401) {
+        let refreshToken = Cookies.get(this.refreshCoockieName)
+
+        if (!refreshToken) {
+          let service = new AuthService({ fetch: this.fetch })
+          service.logout()
+          throw new Error("unauthorized request")
+        } else if(!params.retrying) {
+          await this.refreshToken()
+          return await this.get({
+            ...params,
+            retrying: true
+          })
+        } else {
+          throw new Error("unauthorized request")
+        }
+      } else {
+        return response.json()
+      }
+    })
+  }
+
+  private async refreshToken() {
+    let refreshToken = Cookies.get(this.refreshCoockieName)
+
+    let response = await this.fetch(
+      this._calculateApiUrl('/auth/refreshToken'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + refreshToken
+        }
+      }
+    )
+
+    let token = await response.json()
+
+    Cookies.set(this.coockieName, token.token, {
+      expires: new Date(token.expiresAt),
+      sameSite: 'strict'
+    })
   }
 
   private _calculateApiUrl(url: string) {

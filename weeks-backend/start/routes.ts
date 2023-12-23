@@ -21,13 +21,14 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.post('/auth/login', 'AuthController.login')
+Route.post('/auth/refreshToken', 'AuthController.refreshToken')
 Route.post('/auth/signup', 'AuthController.signup')
 Route.post('/auth/logout', 'AuthController.logout').middleware('auth:api')
 Route.get('/auth/me', 'AuthController.me').middleware('auth:api')
 Route.get('/auth/google/redirect', 'AuthController.googleRedirect')
-Route.get('/auth/googleios/redirect', 'AuthController.googleiosRedirect')
 Route.get('/auth/google/callback', 'AuthController.googleCallback')
-Route.get('/auth/googleios/callback', 'AuthController.googleiosCallback')
+
+Route.post('/auth/google/loginWithIosGoogleToken', 'AuthController.loginWithIosGoogleToken')
 
 Route.resource('teams', 'TeamsController')
   .only(['index', 'store', 'update', 'show', 'destroy'])

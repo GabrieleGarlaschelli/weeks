@@ -80,6 +80,18 @@ declare module '@ioc:Adonis/Addons/Auth' {
     basic: {
       implementation: BasicAuthGuardContract<'user', 'basic'>
       config: BasicAuthGuardConfig<'user'>
+    },
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Tokens
+    |--------------------------------------------------------------------------
+    |
+    | To generate refresh tokens when requested
+    |
+    */
+    refresh: {
+      implementation: OATGuardContract<'user', 'refresh'>
+      config: OATGuardConfig<'user'>
     }
   }
 }

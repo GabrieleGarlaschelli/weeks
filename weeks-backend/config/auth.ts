@@ -34,6 +34,21 @@ const authConfig: AuthConfig = {
         model: () => import('App/Models/User'),
       },
     },
+    refresh: {
+      driver: 'oat',
+      tokenProvider: {
+        type: 'refresh',
+        driver: 'database',
+        table: 'api_tokens',
+        foreignKey: 'userId',
+      },
+      provider: {
+        driver: 'lucid',
+        identifierKey: 'id',
+        uids: ['email'],
+        model: () => import('App/Models/User'),
+      },
+    },
     basic: {
       driver: 'basic',
       realm: 'Login',
