@@ -1,4 +1,4 @@
-import { FetchBasedService } from "../base/fetchBased.service";
+import { FetchBasedService } from "$lib/services/common/fetchBased.service";
 import { browser } from "$app/environment";
 
 export type Role = {
@@ -52,23 +52,14 @@ export type RoleCans = {
 }
 
 export default class RolesService extends FetchBasedService {
-  constructor(params: {
-    fetch: any
-  }) {
-    super({
-      fetch: params.fetch,
-    })
-  }
-
   public async create(params: {
     name?: string,
     convocable?: boolean,
     cans?: any
   }): Promise<Role> {
-    if (!browser) throw new Error('only available in browser')
     if (!params.name) throw new Error('name must be defined')
 
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/roles',
       body: params
     })
@@ -83,12 +74,11 @@ export default class RolesService extends FetchBasedService {
       id: number
     }
   }): Promise<PaginatedRoles> {
-    if (!browser) throw new Error('only available in browser')
     if (!params.team || !params.team.id) throw new Error('team must be defined')
     if (!params.page) params.page = 1
     if (!params.perPage) params.perPage = 300
 
-    let response = await this.get({
+    let response = await this.client.get({
       url: `/teams/${params.team.id}/roles`,
       params: {
         page: params.page,
@@ -105,7 +95,7 @@ export default class RolesService extends FetchBasedService {
   public async show(params: {
     id: number
   }): Promise<Role> {
-    let response = await this.get({
+    let response = await this.client.get({
       url: '/roles/' + params.id
     })
 
@@ -118,7 +108,7 @@ export default class RolesService extends FetchBasedService {
     convocable?: boolean,
     cans?: RoleCans
   }): Promise<Role> {
-    let response = await this.put({
+    let response = await this.client.put({
       url: '/roles/' + params.id,
       body: params
     })
@@ -129,7 +119,7 @@ export default class RolesService extends FetchBasedService {
   public async destroy(params: {
     id: number,
   }): Promise<void> {
-    let response = await this.delete({
+    let response = await this.client.delete({
       url: '/roles/' + params.id,
     })
 

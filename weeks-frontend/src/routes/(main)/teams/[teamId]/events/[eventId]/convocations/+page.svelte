@@ -5,7 +5,7 @@
   import type { Teammate } from "$lib/services/teams/teams.service";
   import event from '$lib/stores/events/eventShow'
   import team from '$lib/stores/teams/teamsShow'
-  import Icon from "@likable-hair/svelte/media/Icon.svelte";
+  import { Icon } from "@likable-hair/svelte";
   import CansService from "$lib/services/roles/cans.service";
 
   function handleConfirmOrDeny(e: CustomEvent<{ convocation: Convocation }>) {

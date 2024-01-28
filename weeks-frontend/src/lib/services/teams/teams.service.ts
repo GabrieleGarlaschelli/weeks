@@ -1,6 +1,5 @@
-import { FetchBasedService } from "../base/fetchBased.service";
-import { browser } from "$app/environment";
-import type { User } from "../users/user.service";
+import { FetchBasedService } from "$lib/services/common/fetchBased.service";
+import type { User } from "../auth/auth.service";
 import type { Role } from "../roles/roles.service";
 import type { Invitation } from "../invitations/invitations.service";
 
@@ -36,22 +35,14 @@ export type PaginatedTeams = {
 }
 
 export default class TeamsService extends FetchBasedService {
-  constructor(params: {
-    fetch: any
-  }) {
-    super({
-      fetch: params.fetch,
-    })
-  }
 
   public async create(params: {
     name?: string,
     notes?: string
   }): Promise<Team> {
-    if (!browser) throw new Error('only available in browser')
     if(!params.name) throw new Error('name must be defined')
 
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/teams',
       body: params
     })
@@ -63,7 +54,6 @@ export default class TeamsService extends FetchBasedService {
     page?: number,
     perPage?: number
   }): Promise<PaginatedTeams> {
-    if (!browser) throw new Error('only available in browser')
     if(!params) params = {
       page: 1,
       perPage: 300
@@ -71,7 +61,7 @@ export default class TeamsService extends FetchBasedService {
     if (!params.page) params.page = 1
     if (!params.perPage) params.perPage = 300
 
-    let response = await this.get({
+    let response = await this.client.get({
       url: '/teams',
       params: params
     })
@@ -82,7 +72,7 @@ export default class TeamsService extends FetchBasedService {
   public async show(params: {
     id: number
   }): Promise<Team> {
-    let response = await this.get({
+    let response = await this.client.get({
       url: '/teams/' + params.id
     })
 
@@ -94,7 +84,7 @@ export default class TeamsService extends FetchBasedService {
     name?: string,
     notes?: string
   }): Promise<Team> {
-    let response = await this.put({
+    let response = await this.client.put({
       url: '/teams/' + params.id,
       body: params
     })

@@ -1,21 +1,17 @@
-<script lang="ts" context="module">
-  import type { Teammate } from '$lib/services/teams/teams.service'
-  import type { Role } from '$lib/services/roles/roles.service'
-  import type { Item } from '@likable-hair/svelte/forms/Autocomplete.svelte'
-</script>
-
 <script lang="ts">
-  import LabelAndTextfield from '$lib/components/LabelAndTextfield.svelte';
-	import RolesAutocomplete from "../roles/RolesAutocomplete.svelte";
+  import LabelAndTextfield from '$lib/components/common/LabelAndTextfield.svelte';
+	import type { ComponentProps } from 'svelte';
+  import StandardAutocomplete from '../common/StandardAutocomplete.svelte';
+	import type { Role } from '$lib/services/roles/roles.service';
 
   export let alias: string | undefined,
-    team: { id: number },
     role: {
       id: number,
       name: string
-    } | undefined
+    } | undefined,
+    teamRoles: Role[] = []
 
-  let selectedRoles: Item[] = []
+  let selectedRoles: NonNullable<ComponentProps<StandardAutocomplete>['values']> = []
 
   $: selectedRoles = !!role ? [{
     value: role.id.toString(),
@@ -32,21 +28,33 @@
       role = undefined
     }
   }
+
+  $: selectableRoles = teamRoles.map((role) => {
+    return {
+      value: role.id.toString(),
+      label: role.name
+    }
+  })
 </script>
 
-<div class="form">
+<div class="flex gap-4">
   <div>
     <LabelAndTextfield
       label="Alias"
       name="alias"
+      placeholder="Alias"
       bind:value={alias}
     ></LabelAndTextfield>
   </div>
   <div>
-    <RolesAutocomplete
-      bind:values={selectedRoles}
-      on:change={handleRoleChange}
-      team={team}
-    ></RolesAutocomplete>
+    <div>Ruolo</div>
+    <div class="mt-2">
+      <StandardAutocomplete
+        items={selectableRoles}
+        bind:values={selectedRoles}
+        on:change={handleRoleChange}
+        placeholder="Ruolo"
+      ></StandardAutocomplete>
+    </div>
   </div>
 </div>

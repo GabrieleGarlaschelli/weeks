@@ -1,16 +1,42 @@
 <script lang="ts">
-    import { dev } from "$app/environment"
-    import * as Sentry from "@sentry/svelte";
-    import { BrowserTracing } from "@sentry/tracing";
-    
-    if(!dev) {
-        Sentry.init({
-            dsn: "https://df08178abe22407584194fba9cb643d2@o823491.ingest.sentry.io/4504009711484928",
-            integrations: [new BrowserTracing()],
-    
-            tracesSampleRate: 1.0,
-        });
-    }
+  import type { LayoutData } from './$types';
+  import user from '$lib/stores/auth/user'
+  import '../app.css'
+  import NProgress from 'nprogress';
+	import { navigating } from '$app/stores';
+
+  /************************************
+  ***** NProgress for page loader *****
+  *************************************/
+  
+  // configuration docs: https://github.com/rstacruz/nprogress#configuration
+
+	import 'nprogress/nprogress.css';
+
+  NProgress.configure({
+		minimum: 0.16,
+    template: `<div class="bar" style="background-color: rgb(var(--global-color-primary-500)); height: 4px" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div style="border-top-color: #FFFFFF; border-left-color: #FFFFFF" class="spinner-icon"></div></div>`
+	});
+
+	$: {
+		if ($navigating) {
+			NProgress.start();
+		}
+		if (!$navigating) {
+			NProgress.done();
+		}
+	}
+
+  /*************************************
+  ***** Loading current user store *****
+  **************************************/
+
+  export let data: LayoutData;
+  user.set(data.user)
 </script>
+
+<svelte:head>
+  <title>Weeks</title>
+</svelte:head>
 
 <slot></slot>

@@ -5,6 +5,8 @@
 <script lang="ts">
   import InvitationsService from '$lib/services/invitations/invitations.service';
   import { createEventDispatcher } from 'svelte';
+  import StandardButton from '$lib/components/common/StandardButton.svelte';
+
   let dispatch = createEventDispatcher<{
     'accept': {
       invitation: Invitation
@@ -29,37 +31,32 @@
       dispatch('accept', { invitation: newInvitation })
     })
   }
-
-  import colors from "$lib/stores/colors";
-  import LinkButton from '$lib/components/LinkButton.svelte';
-  import StandardButton from '../StandardButton.svelte';
 </script>
 
 {#if !!invitations && invitations.length > 0}
   {#each invitations as invitation}
     <div 
-      style:background-color={$colors.thinContrast}
+      style:background-color="rgb(var(--global-color-background-300))"
       class="invitation-container"
     >
       <div class="invitation-info-container">
         <div class="team-name">{invitation.team.name}</div>
         <div style:margin-top="10px">
           {#if !!invitation.role}
-            {invitation.invitedBy.name} ti ha invitato al team come 
-            <span style:color={$colors.primary}>{invitation.role.name}</span>
+            {invitation.invitedBy.firstname} {invitation.invitedBy.lastname} ti ha invitato al team come
+            <span style:color="rgb(var(--global-color-primary-500))">{invitation.role.name}</span>
           {:else}
-            {invitation.invitedBy.name} ti ha invitato al team
+            {invitation.invitedBy.firstname} {invitation.invitedBy.lastname} ti ha invitato al team
           {/if}
         </div>
       </div>
       <div class="button-container">
         <div class="link-button-container">
-          <LinkButton
+          <button
             on:click={() => handleReject(invitation)}
-          >Rifiuta</LinkButton>
+          >Rifiuta</button>
         </div>
         <StandardButton
-          width={"auto"}
           on:click={() => handleAccept(invitation)}
         >Accetta</StandardButton>
       </div>

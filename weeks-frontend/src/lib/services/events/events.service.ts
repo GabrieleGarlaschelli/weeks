@@ -1,7 +1,6 @@
-import { FetchBasedService } from "../base/fetchBased.service";
-import { browser } from "$app/environment";
+import { FetchBasedService } from "$lib/services/common/fetchBased.service";
 import type { Team } from "$lib/services/teams/teams.service"
-import type { User } from "$lib/services/users/user.service"
+import type { User } from "../auth/auth.service";
 import type { Convocation } from "$lib/services/convocations/convocations.service";
 
 export type Event = {
@@ -21,14 +20,6 @@ export type Event = {
 }
 
 export default class EventsService extends FetchBasedService {
-  constructor(params: {
-    fetch: any
-  }) {
-    super({
-      fetch: params.fetch,
-    })
-  }
-
   public async list(params: {
     filters: { 
       from: Date,
@@ -38,9 +29,7 @@ export default class EventsService extends FetchBasedService {
       }
     },
   }): Promise<Event[]> {
-    if (!browser) throw new Error('only available in browser')
-
-    let response = await this.get({
+    let response = await this.client.get({
       url: '/events',
       params: params
     })
@@ -64,9 +53,7 @@ export default class EventsService extends FetchBasedService {
       teammateId: number
     }[]
   }): Promise<Event[]> {
-    if (!browser) throw new Error('only available in browser')
-
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/events',
       body: {
         event: params
@@ -83,7 +70,7 @@ export default class EventsService extends FetchBasedService {
     toWeekYear: number,
     team: { id: number }
   }): Promise<Event[]> {
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/events/copyWeek',
       body: params
     })
@@ -98,7 +85,7 @@ export default class EventsService extends FetchBasedService {
   public async show(params: {
     id: number
   }): Promise<Event> {
-    let response = await this.get({
+    let response = await this.client.get({
       url: '/events/' + params.id
     })
 
@@ -112,7 +99,7 @@ export default class EventsService extends FetchBasedService {
     id: number,
     name?: string,
   }): Promise<Event> {
-    let response = await this.put({
+    let response = await this.client.put({
       url: '/events/' + params.id,
       body: params
     })
@@ -123,7 +110,7 @@ export default class EventsService extends FetchBasedService {
   public async destroy(params: {
     id: number,
   }): Promise<void> {
-    let response = await this.delete({
+    let response = await this.client.delete({
       url: '/events/' + params.id,
     })
 

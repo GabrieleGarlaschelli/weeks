@@ -3,9 +3,10 @@
 </script>
 
 <script lang="ts">
+import { DateTime } from "luxon";
+
   export let team: Team
   
-  import DateTimeFormattor from "$lib/components/common/DateTimeFormattor.svelte";
 </script>
 
     
@@ -21,15 +22,13 @@
   <tr class="field-row">
     <td class="field-name">Creato il</td>
     <td>
-      <DateTimeFormattor
-        datetime={new Date(team.createdAt)}
-      ></DateTimeFormattor>
+      {DateTime.fromJSDate(new Date(team.createdAt)).setLocale('it-IT').toLocaleString(DateTime.DATETIME_FULL)}
     </td>
   </tr>
   <tr class="field-row">
     <td class="field-name">Proprietario</td>
     <td>
-      {team.owner?.name}
+      {team.owner?.firstname} {team.owner?.lastname}
     </td>
   </tr>
 </table>

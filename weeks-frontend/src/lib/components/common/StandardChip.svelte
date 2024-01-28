@@ -1,21 +1,28 @@
 <script lang="ts">
-  export let warning: boolean = false
 
-  import Chip from '@likable-hair/svelte/navigation/Chip.svelte'
-  import colors from '$lib/stores/colors'
+  export let close: boolean = false,
+    closeIcon: string = "mdi-close",
+    text: string | undefined = undefined,
+    fontWeight: number | undefined = undefined
+
+  import { Chip } from '@likable-hair/svelte'
 </script>
 
 <Chip
   label
-  color={warning ? $colors.warningBackground : $colors.tertiary}
-  textColor={$colors.contrast}
+  {close}
+  {closeIcon}
   on:click
+  on:close
 >
-  <div 
+  <div
     style:min-height="30px"
     style:display="flex"
     style:align-items="center"
+    style:font-weight={fontWeight}
   >
-    <slot></slot>
+    <slot>
+      {text}
+    </slot>
   </div>
 </Chip>

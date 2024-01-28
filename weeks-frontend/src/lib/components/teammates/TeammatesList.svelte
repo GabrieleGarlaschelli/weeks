@@ -1,13 +1,16 @@
 <script lang="ts" context="module">
   import type { Teammate, Team } from '$lib/services/teams/teams.service'
-  import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, type ComponentProps } from 'svelte';
   import InvitationsService from '$lib/services/invitations/invitations.service'
   import CansService from '$lib/services/roles/cans.service';
+  import { SimpleTable, Icon } from '@likable-hair/svelte';
+  import StandardTextfield from '$lib/components/common/StandardTextfield.svelte';
+  import StandardButton from '$lib/components/common/StandardButton.svelte';
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
   let dispatch = createEventDispatcher<{
     "destroy": { },
@@ -17,27 +20,33 @@
     team: Pick<Team, 'id' | 'ownerId'>,
     searchable: boolean = false
 
-  let headers: Header[] = [
+  let headers: ComponentProps<SimpleTable>['headers'] = [
     {
       value: "name",
       label: "Nome",
-      type: 'custom',
+      type: {
+        key: 'custom'
+      }
     },
     {
       value: "email",
       label: "Email",
-      type: 'custom',
+      type: {
+        key: 'custom'
+      }
     },
     {
       value: "role",
       label: "Ruolo",
-      type: 'custom',
+      type: {
+        key: 'custom'
+      }
     },
   ]
 
   let searchText: string
   $: filteredTeammates = !!searchText ? teammates.filter((teammate) => {
-    return teammate.user.name.toLowerCase().includes(searchText.toLowerCase())
+    return (teammate.user.firstname.toLowerCase() + teammate.user.lastname.toLowerCase()).includes(searchText.toLowerCase())
   }) : teammates
 
   function inviteUser(event: any) {
@@ -69,13 +78,6 @@
       })
     }
   }
-
-  import StandardTable from '$lib/components/common/StandardTable.svelte';
-  import StandardTextfield from '$lib/components/StandardTextfield.svelte';
-  import Icon from '@likable-hair/svelte/media/Icon.svelte';
-  import colors from '$lib/stores/colors';
-  import StandardButton from '$lib/components/StandardButton.svelte';
-  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 </script>
 
 
@@ -87,7 +89,6 @@
   >
     <StandardTextfield
       bind:value={searchText}
-      maxWidth="300px"
       placeholder="Cerca partecipanti ..."
     >
       <svelte:fragment
@@ -96,7 +97,7 @@
         <div style:margin-right="10px">
           <Icon 
             name="mdi-search-web"
-            color={$colors.lightContrast}
+            --icon-color="rgb(var(--global-color-contrast-500), .5)"
           ></Icon>
         </div>
       </svelte:fragment>
@@ -117,23 +118,18 @@
 {/if}
 
 <div
-  style:max-width="100%"
-  style:overflow="auto"
+  class="overflow-auto w-full mt-4"
 >
-  <StandardTable
+  <SimpleTable
     headers={headers}
     items={filteredTeammates}
   >
     <svelte:fragment 
-      slot="customColumn"
+      slot="custom"
       let:item
       let:header
     >
-      {#if header.value == 'name'}
-        {item.user.name}
-      {:else if header.value == 'email'}
-        {item.user.email}
-      {:else if header.value == 'role'}
+      {#if header.value == 'role'}
         {#if !!item.role?.name}
           {item.role?.name}
         {:else if !!team.ownerId && item.user.id == team.ownerId}
@@ -141,12 +137,16 @@
         {:else}
           Nessuno
         {/if}
+      {:else if header.value == 'name'}
+        {item.alias || `${item.user.firstname} ${item.user.lastname}`}
+      {:else if header.value == 'email'}
+        {item.user.email}
       {/if}
     </svelte:fragment>
     <div 
       style:display="flex"
       style:justify-content="end"
-      slot="appendLastColumn" 
+      slot="rowActions"
       let:item
     >
       {#if CansService.can('Team', 'update')}
@@ -162,18 +162,18 @@
         <Icon 
           name="mdi-delete"
           click
-          color={$colors.warning}
+          --icon-color="rgb(var(--global-color-error-500))"
           on:click={() => handleDeleteClick(item)}
         ></Icon>
       {/if}
     </div>
-  </StandardTable>
+  </SimpleTable>
 </div>
 
 <ConfirmDialog
   confirmText="Elimina"
   title="Eliminazione ruolo"
-  description={`Sei sicuro di voler rimuovere ${deletingTeammate?.user?.name}?`}
+  description={`Sei sicuro di voler rimuovere ${deletingTeammate?.user?.firstname} ${deletingTeammate?.user?.lastname}?`}
   bind:open={confirmDialogOpen}
   on:cancel-click={() => confirmDialogOpen = false}
   on:confirm-click={confirmTeammateDeletion}

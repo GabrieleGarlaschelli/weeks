@@ -1,23 +1,20 @@
 <script lang="ts" context="module">
   import type { Convocation } from "$lib/services/convocations/convocations.service";
-  import type { Chip } from "$lib/components/common/ChipMultipleSelection.svelte"
 </script>
 
 <script lang="ts">
-  import user from "$lib/stores/user";
-  import UserAvatar from "$lib/components/UserAvatar.svelte";
+  import user from "$lib/stores/auth/user";
+  import UserAvatar from "$lib/components/common/UserAvatar.svelte";
   import StandardChip from '$lib/components/common/StandardChip.svelte';
-  import Icon from '@likable-hair/svelte/media/Icon.svelte';
+  import { Icon, CircularLoader, MediaQuery, HorizontalStackedProgress } from '@likable-hair/svelte';
   import CansService from "$lib/services/roles/cans.service";
-  import CircularLoader from '@likable-hair/svelte/loaders/CircularLoader.svelte';
-  import colors from "$lib/stores/colors";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, type ComponentProps } from "svelte";
   import ConvocationsService from "$lib/services/convocations/convocations.service";
-  import MediaQuery from '@likable-hair/svelte/common/MediaQuery.svelte'
-  import Divider from "$lib/components/Divider.svelte"
+  import Divider from "$lib/components/common/Divider.svelte"
   import StandardDialog from '$lib/components/common/StandardDialog.svelte'
-	import OptionSelector, { type Option } from "$lib/components/common/OptionSelector.svelte";
   import RoleMultipleSelectorChip from "$lib/components/roles/RoleMultipleSelectorChip.svelte"
+	import type { Role } from "$lib/services/roles/roles.service";
+  import OptionSelector from "$lib/components/common/OptionSelector.svelte";
 
   let dispatch = createEventDispatcher<{
     'confirm': {
@@ -34,7 +31,7 @@
     },
   }>()
 
-  let editConvocationsOptions: Option[]
+  let editConvocationsOptions: ComponentProps<OptionSelector>['options']
   $: if(!!editingConvocation) {
     editConvocationsOptions = []
     if(CansService.can('Convocation', 'confirm') || editingConvocation.teammate.userId == $user?.id) {
@@ -64,7 +61,7 @@
     editConvocationsOptions = [...editConvocationsOptions]
   }
 
-  function handleConvocationOptionClick(e: CustomEvent<{option: Option}>) {
+  function handleConvocationOptionClick(e: CustomEvent<{ option: any }>) {
     if(!!editingConvocation) {
       if(e.detail.option.name == 'confirm') confirmConvocation(editingConvocation)
       else if(e.detail.option.name == 'deny') denyConvocation(editingConvocation)
@@ -75,7 +72,8 @@
   }
 
   export let convocations: Convocation[] = [],
-    team: { id: number } | undefined
+    team: { id: number } | undefined,
+    roles: Role[] = []
 
   function translateConfirmationStatus(confirmationStatus: string | undefined) {
     if(!confirmationStatus) return 'Non specificato'
@@ -141,7 +139,7 @@
     convocationDetailDialogOpen = true
   }
 
-  let selectedRoles: Chip[] = []
+  let selectedRoles: ComponentProps<RoleMultipleSelectorChip>['value'] = []
 
   $: filteredConvocations = convocations.filter((c) => {
     if(!selectedRoles || selectedRoles.length == 0) return true
@@ -154,20 +152,27 @@
 <MediaQuery
   let:lAndUp
 >
-  <div class="container">
+  <div>
     <div class="summary">
-      <div class="summary-row">
-        <div>Convocazioni totali:</div>
-        <div>{totalConvocations}</div>
-      </div>
-      <div class="summary-row">
-        <div>Presenze rifiutate:</div>
-        <div>{deniedConvocations}</div>
-      </div>
-      <div class="summary-row">
-        <div>Presenze confermate:</div>
-        <div>{confirmedConvocations}</div>
-      </div>
+      <HorizontalStackedProgress
+        progresses={[
+          { 
+            label: 'Non specificato', 
+            value: totalConvocations - deniedConvocations - confirmedConvocations,
+            color: 'grey'
+          },
+          { 
+            label: 'Rifiutate', 
+            value: deniedConvocations, 
+            color: 'rgb(var(--global-color-error-500))' 
+          },
+          { 
+            label: 'Confermate', 
+            value: confirmedConvocations, 
+            color: 'rgb(var(--global-color-primary-500))' 
+          }
+        ]}
+      ></HorizontalStackedProgress>
     </div>
 
     <div>
@@ -177,7 +182,7 @@
           style:margin-bottom="20px"
         >
           <RoleMultipleSelectorChip
-            bind:team={team}
+            roles={roles}
             bind:value={selectedRoles}
             onlyConvocable={true}
           ></RoleMultipleSelectorChip>
@@ -195,7 +200,7 @@
                 <div class="name-column">
                   <UserAvatar
                     src={convocation.teammate.user.avatarUrl}
-                    username={convocation.teammate.alias || convocation.teammate.user.name}
+                    username={convocation.teammate.alias || convocation.teammate.user.firstname + " " + convocation.teammate.user.lastname}
                     description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
                   ></UserAvatar>
                 </div>
@@ -203,7 +208,16 @@
                   class="chip-column"
                 >
                   <StandardChip
-                    warning={convocation.confirmationStatus == 'denied'}
+                    --chip-hover-background-color={
+                      convocation.confirmationStatus == 'denied' ? "red" : 
+                      convocation.confirmationStatus == 'confirmed' ? "rgb(var(--global-color-primary-500))" :
+                      'rgb(var(--global-color-background-400))' 
+                    }
+                    --chip-background-color={
+                      convocation.confirmationStatus == 'denied' ? "red" : 
+                      convocation.confirmationStatus == 'confirmed' ? "rgb(var(--global-color-primary-500))" :
+                      'rgb(var(--global-color-background-400))' 
+                    }
                   >
                     <span style:font-weight="700">{translateConfirmationStatus(convocation.confirmationStatus)}</span>
                   </StandardChip>
@@ -238,7 +252,6 @@
                     {/if}
                   {:else}
                     <CircularLoader
-                      color={$colors.contrast}
                     ></CircularLoader>
                   {/if}
                 </div>
@@ -252,14 +265,13 @@
           style:flex-direction="column"
         >
           {#each filteredConvocations as convocation}
-            <div 
-              style:display="flex"
-              style:justify-content="space-between"
+            <button
+              class="flex justify-between items-center mb-2"
               on:click={() => handleMobileConvocationRowClick(convocation)}
             >
               <UserAvatar
                 src={convocation.teammate.user.avatarUrl}
-                username={convocation.teammate.alias || convocation.teammate.user.name}
+                username={convocation.teammate.alias || convocation.teammate.user.firstname + " " + convocation.teammate.user.lastname}
                 description={!!convocation.teammate.role ? convocation.teammate.role.name : undefined}
               ></UserAvatar>
               <div class="status-container">
@@ -270,7 +282,7 @@
                   class:dot-pending={convocation.confirmationStatus == 'pending'}
                 ></div>
               </div>
-            </div>
+            </button>
             <Divider
               marginBottom="8px"
               marginLeft="0px"
@@ -283,14 +295,23 @@
         {#if !!editingConvocation}
           <StandardDialog
             bind:open={convocationDetailDialogOpen}
-            title={editingConvocation?.teammate.user.name}
+            title={editingConvocation.teammate.alias || editingConvocation.teammate.user.firstname + " " + editingConvocation.teammate.user.lastname}
           >
             <div
               style:display="flex"
               style:margin-bottom="10px"
             >
               <StandardChip
-                warning={editingConvocation.confirmationStatus == 'denied'}
+                --chip-hover-background-color={
+                  editingConvocation.confirmationStatus == 'denied' ? "red" : 
+                  editingConvocation.confirmationStatus == 'confirmed' ? "rgb(var(--global-color-primary-500))" :
+                  'rgb(var(--global-color-background-400))' 
+                }
+                --chip-background-color={
+                  editingConvocation.confirmationStatus == 'denied' ? "red" : 
+                  editingConvocation.confirmationStatus == 'confirmed' ? "rgb(var(--global-color-primary-500))" :
+                  'rgb(var(--global-color-background-400))' 
+                }
               >
                 <span style:font-weight="700">{translateConfirmationStatus(editingConvocation.confirmationStatus)}</span>
               </StandardChip>
@@ -336,24 +357,12 @@
       width: 200px;
       display: flex;
     }
-
-    .container {
-      display: flex;
-      justify-content: space-between;
-      flex-direction: row-reverse;
-    }
   }
 
   .summary {
     font-weight: 300;
     color: var(--global-light-contrast-color);
     margin-bottom: 20px;
-  }
-
-  .summary-row { 
-    margin-top: 5px;
-    display: flex;
-    gap: 10px;
   }
 
   .convocations-list {
@@ -375,15 +384,15 @@
   }
 
   .dot-confirmed {
-    background-color: var(--global-primary-color);
+    background-color: rgb(var(--global-color-primary-500));
   }
 
   .dot-pending {
-    background-color: var(--global-thin-contrast-color);
+    background-color: rgb(var(--global-color-background-400));
   }
 
   .dot-denied {
-    background-color: var(--global-warning-color);
+    background-color: rgb(var(--global-color-error-500));
   }
 
   .info-container {

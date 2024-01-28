@@ -4,6 +4,11 @@
 
 <script lang="ts">
   import { DateTime } from 'luxon';
+  import { MediaQuery, Icon } from "@likable-hair/svelte";
+  import EventsList from "$lib/components/events/EventsList.svelte";
+	import GlobalCalendar from './GlobalCalendar.svelte';
+
+  export let events: Event[] = []
 
   let selectedDate: Date | undefined,
     selectedEvents: Event[] = []
@@ -13,11 +18,6 @@
   function handleCloseDrawer() {
     selectedDate = undefined
   }
-
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
-  import EventsList from "$lib/components/events/EventsList.svelte";
-  import Icon from "@likable-hair/svelte/media/Icon.svelte";
-	import GlobalCalendar from './GlobalCalendar.svelte';
 </script>
 
 <MediaQuery 
@@ -29,6 +29,7 @@
     <GlobalCalendar
       bind:selectedDate={selectedDate}
       bind:selectedEvents={selectedEvents}
+      bind:events={events}
     ></GlobalCalendar>
     {#if !mAndDown}
       <div 

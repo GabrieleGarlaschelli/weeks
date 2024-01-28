@@ -1,11 +1,8 @@
-<script lang="ts" context="module">
-  import type { Event } from "$lib/services/events/events.service"
-</script>
-
 <script lang="ts">
+  import { DateTime } from "luxon";
+  import type { Event } from "$lib/services/events/events.service"
+
   export let event: Event
-  
-  import DateTimeFormattor from "$lib/components/common/DateTimeFormattor.svelte";
 </script>
 
     
@@ -21,31 +18,25 @@
   <tr class="field-row">
     <td class="field-name">Inizio</td>
     <td>
-      <DateTimeFormattor
-        datetime={new Date(event.start)}
-      ></DateTimeFormattor>
+      {DateTime.fromJSDate(new Date(event.start)).setLocale('it').toLocaleString(DateTime.DATETIME_MED)}
     </td>
   </tr>
   <tr class="field-row">
     <td class="field-name">Fine</td>
     <td>
-      <DateTimeFormattor
-        datetime={new Date(event.end)}
-      ></DateTimeFormattor>
+      {DateTime.fromJSDate(new Date(event.end)).setLocale('it').toLocaleString(DateTime.DATETIME_MED)}
     </td>
   </tr>
   <tr class="field-row">
     <td class="field-name">Creato da</td>
     <td>
-      {event.createdBy.name}
+      {event.createdBy.firstname} {event.createdBy.lastname}
     </td>
   </tr>
   <tr class="field-row">
     <td class="field-name">Creato il</td>
     <td>
-      <DateTimeFormattor
-        datetime={new Date(event.createdAt)}
-      ></DateTimeFormattor>
+      {DateTime.fromJSDate(new Date(event.createdAt)).setLocale('it').toLocaleString(DateTime.DATETIME_MED)}
     </td>
   </tr>
 </table>

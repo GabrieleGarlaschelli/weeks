@@ -9,6 +9,9 @@
   import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte'
   import TeammateService from '$lib/services/teammates/teammates.service'
 	import { onMount } from 'svelte';
+	import type { PageData } from "./$types";
+
+  export let data: PageData
 
   let teammate: Teammate | undefined
 
@@ -73,12 +76,12 @@
     style:font-size="1.3rem"
     style:margin-top="20px"
     style:margin-bottom="20px"
-  >{teammate.user.name}</div>
+  >{teammate.user.firstname} {teammate.user.lastname}</div>
 
   <TeammateForm
     bind:alias={teammate.alias}
     bind:role={teammate.role}
-    team={{ id: teammate.teamId }}
+    teamRoles={data.team.roles}
   ></TeammateForm>
   <ConfirmOrCancelButtons
     on:confirm-click={handleConfirmClick}

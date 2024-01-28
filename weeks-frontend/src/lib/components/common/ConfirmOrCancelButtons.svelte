@@ -13,7 +13,7 @@
       nativeEvent: MouseEvent
     },
     "cancel-click": {
-      nativeEvent: MouseEvent
+      nativeEvent: MouseEvent | KeyboardEvent
     },
   }>()
 
@@ -25,7 +25,7 @@
     }
   }
 
-  function handleCancel(nativeEvent: MouseEvent) {
+  function handleCancel(nativeEvent: MouseEvent | KeyboardEvent) {
     if(!cancelDisable) {
       dispatch('cancel-click', {
         nativeEvent
@@ -33,8 +33,7 @@
     }
   }
 
-  import LinkButton from "$lib/components/LinkButton.svelte";
-  import StandardButton from "$lib/components/StandardButton.svelte";
+  import StandardButton from "$lib/components/common/StandardButton.svelte";
 </script>
 
 <div
@@ -44,17 +43,21 @@
   <div
     class="link-button-container"
   >
-    <LinkButton
-      disabled={cancelDisable}
-      on:click={handleCancel}
-    >{cancelText}</LinkButton>
+    <div></div>
+    <slot name="cancel-button" {loading} {handleCancel} {cancelText}>
+      <button
+        class="text-button"
+        on:click={handleCancel}
+      >{cancelText}</button>
+    </slot>
   </div>
-  <StandardButton
-    width={"auto"}
-    loading={loading}
-    on:click={handleConfirm}
-    disabled={confirmDisable}
-  >{confirmText}</StandardButton>
+  <slot name="confirm-button" {loading} {handleConfirm} {confirmDisable} {confirmText}>
+    <StandardButton
+      loading={loading}
+      on:click={handleConfirm}
+      disabled={confirmDisable}
+    >{confirmText}</StandardButton>
+  </slot>
 </div>
 
 
@@ -68,8 +71,21 @@
   @media (min-width: 769px){
     .button-container {
       justify-content: end;
+      align-items: center;
       gap: 15px;
     }
+  }
+
+  .text-button {
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: none;
   }
 
   .button-container {

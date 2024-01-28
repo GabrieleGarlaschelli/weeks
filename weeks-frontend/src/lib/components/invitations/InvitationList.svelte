@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
   import type { Invitation } from '$lib/services/invitations/invitations.service'
-  import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
 </script>
 
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, type ComponentProps } from 'svelte';
+  import { Icon, SimpleTable } from '@likable-hair/svelte';
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
   let dispatch = createEventDispatcher<{
     "discard": { 
@@ -15,26 +15,34 @@
 
   export let invitations: Invitation[] = []
 
-  let headers: Header[] = [
+  let headers: ComponentProps<SimpleTable>['headers'] = [
     {
       value: "invitedEmail",
       label: "Email",
-      type: 'string',
+      type: {
+        key: 'string'
+      },
     },
     {
       value: "status",
       label: "Stato",
-      type: 'custom',
+      type: {
+        key: 'custom'
+      },
     },
     {
       value: "role",
       label: "Ruolo",
-      type: 'custom',
+      type: {
+        key: 'custom'
+      },
     },
     {
       value: "invitedBy",
       label: "Invitato da",
-      type: 'custom',
+      type: {
+        key: 'custom'
+      },
     },
   ]
 
@@ -53,23 +61,18 @@
       })
     }
   }
-
-  import StandardTable from '$lib/components/common/StandardTable.svelte';
-  import Icon from '@likable-hair/svelte/media/Icon.svelte';
-  import colors from '$lib/stores/colors';
-  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 </script>
 
 <div
   style:max-width="100%"
   style:overflow="auto"
 >
-  <StandardTable
+  <SimpleTable
     headers={headers}
     items={invitations}
   >
     <svelte:fragment 
-      slot="customColumn"
+      slot="custom"
       let:item
       let:header
     >
@@ -88,17 +91,17 @@
     <div 
       style:display="flex"
       style:justify-content="end"
-      slot="appendLastColumn" 
+      slot="rowActions" 
       let:item
     >
       <Icon 
         name="mdi-delete"
         click
-        color={$colors.warning}
+        --icon-color="rgb(var(--global-color-error-500))"
         on:click={() => handleDeleteClick(item)}
       ></Icon>
     </div>
-  </StandardTable>
+  </SimpleTable>
 </div>
 
 <ConfirmDialog

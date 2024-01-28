@@ -1,25 +1,26 @@
-<script lang="ts" context="module">
-  import type { User } from '$lib/services/users/user.service'
-  import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
-</script>
-
 <script lang="ts">
+  import type { User } from '$lib/services/auth/auth.service';
+  import { SimpleTable } from '@likable-hair/svelte';
+  import type { ComponentProps } from 'svelte';
+
   export let users: User[] = []
 
-  let headers: Header[] = [
+  let headers: ComponentProps<SimpleTable>['headers'] = [
     {
       value: "name",
       label: "Nome",
-      type: 'string',
+      type: {
+        key: 'string'
+      },
     },
     {
       value: "email",
       label: "Email",
-      type: 'string',
+      type: {
+        key: 'string'
+      },
     }
   ]
-
-  import StandardTable from '$lib/components/common/StandardTable.svelte';
 </script>
 
 
@@ -27,20 +28,20 @@
   style:max-width="100%"
   style:overflow="auto"
 >
-  <StandardTable
+  <SimpleTable
     headers={headers}
     items={users}
   >
     <div 
       style:display="flex"
       style:justify-content="end"
-      slot="appendLastColumn" 
+      slot="rowActions" 
       let:item
     >
       <slot 
-        name="appendLastColumn"
+        name="rowActions"
         item={item}
       ></slot>
     </div>
-  </StandardTable>
+  </SimpleTable>
 </div>

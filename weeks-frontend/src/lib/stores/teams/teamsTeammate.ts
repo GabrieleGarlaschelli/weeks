@@ -1,6 +1,6 @@
 import { derived } from "svelte/store";
 import team from './teamsShow'
-import user from '../user'
+import user from '../auth/user'
 import type { Teammate } from '$lib/services/teams/teams.service';
 
 

@@ -1,64 +1,49 @@
-<script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
-</script>
-
 <script lang="ts">
-  import { page } from "$app/stores"
-  import { onMount } from "svelte"
   import TeamService from "$lib/services/teams/teams.service"
+  import { MediaQuery } from "@likable-hair/svelte";
+  import PageTitle from "$lib/components/common/PageTitle.svelte";
+  import TeamForm from "$lib/components/teams/TeamForm.svelte";
+  import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte';
+	import type { PageData } from "./$types";
+	import { goto } from "$app/navigation";
 
-  let team: Team
-  onMount(async () => {
-    let service = new TeamService({ fetch })
-    team = await service.show({ id: parseInt($page.params.teamId) })
-  })
+  export let data: PageData
 
   let loading = false
   function handleConfirmClick() {
     loading = true
 
     let service = new TeamService({ fetch })
-    service.update(team).then(() => {
+    service.update(data.team).then(() => {
       loading = false
       window.history.back()
     })
   }
 
   function handleCancelClick() {
-
+    goto('/teams/' + data.team.id + '/general')
   }
-
-
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
-  import PageTitle from "$lib/components/typography/PageTitle.svelte";
-  import TeamForm from "$lib/components/teams/TeamForm.svelte";
-  import ConfirmOrCancelButtons from '$lib/components/common/ConfirmOrCancelButtons.svelte';
 </script>
 
-<MediaQuery
-  let:mAndDown
->
-  <PageTitle
-    title={team?.name}
-    paddingTop={mAndDown ? "15px" : "40px"}
-    prependVisible={true}
-  ></PageTitle>
+<PageTitle
+  title={data.team?.name}
+  prependVisible={true}
+></PageTitle>
 
-  {#if !!team}
-    <div 
-      style:margin-top="20px"
-    >
-      <TeamForm
-        team={team}
-        mode="update"
-      ></TeamForm>
-      <ConfirmOrCancelButtons
-        on:confirm-click={handleConfirmClick}
-        on:cancel-click={handleCancelClick}
-      ></ConfirmOrCancelButtons>
-    </div>
-  {:else}
-    no team
-  {/if}
-</MediaQuery>
+{#if !!data.team}
+  <div 
+    style:margin-top="20px"
+  >
+    <TeamForm
+      team={data.team}
+      mode="update"
+    ></TeamForm>
+    <ConfirmOrCancelButtons
+      on:confirm-click={handleConfirmClick}
+      on:cancel-click={handleCancelClick}
+    ></ConfirmOrCancelButtons>
+  </div>
+{:else}
+  no team
+{/if}
 

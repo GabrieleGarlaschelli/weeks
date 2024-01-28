@@ -11,13 +11,13 @@
   export let selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year')
+    visibleYear: number = DateTime.now().get('year'),
+    events: Event[]
 
   onMount(() => {
     loadEvents()
   })
 
-  let events: Event[]
   function loadEvents() {
     let service = new EventsService({ fetch })
     service.list({
@@ -52,7 +52,6 @@
     })
   }
 
-  $: if(!!visibleMonth && !!visibleYear) loadEvents()
   import EventsViewer from "$lib/components/events/EventsViewer.svelte";
 </script>
 
@@ -62,4 +61,6 @@
   bind:selectedEvents={selectedEvents}
   bind:visibleMonth={visibleMonth}
   bind:visibleYear={visibleYear}
+  on:nextMonth={() => loadEvents()}
+  on:previousMonth={() => loadEvents()}
 ></EventsViewer>

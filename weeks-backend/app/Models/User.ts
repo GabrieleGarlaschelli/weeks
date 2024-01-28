@@ -20,6 +20,12 @@ export default class User extends CamelCaseBaseModel {
   public name?: string
 
   @column()
+  public firstname?: string
+
+  @column()
+  public lastname?: string
+
+  @column()
   public color?: string
 
   @column()

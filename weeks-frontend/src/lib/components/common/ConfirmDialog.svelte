@@ -13,14 +13,14 @@ import StandardDialog from "./StandardDialog.svelte";
   bind:open={open}
   title={title}
 >
-  {description}
-  <div slot="footer">
-    <ConfirmOrCancelButtons
-      marginTop="0px"
-      confirmText={confirmText}
-      cancelText={cancelText}
-      on:cancel-click
-      on:confirm-click
-    ></ConfirmOrCancelButtons>
+  <div class="mb-4">
+    {description}
   </div>
+  <ConfirmOrCancelButtons
+    marginTop="0px"
+    confirmText={confirmText}
+    cancelText={cancelText}
+    on:cancel-click
+    on:confirm-click
+  ></ConfirmOrCancelButtons>
 </StandardDialog>

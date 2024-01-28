@@ -1,14 +1,15 @@
-<script lang="ts" context="module">
+<script lang="ts">
   import type { Team } from "$lib/services/teams/teams.service"
   import type { Event } from "$lib/services/events/events.service"
-  import type { Item } from '@likable-hair/svelte/forms/Autocomplete.svelte'
   import type { Option } from "$lib/components/common/StandardSelect.svelte"
-</script>
-
-<script lang="ts">
   import { DateTime } from "luxon";
   import EventsService from "$lib/services/events/events.service";
   import { createEventDispatcher } from "svelte";
+  import StandardDialog from "$lib/components/common/StandardDialog.svelte";
+  import StandardSelect from "$lib/components/common/StandardSelect.svelte";
+	import LabelAndTextfield from "$lib/components/common/LabelAndTextfield.svelte";
+	import ConfirmOrCancelButtons from "../common/ConfirmOrCancelButtons.svelte";
+
   let dispatch = createEventDispatcher<{
     'import': {
       events: Event[]
@@ -97,11 +98,6 @@
   function handleCancelation() {
     open = false
   }
-
-  import StandardDialog from "$lib/components/common/StandardDialog.svelte";
-  import StandardSelect from "$lib/components/common/StandardSelect.svelte";
-	import LabelAndTextfield from "../LabelAndTextfield.svelte";
-	import ConfirmOrCancelButtons from "../common/ConfirmOrCancelButtons.svelte";
 </script>
 
 <StandardDialog

@@ -5,14 +5,14 @@
   export let collapsed: boolean = false,
     title: string | undefined = undefined
 
-  import Icon from "@likable-hair/svelte/media/Icon.svelte";
+  import { Icon } from "@likable-hair/svelte";
   import { slide } from "svelte/transition";
 </script>
 
 
 
 <div class="panel">
-  <div 
+  <button 
     class="title-container" 
     on:click={() => collapsed = !collapsed}
   >
@@ -33,7 +33,7 @@
         <Icon name="mdi-menu-down"></Icon>
       </div>
     </slot>
-  </div>
+  </button>
   {#if !collapsed}
     <div transition:slide|local={{duration: 200}}>
       <slot></slot>
@@ -52,7 +52,7 @@
   }
 
   .panel {
-    background-color: var(--global-thin-contrast-color);
+    background-color: rgb(var(--global-color-background-300));
     padding: 10px;
     border-radius: 5px;
     height: fit-content;

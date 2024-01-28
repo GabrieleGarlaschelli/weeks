@@ -1,40 +1,15 @@
 <script lang="ts">
-  export let value: string = '',
-    placeholder: string = "Ora",
-    label: string = "Ora",
-    name: string
+  import StandardTextfield from "./StandardTextfield.svelte";
 
-  import colors from "$lib/stores/colors";
+  export let value: string = '',
+    name: string;
+
 </script>
 
-<label
-  style:font-weight="500"
-  style:margin-left="3px"
-  for={name}
->{label}</label>
-<div>
-  <input 
-    bind:value={value}
-    style:border-color={$colors.thinContrast}
-    style:color={$colors.contrast}
-    type="time" 
-    class="time-picker" 
-    on:change
-  />
-</div>
-
-<style>
-  .time-picker {
-    background-color: transparent;
-    border: 1px solid;
-    border-radius: 5px;
-    height: 35px;
-    margin-top: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-
-  .time-picker:focus {
-    outline: none;
-  }
-</style>
+<StandardTextfield
+  bind:value={value}
+  appendInnerIcon="mdi-clock"
+  type="time"
+  --simple-textfield-width="fit-content"
+  on:input
+></StandardTextfield>

@@ -1,17 +1,16 @@
-<script lang="ts" context="module">
+<script lang="ts">
   import type { Team, Teammate } from "$lib/services/teams/teams.service"
   import type { Event } from "$lib/services/events/events.service"
-  import type { Option } from '$lib/components/common/OptionSelector.svelte'
-</script>
-
-<script lang="ts">
   import { DateTime } from "luxon";
-  import { onMount, createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher, type ComponentProps } from "svelte";
   import { goto } from "$app/navigation";
-  import colors from "$lib/stores/colors";
   import CansService from '$lib/services/roles/cans.service';
   import EventsService from "$lib/services/events/events.service";
   import qs from 'qs'
+  import { Icon, MediaQuery } from "@likable-hair/svelte"
+  import Divider from "$lib/components/common/Divider.svelte"
+  import OptionMenu from "$lib/components/common/OptionMenu.svelte"
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
   export let team: Team,
     teammate: Teammate | undefined = undefined,
@@ -36,7 +35,7 @@
   let dayGroupedEvents: {
       [key: string]: Event[] | undefined
     } = {},
-    options: Option[] = []
+    options: NonNullable<ComponentProps<OptionMenu>['options']> = []
 
   onMount(() => {
     groupEventByDate()
@@ -44,23 +43,25 @@
     if(CansService.can('Event', 'update')) {
       options.push({
         name: 'edit',
-        label: 'Modifica',
+        title: 'Modifica',
         icon: 'mdi-pencil'
       })
     }
 
     options.push({
       name: 'view',
-      label: 'Visualizza',
+      title: 'Visualizza',
       icon: 'mdi-eye'
     })
 
     if(CansService.can('Event', 'destroy')) {
       options.push({
         name: 'destroy',
-        label: 'Elimina',
+        title: 'Elimina',
         icon: 'mdi-delete',
-        color: $colors.warning
+        style: {
+          color: 'rgb(var(--global-color-error-500))'
+        }
       })
     }
   })
@@ -197,12 +198,12 @@
   }
 
   let confirmDeletionDialogOpen: boolean = false, deletingEvent: Event | undefined, loadingDelete: boolean = false
-  function handleEventOptionClick(e: CustomEvent<{option: Option}>, event: Event) {
-    if(e.detail.option.name == 'edit' && !!team) {
+  function handleEventOptionClick(e: CustomEvent<{element: (typeof options)[0]}>, event: Event) {
+    if(e.detail.element.name == 'edit' && !!team) {
       goto(`/teams/${team.id}/events/${event.id}/edit`)
-    } else if(e.detail.option.name == 'view' && !!team) {
+    } else if(e.detail.element.name == 'view' && !!team) {
       goto(`/teams/${team.id}/events/${event.id}/general`)
-    } else if(e.detail.option.name == 'destroy' && !!team) {
+    } else if(e.detail.element.name == 'destroy' && !!team) {
       confirmDeletionDialogOpen = true
       deletingEvent = event
     }
@@ -232,12 +233,6 @@
   function isConvocated(event: Event) {
     return !!teammate && event.convocations.some((c) => !!teammate && c.teammateId == teammate.id)
   }
-
-  import Icon from "@likable-hair/svelte/media/Icon.svelte"
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
-  import Divider from "$lib/components/Divider.svelte"
-  import OptionMenu from "$lib/components/common/OptionMenu.svelte"
-  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 </script>
 
 <MediaQuery 
@@ -307,28 +302,30 @@
                 {#each getEventsFromWeekDay(index) || [] as event}
                   <div class="event">
                     <div class="event-title">
-                      <div 
+                      <button 
                         on:click={() => handleEventTitleClick(event)}
                         style:cursor="pointer"
-                      >{event.name}</div>
+                      >{event.name}</button>
                       <div style:margin-left="10px">
                         <OptionMenu
                           options={options}
-                          on:option-click={(e) => handleEventOptionClick(e, event)}
+                          on:select={(e) => handleEventOptionClick(e, event)}
                         ></OptionMenu>
                       </div>
                     </div>
                     <div class="event-subtitle">
-                      <Icon name='mdi-clock' size={10}></Icon>
+                      <Icon name='mdi-clock' --icon-size="10pt"></Icon>
                       {getEventTimeRangeString(event)}
                     </div>
-                    <div 
-                      class="event-description"
-                      style:white-space="pre-wrap"
-                    >
-                      <Icon name='mdi-text' size={10}></Icon>
-                      {event.description}
-                    </div>
+                    {#if !!event.description}
+                      <div 
+                        class="event-description"
+                        style:white-space="pre-wrap"
+                      >
+                        <Icon name='mdi-text' --icon-size="10pt"></Icon>
+                        {event.description}
+                      </div>
+                    {/if}
                     {#if isConvocated(event)}  
                       <div
                         class="convocated-badge"
@@ -339,11 +336,11 @@
                       >
                         <Icon 
                           name="mdi-account-check"
-                          color={$colors.success}
-                          size={15}
+                          --icon-color="rgb(var(--global-color-success))"
+                          --icon-size="15pt"
                         ></Icon>
                         <span 
-                          style:color={$colors.success}
+                          style:color="rgb(var(--global-color-success))"
                           style:font-size="0.9rem"
                           style:font-weight="300"
                         >

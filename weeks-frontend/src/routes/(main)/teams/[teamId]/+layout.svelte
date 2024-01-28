@@ -1,108 +1,116 @@
 <script lang="ts">
-  import user from "$lib/stores/user";
+  import user from '$lib/stores/auth/user'
   import { page } from "$app/stores"
-  import { onMount } from "svelte"
+  import type { ComponentProps } from "svelte"
   import { goto } from "$app/navigation";
-  import TeamService from "$lib/services/teams/teams.service"
   import team from "$lib/stores/teams/teamsShow"
-  import colors from "$lib/stores/colors";
   import teamCans from "$lib/stores/teams/teamsCans"
   import CansService from '$lib/services/roles/cans.service';
-  import type { Option } from '$lib/components/common/OptionSelector.svelte'
-  import type { Tab } from '@likable-hair/svelte/navigation/TabSwitcher.svelte'
+  import PageTitle from "$lib/components/common/PageTitle.svelte"
+  import StandardTabSwitcher from "$lib/components/common/StandardTabSwitcher.svelte"
+  import OptionMenu from "$lib/components/common/OptionMenu.svelte"
+  import { CircularLoader } from "@likable-hair/svelte";
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+	import InvitationsService from "$lib/services/invitations/invitations.service";
+	import type { LayoutData } from './$types';
+  import { slide } from "svelte/transition";
 
-  let selectedTab: string = 'general',
-    options: Option[] = [],
-    tabs: Tab[] = []
+  export let data: LayoutData
+  $team = data.team
 
-  onMount(async () => {
-    let service = new TeamService({ fetch })
-    $team = await service.show({ id: parseInt($page.params.teamId) })
-
-    let currentTeammates = $team.teammates.find((teammate) => {
-      return !!$user && teammate.userId == $user?.id
-    })
-
-    $teamCans = {
-      cans: currentTeammates?.role?.cans,
-      owner: !!$user && $team.ownerId == $user?.id
-    }
-
-    options = [ ]
-
-    if(CansService.can('Team', 'update'))
-      options.push({
-        name: 'edit', 
-        label: 'Modifica',
-        icon: 'mdi-pencil'
-      },)
-
-    if(CansService.can('Team', 'invite'))
-      options.push({
-        name: 'inviteUser', 
-        label: 'Invita utente',
-        icon: 'mdi-account-plus'
-      })
-
-    if(CansService.can('Event', 'create')) 
-      options.push({
-        name: 'addEvent', 
-        label: 'Aggiungi evento',
-        icon: 'mdi-calendar-plus'
-      })
-    
-    if(CansService.can('Team', 'destroy'))
-      options.push({
-        name: 'delete', 
-        label: 'Elimina',
-        icon: 'mdi-delete',
-        color: $colors.warning
-      })
-
-    if(!$teamCans.owner)
-      options.push({
-        name: 'exit',
-        label: 'Esci dal team',
-        icon: 'mdi-delete',
-        color: $colors.warning
-      })
-    
-    tabs = [
-      {
-        name: 'general',
-        label: 'Generale'
-      },
-      {
-        name: 'teammates',
-        label: 'Partecipanti'
-      }
-    ]
-
-    if(CansService.can('Role', 'update')) 
-      tabs.push({
-        name: 'roles',
-        label: 'Ruoli'
-      })
-    
-    tabs.push({
-      name: 'calendar',
-      label: 'Calendario'
-    })
-
-    tabs.push({
-      name: 'weeks',
-      label: 'Settimane'
-    })
+  let currentTeammates = $team.teammates.find((teammate) => {
+    return !!$user && teammate.userId == $user?.id
   })
 
-  function handleOptionClick(event: CustomEvent<{option: Option}>) {
-    if(event.detail?.option?.name == 'edit' && !!$team) {
+  $teamCans = {
+    cans: currentTeammates?.role?.cans,
+    owner: !!$user && $team.ownerId == $user?.id
+  }
+
+  let selectedTab: string = 'general',
+    options: ComponentProps<OptionMenu>['options'] = [],
+    tabs: ComponentProps<StandardTabSwitcher>['tabs'] = []
+
+
+  options = [ ]
+
+  if(CansService.can('Team', 'update'))
+    options.push({
+      name: 'edit', 
+      title: 'Modifica',
+      icon: 'mdi-pencil'
+    },)
+
+  if(CansService.can('Team', 'invite'))
+    options.push({
+      name: 'inviteUser', 
+      title: 'Invita utente',
+      icon: 'mdi-account-plus'
+    })
+
+  if(CansService.can('Event', 'create')) 
+    options.push({
+      name: 'addEvent', 
+      title: 'Aggiungi evento',
+      icon: 'mdi-calendar-plus'
+    })
+  
+  if(CansService.can('Team', 'destroy'))
+    options.push({
+      name: 'delete', 
+      title: 'Elimina',
+      icon: 'mdi-delete',
+      style: {
+        color: 'rgb(var(--global-color-error-500))'
+      }
+    })
+
+  if(!$teamCans.owner)
+    options.push({
+      name: 'exit',
+      title: 'Esci dal team',
+      icon: 'mdi-delete',
+      style: {
+        color: 'rgb(var(--global-color-error-500))'
+      }
+    })
+  
+  tabs = [
+    {
+      name: 'general',
+      label: 'Generale'
+    },
+    {
+      name: 'teammates',
+      label: 'Partecipanti'
+    }
+  ]
+
+  if(CansService.can('Role', 'update')) 
+    tabs.push({
+      name: 'roles',
+      label: 'Ruoli'
+    })
+  
+  tabs.push({
+    name: 'calendar',
+    label: 'Calendario'
+  })
+
+  tabs.push({
+    name: 'weeks',
+    label: 'Settimane'
+  })
+
+  function handleOptionClick(event: CustomEvent<{ element: NonNullable<ComponentProps<OptionMenu>['options']>[0] }>) {
+    console.log(event.detail)
+    if(event.detail?.element?.name == 'edit' && !!$team) {
       goto('/teams/' + $team.id + '/edit')
-    } else if(event.detail?.option?.name == 'inviteUser' && !!$team) {
+    } else if(event.detail?.element?.name == 'inviteUser' && !!$team) {
       goto('/teams/' + $team.id + '/inviteUser')
-    } else if(event.detail?.option?.name == 'addEvent' && !!$team) {
+    } else if(event.detail?.element?.name == 'addEvent' && !!$team) {
       goto('/teams/' + $team.id + '/events/new')
-    } else if(event.detail?.option?.name == 'exit') {
+    } else if(event.detail?.element?.name == 'exit') {
       exitTeamConfirmDialog = true
     }
   }
@@ -149,49 +157,45 @@
       })
     }
   }
-  
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
-  import PageTitle from "$lib/components/typography/PageTitle.svelte"
-  import StandardTabSwitcher from "$lib/components/common/StandardTabSwitcher.svelte"
-  import OptionMenu from "$lib/components/common/OptionMenu.svelte"
-  import CircularLoader from "@likable-hair/svelte/loaders/CircularLoader.svelte";
-  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import InvitationsService from "$lib/services/invitations/invitations.service";
+
+  $: headerHidden = $page.url.pathname.endsWith('/roles/new') ||
+    /\/roles\/\d+\/edit$/.test($page.url.pathname) || 
+    $page.url.pathname.endsWith('/events/new') || 
+    /\/events\/\d+\//.test($page.url.pathname)
 </script>
 
-<MediaQuery
-  let:mAndDown
->
-  {#if !!$team}
-    <PageTitle
-      title={$team.name}
-      paddingTop={mAndDown ? "15px" : "40px"}
-      prependVisible={true}
-      prependRoute="/teams"
-    >
-      <svelte:fragment slot="append">
-        {#if options.length > 0}
-          <OptionMenu
-            options={options}
-            on:option-click={handleOptionClick}
-          ></OptionMenu>
-        {/if}
-      </svelte:fragment>
-    </PageTitle>
+{#if !!$team}
+  {#if !headerHidden}
+    <div transition:slide|local={{duration: 200}}>
+      <PageTitle
+        title={$team.name}
+        prependVisible={true}
+        prependRoute="/teams"
+      >
+        <svelte:fragment slot="append">
+          {#if !!options && options.length > 0}
+            <OptionMenu
+              options={options}
+              on:select={handleOptionClick}
+            ></OptionMenu>
+          {/if}
+        </svelte:fragment>
+      </PageTitle>
 
-    <StandardTabSwitcher
-      tabs={tabs}
-      marginTop="10px"
-      marginBottom="10px"
-      bind:selected={selectedTab}
-      on:tab-click={handleTabClick}
-    ></StandardTabSwitcher>
-
-    <slot></slot>
-  {:else}
-    <CircularLoader></CircularLoader>
+      <StandardTabSwitcher
+        tabs={tabs}
+        marginTop="10px"
+        marginBottom="10px"
+        bind:selected={selectedTab}
+        on:tab-click={handleTabClick}
+      ></StandardTabSwitcher>
+    </div>
   {/if}
-</MediaQuery>
+
+  <slot></slot>
+{:else}
+  <CircularLoader></CircularLoader>
+{/if}
 
 
 <ConfirmDialog

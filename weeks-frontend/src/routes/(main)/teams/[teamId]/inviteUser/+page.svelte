@@ -1,14 +1,19 @@
-<script lang="ts" context="module">
-  import type { User } from '$lib/services/users/user.service'
-  import type { Item } from '@likable-hair/svelte/forms/Autocomplete.svelte';
-</script>
-
 <script lang="ts">
+  import type { User } from '$lib/services/auth/auth.service';
   import team from '$lib/stores/teams/teamsShow'
-  import colors from '$lib/stores/colors'
   import UserService from '$lib/services/users/user.service'
   import InvitationsService, { type Invitation } from "$lib/services/invitations/invitations.service";
   import CansService from '$lib/services/roles/cans.service';
+  import StandardTextfield from '$lib/components/common/StandardTextfield.svelte';
+  import StandardButton from '$lib/components/common/StandardButton.svelte';
+  import { Icon, MediaQuery } from '@likable-hair/svelte';
+  import UsersList from '$lib/components/users/UsersList.svelte'
+  import InvitationList from '$lib/components/invitations/InvitationList.svelte';
+  import StandardAutocomplete from '$lib/components/common/StandardAutocomplete.svelte';
+	import type { ComponentProps } from 'svelte';
+	import type { PageData } from './$types';
+
+  export let data: PageData
 
   let searchText: string, results: User[]
   async function searchUser() {
@@ -18,7 +23,7 @@
   }
 
   let userInvited: boolean = false
-  let selectedRoles: Item[]
+  let selectedRoles: NonNullable<ComponentProps<StandardAutocomplete>['values']>
   function inviteUser(user: any) {
     if(!!$team) {
       let service = new InvitationsService({ fetch })
@@ -49,17 +54,6 @@
       })
     }
   }
-
-  import StandardTextfield from '$lib/components/StandardTextfield.svelte';
-  import StandardButton from '$lib/components/StandardButton.svelte';
-  import Icon from '@likable-hair/svelte/media/Icon.svelte'
-  import UsersList from '$lib/components/users/UsersList.svelte'
-  import InvitationList from '$lib/components/invitations/InvitationList.svelte';
-  import LinkButton from "$lib/components/LinkButton.svelte"
-  import RolesAutocomplete from '$lib/components/roles/RolesAutocomplete.svelte';
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte"
-  import Subhead from '$lib/components/typography/Subhead.svelte';
-import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.svelte';
 </script>
 
 
@@ -84,7 +78,7 @@ import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.s
           <div style:margin-right="10px">
             <Icon 
               name="mdi-email"
-              color={$colors.lightContrast}
+              --icon-color="rgb(var(--global-color-contrast-500), .5)"
             ></Icon>
           </div>
         </svelte:fragment>
@@ -93,11 +87,14 @@ import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.s
       <div
         style:margin-left={mAndDown ? "0px" : "10px"}
       >
-        <RolesAutocomplete
-          width={mAndDown ? '100%' : '300px'}
-          team={$team}
+        <StandardAutocomplete
+          items={data.team.roles?.map((role) => ({
+            value: role.id.toString(),
+            label: role.name
+          })) || []}
           bind:values={selectedRoles}
-        ></RolesAutocomplete>
+          placeholder="Ruolo"
+        ></StandardAutocomplete>
       </div>
       {/if}
       <div
@@ -115,7 +112,7 @@ import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.s
       <UsersList
         users={results}
       >
-        <svelte:fragment slot="appendLastColumn" let:item>
+        <svelte:fragment slot="rowActions" let:item>
           <Icon
             name="mdi-account-plus"
             click
@@ -136,12 +133,12 @@ import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.s
         >
           Ops, sembra che la mail digitata non esista. 
           <br />
-          <LinkButton 
-            display="inline-block"
+          <button
+            style:color="rgb(var(--global-color-primary-500))"
             on:click={() => inviteUser({
               email: searchText
             })}
-          >Vuoi invitare lo stesso la mail?</LinkButton> 
+          >Vuoi invitare lo stesso la mail?</button> 
           <br />
           quando l'utente si registrerà con questa mail
           visualizzerà il tuo invito.
@@ -164,16 +161,13 @@ import InvitationToAccept from '$lib/components/invitations/InvitationToAccept.s
           style:margin-top="10px"
         >
           <Icon
-            size={40}
+            --icon-size="40pt"
             name="mdi-party-popper"
           ></Icon>
         </div>
       </div>
     {/if}
-
-    <div style:margin-top="20px">
-      <Subhead text="Inviti in attesa"></Subhead>
-    </div>
+    <div class="font-bold mt-6">Inviti in attesa</div>
     <div style:margin-top="10px">
       <InvitationList
         invitations={$team?.invitations}

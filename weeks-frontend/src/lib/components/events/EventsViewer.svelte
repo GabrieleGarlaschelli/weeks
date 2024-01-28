@@ -27,5 +27,7 @@
     bind:events={events}
     bind:visibleMonth={visibleMonth}
     bind:visibleYear={visibleYear}
+    on:nextMonth
+    on:previousMonth
   ></EventsCalendar>
 </div>

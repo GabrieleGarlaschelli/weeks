@@ -5,25 +5,14 @@
 
 <script lang="ts">
   import ChipMultipleSelection from "$lib/components/common/ChipMultipleSelection.svelte";
-  import RolesService from '$lib/services/roles/roles.service'
 
-  export let team: { id: number },
-    value: Chip[],
-    onlyConvocable: boolean = false
+  export let value: Chip[],
+    onlyConvocable: boolean = false,
+    roles: Role[]
 
   
-  let roles: Role[],
-    filteredChips: Chip[]
+  let filteredChips: Chip[]
 
-  async function loadRoles() {
-    if(!!team) {
-      let service = new RolesService({ fetch })
-      let response = await service.list({ team: team })
-      roles = response.data
-    }
-  }
-
-  $: if(!!team) loadRoles()
   $: filteredChips = !!roles ? roles
     .filter((role) => {
       return !onlyConvocable || (onlyConvocable && role.convocable)

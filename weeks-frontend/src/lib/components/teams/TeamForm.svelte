@@ -2,12 +2,12 @@
   export type Team = {
     name?: string,
     notes?: string
-  }
+  };
 </script>
 
 <script lang="ts">
-  import LabelAndTextfield from "../LabelAndTextfield.svelte"
-  import LabelAndTextarea from "../LabelAndTextarea.svelte"
+  import LabelAndTextfield from "$lib/components/common/LabelAndTextfield.svelte"
+  import LabelAndTextarea from "$lib/components/common/LabelAndTextarea.svelte"
 
   export let team: Team = {
       name: undefined,

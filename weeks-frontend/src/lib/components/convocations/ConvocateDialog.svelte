@@ -5,7 +5,7 @@
   import TeammatesChecklist from "../teammates/TeammatesChecklist.svelte";
   import ConvocationsService from "$lib/services/convocations/convocations.service";
   import { createEventDispatcher } from "svelte";
-  import StandardButton from "../StandardButton.svelte";
+  import StandardButton from "$lib/components/common/StandardButton.svelte";
   import type { Event } from "$lib/services/events/events.service";
 
   export let open: boolean = false,

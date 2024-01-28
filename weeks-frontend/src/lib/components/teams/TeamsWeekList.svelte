@@ -5,9 +5,11 @@
 
 <script lang="ts">
   import { DateTime } from "luxon";
-  import { onMount } from "svelte";
   import EventsService from "$lib/services/events/events.service"
   import { createEventDispatcher } from "svelte";
+  import EventsWeekList from "../events/EventsWeekList.svelte";
+  import { Icon } from "@likable-hair/svelte";
+  import TeamImportWeekDialog from "$lib/components/teams/TeamImportWeekDialog.svelte";
 
   let dispatch = createEventDispatcher<{
     'focusToday': {
@@ -21,16 +23,12 @@
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleYear: number = DateTime.now().get('year'),
-    visibleWeek: number = DateTime.now().get('weekNumber')
+    visibleWeek: number = DateTime.now().get('weekNumber'),
+    events: Event[] = []
 
   let importFromYear = visibleYear,
     importFromWeek = visibleWeek
 
-  onMount(async () => {
-    await loadEvents(visibleWeek, visibleYear)
-  })
-
-  let events: Event[]
   async function loadEvents(vw: number, vy: number) {
     let from: Date = DateTime.fromObject({
             weekday: 1,
@@ -74,8 +72,6 @@
     ]
   }
 
-  $: if(!!visibleYear && !!visibleWeek) loadEvents(visibleWeek, visibleYear)
-
   let openImportWeekDialog: boolean = false
   function handleImportWeekClick() {
     openImportWeekDialog = true
@@ -89,10 +85,6 @@
       visibleYear: visibleYear
     })
   }
-  
-	import EventsWeekList from "../events/EventsWeekList.svelte";
-  import Icon from "@likable-hair/svelte/media/Icon.svelte";
-  import TeamImportWeekDialog from "$lib/components/teams/TeamImportWeekDialog.svelte";
 </script>
 
 {#if !!events}
@@ -104,7 +96,9 @@
     bind:selectedEvents={selectedEvents}
     bind:visibleYear={visibleYear}
     bind:visibleWeek={visibleWeek}
+    on:nextWeek={() => loadEvents(visibleWeek, visibleYear)}
     on:nextWeek
+    on:previousWeek={() => loadEvents(visibleWeek, visibleYear)}
     on:previousWeek
   >
     <div 
@@ -112,13 +106,6 @@
       style:gap="15px"
       slot="options"
     >
-      <div>
-        <Icon
-          name="mdi-import"
-          click
-          on:click={handleImportWeekClick}
-        ></Icon>
-      </div>
       <div>
         <Icon
           name="mdi-calendar-today"

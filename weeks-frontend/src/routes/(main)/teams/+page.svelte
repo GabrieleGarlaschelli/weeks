@@ -4,22 +4,22 @@
 </script>
 
 <script lang="ts">
-  import PageTitle from "$lib/components/typography/PageTitle.svelte"
+  import PageTitle from "$lib/components/common/PageTitle.svelte"
   import OptionMenu from "$lib/components/common/OptionMenu.svelte";
   import TeamsBoxList from "$lib/components/teams/TeamsBoxList.svelte"
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
   import TeamsService from "$lib/services/teams/teams.service"
   import InvitationsService from "$lib/services/invitations/invitations.service";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation"
-  import Subhead from "$lib/components/typography/Subhead.svelte";
   import InvitationToAccept from "$lib/components/invitations/InvitationToAccept.svelte";
+  import type { PageData } from './$types';
 
-  let teams: Team[] = []
+  export let data: PageData
+
   async function loadTeams() {
     let service = new TeamsService({ fetch })
     let paginationData = await service.list()
-    teams = paginationData.data
+    data.teams = paginationData.data
   }
 
   let invitationsToAccept: Invitation[]
@@ -57,7 +57,7 @@
         [
           {
             name: 'new', 
-            label: 'Nuovo',
+            title: 'Nuovo',
             icon: 'mdi-plus'
           },
         ]
@@ -67,31 +67,23 @@
   </svelte:fragment>
 </PageTitle>
 
-<MediaQuery
-  let:mAndDown
+<div
+  style:margin-top="10px"
 >
-  <div
-    style:margin-top="10px"
-  >
-    <TeamsBoxList
-      searchable
-      marginTop="20px"
-      teams={teams}
-      on:teams-click={handleTeamClick}
-    ></TeamsBoxList>
-  </div>
-  <div 
-    style:margin-top="30px"
-  >
-    <Subhead text="I miei inviti"></Subhead>
-  </div>
-  <div 
-    style:margin-top="10px"
-  >
-    <InvitationToAccept
-      invitations={invitationsToAccept}
-      on:accept={reload}
-      on:reject={reload}
-    ></InvitationToAccept>
-  </div>
-</MediaQuery>
+  <TeamsBoxList
+    searchable
+    marginTop="20px"
+    teams={data.teams}
+    on:teams-click={handleTeamClick}
+  ></TeamsBoxList>
+</div>
+<div class="font-bold mt-4">I miei inviti</div>
+<div 
+  style:margin-top="10px"
+>
+  <InvitationToAccept
+    invitations={invitationsToAccept}
+    on:accept={reload}
+    on:reject={reload}
+  ></InvitationToAccept>
+</div>

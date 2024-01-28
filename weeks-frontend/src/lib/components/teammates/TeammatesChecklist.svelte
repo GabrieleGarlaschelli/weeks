@@ -1,15 +1,18 @@
-<script lang="ts" context="module">
-  import type { Teammate } from '$lib/services/teams/teams.service'
-  import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
-  import type { Chip } from "$lib/components/common/ChipMultipleSelection.svelte"
-</script>
-
 <script lang="ts">
+  import type { Teammate } from '$lib/services/teams/teams.service'
+  import StandardTextfield from '$lib/components/common/StandardTextfield.svelte';
+  import { Icon } from '@likable-hair/svelte';
+  import LabelAndCheckbox from '$lib/components/common/LabelAndCheckbox.svelte';
+  import RoleMultipleSelectorChip from '$lib/components/roles/RoleMultipleSelectorChip.svelte';
+	import type { Role } from '$lib/services/roles/roles.service';
+	import type { ComponentProps } from 'svelte';
+
   export let teammates: Teammate[] = [],
     team: { id: number } | undefined = undefined,
     searchable: boolean = false,
     onlyConvocables: boolean = false,
     roleFilter: boolean = false,
+    selectableRoles: Role[] = [],
     value: {
       [key: number]: boolean
     } = { }
@@ -18,7 +21,7 @@
   $: filteredTeammates = teammates.filter((teammate) => {
     return (
       !searchText ||
-      (!!searchText && teammate.user.name.toLowerCase().includes(searchText.toLowerCase()))
+      (!!searchText && (teammate.alias || teammate.user.firstname + ' ' + teammate.user.lastname).toLowerCase().includes(searchText.toLowerCase()))
     ) && (
       !onlyConvocables ||
       (
@@ -38,13 +41,7 @@
     value[teammate.id] = event.target.checked
   }
 
-  let selectedRoles: Chip[] = []
-
-  import StandardTextfield from '$lib/components/StandardTextfield.svelte';
-  import Icon from '@likable-hair/svelte/media/Icon.svelte';
-  import colors from '$lib/stores/colors';
-  import LabelAndCheckbox from '../LabelAndCheckbox.svelte';
-  import RoleMultipleSelectorChip from '$lib/components/roles/RoleMultipleSelectorChip.svelte';
+  let selectedRoles: ComponentProps<RoleMultipleSelectorChip>['value'] = []
 </script>
 
 
@@ -56,7 +53,6 @@
   >
     <StandardTextfield
       bind:value={searchText}
-      maxWidth="300px"
       placeholder="Cerca partecipanti ..."
     >
       <svelte:fragment
@@ -65,7 +61,7 @@
         <div style:margin-right="10px">
           <Icon 
             name="mdi-search-web"
-            color={$colors.lightContrast}
+            --icon-color="rgb(var(--global-color-contrast-500), .5)"
           ></Icon>
         </div>
       </svelte:fragment>
@@ -76,8 +72,8 @@
 {#if roleFilter && !!team}
   <RoleMultipleSelectorChip
     onlyConvocable={true}
+    bind:roles={selectableRoles}
     bind:value={selectedRoles}
-    bind:team={team}
   ></RoleMultipleSelectorChip>
 {/if}
 
@@ -93,16 +89,16 @@
       <LabelAndCheckbox
         id={`check-convocation-${teammate.id}`}
         value={value[teammate.id]}
-        textColor={$colors.contrast}
+        label=""
         on:change={(event) => handleChange(teammate, event)}
       >
         <svelte:fragment slot="text">
-          <span>{teammate.alias || teammate.user.name}</span> 
+          <span>{teammate.alias || teammate.user.firstname + ' ' + teammate.user.lastname}</span> 
           <span 
             style:margin-left="10px"
             style:font-weight="200"
             style:font-size="0.9rem"
-          >{teammate.role?.name}</span>
+          >{teammate.role?.name || ''}</span>
         </svelte:fragment>
       </LabelAndCheckbox>
     </div>

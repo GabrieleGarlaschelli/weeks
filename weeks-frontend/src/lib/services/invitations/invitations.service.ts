@@ -1,6 +1,6 @@
-import { FetchBasedService } from "../base/fetchBased.service";
+import { FetchBasedService } from "$lib/services/common/fetchBased.service";
 import { browser } from "$app/environment";
-import type { User } from "$lib/services/users/user.service"
+import type { User } from "../auth/auth.service";
 import type { Team } from "$lib/services/teams/teams.service"
 import type { Role } from "$lib/services/roles/roles.service"
 
@@ -29,7 +29,7 @@ export default class InvitationsService extends FetchBasedService {
   }): Promise<Invitation> {
     if (!browser) throw new Error('only available in browser')
 
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/invitations/inviteUser',
       body: params
     })
@@ -46,7 +46,7 @@ export default class InvitationsService extends FetchBasedService {
     if (!params.team.id) throw new Error('team must be defined')
     if (!params.user.id) throw new Error('user must be defined')
 
-    await this.post({
+    await this.client.post({
       url: `/teams/${params.team.id}/removeUser`,
       body: params
     })
@@ -57,7 +57,7 @@ export default class InvitationsService extends FetchBasedService {
   }): Promise<void> {
     if (!browser) throw new Error('only available in browser')
 
-    await this.post({
+    await this.client.post({
       url: `/teams/${params.team.id}/exit`,
     })
   }
@@ -65,7 +65,7 @@ export default class InvitationsService extends FetchBasedService {
   public async invitationToAccept(): Promise<Invitation[]> {
     if (!browser) throw new Error('only available in browser')
 
-    let response = await this.get({
+    let response = await this.client.get({
       url: '/invitations/list',
     })
 
@@ -77,7 +77,7 @@ export default class InvitationsService extends FetchBasedService {
   }): Promise<Invitation> {
     if (!browser) throw new Error('only available in browser')
 
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/invitations/accept',
       body: params
     })
@@ -90,7 +90,7 @@ export default class InvitationsService extends FetchBasedService {
   }): Promise<Invitation> {
     if (!browser) throw new Error('only available in browser')
 
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/invitations/reject',
       body: params
     })
@@ -103,7 +103,7 @@ export default class InvitationsService extends FetchBasedService {
   }): Promise<Invitation> {
     if (!browser) throw new Error('only available in browser')
 
-    let response = await this.post({
+    let response = await this.client.post({
       url: '/invitations/discard',
       body: params
     })

@@ -11,7 +11,10 @@ export default class UserValidator {
     password: schema.string.nullableAndOptional([
       rules.minLength(6)
     ]),
-    name: schema.string.nullableAndOptional([
+    firstname: schema.string.nullableAndOptional([
+      rules.maxLength(255)
+    ]),
+    lastname: schema.string.nullableAndOptional([
       rules.maxLength(255)
     ]),
     color: schema.string.nullableAndOptional([

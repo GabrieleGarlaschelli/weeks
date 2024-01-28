@@ -10,14 +10,14 @@
 </script>
 
 <script lang="ts">
-  import LabelAndTextfield from "$lib/components/LabelAndTextfield.svelte"
+  import LabelAndTextfield from "$lib/components/common/LabelAndTextfield.svelte"
   import StandardDatepicker from "$lib/components/common/StandardDatepicker.svelte"
   import StandardTimePicker from "$lib/components/common/StandardTimePicker.svelte"
   import { DateTime } from "luxon";
-  import LabelAndTextarea from "$lib/components/LabelAndTextarea.svelte";
+  import LabelAndTextarea from "$lib/components/common/LabelAndTextarea.svelte";
   import TeammatesChecklist from '$lib/components/teammates/TeammatesChecklist.svelte';
   import CollapsableSection from '$lib/components/common/CollapsableSection.svelte';
-  import LinkButton from "../LinkButton.svelte";
+	import type { Role } from '$lib/services/roles/roles.service';
 
   export let event: Event = { },
     convocations: {
@@ -28,7 +28,8 @@
     margin: string | undefined = undefined,
     width: string | undefined = undefined,
     height: string | undefined = undefined,
-    teammates: Teammate[] | undefined = undefined
+    teammates: Teammate[] | undefined = undefined,
+    roles: Role[] = []
 
   let date: Date | undefined = event.start,
     startTime: string, 
@@ -55,30 +56,62 @@
   function selectAll() {
     if(!!teammates) {
       convocations = {}
-      for(let i = 0; i < teammates.length; i += 1) {
+      for(let i = 0; i < teammates.filter((t) => !t.role || t.role.convocable).length; i += 1) {
         convocations[teammates[i].id] = true
       }
     }
   }
 
-  function handleDatePickerChange(e: CustomEvent<{ date: Date }>) {
+  function handleDatePickerClick(e: CustomEvent<{ 
+    dateStat: {
+      dayOfMonth: number
+      dayOfWeek: number
+      month: number
+      year: number
+    }
+  }>) {
     let newDateStart = event.start
     if(!newDateStart) newDateStart = new Date()
 
     event.start = DateTime.fromJSDate(newDateStart).set({
-      month: e.detail.date.getMonth() + 1,
-      year: e.detail.date.getFullYear(),
-      day: e.detail.date.getDate()
+      month: e.detail.dateStat.month + 1,
+      year: e.detail.dateStat.year,
+      day: e.detail.dateStat.dayOfMonth
     }).toJSDate()
 
     let newDateEnd = event.end
     if(!newDateEnd) newDateEnd = new Date()
 
     event.end = DateTime.fromJSDate(newDateEnd).set({
-      month: e.detail.date.getMonth() + 1,
-      year: e.detail.date.getFullYear(),
-      day: e.detail.date.getDate()
+      month: e.detail.dateStat.month + 1,
+      year: e.detail.dateStat.year,
+      day: e.detail.dateStat.dayOfMonth
     }).toJSDate()
+  }
+
+  function handleDatePickerInput(e: CustomEvent<{
+    datetime: Date | undefined
+  }>) {
+    console.log(e.detail.datetime)
+    if(!!e.detail.datetime) {
+      let newDateStart = event.start
+      if(!newDateStart) newDateStart = new Date()
+
+      event.start = DateTime.fromJSDate(newDateStart).set({
+        month: e.detail.datetime.getMonth() + 1,
+        year: e.detail.datetime.getFullYear(),
+        day: e.detail.datetime.getDate()
+      }).toJSDate()
+
+      let newDateEnd = event.end
+      if(!newDateEnd) newDateEnd = new Date()
+
+      event.end = DateTime.fromJSDate(newDateEnd).set({
+        month: e.detail.datetime.getMonth() + 1,
+        year: e.detail.datetime.getFullYear(),
+        day: e.detail.datetime.getDate()
+      }).toJSDate()
+    }
   }
 
   function handleStartTimeChange(e: any) {
@@ -105,7 +138,7 @@
 
 </script>
 
-<form
+<div
   style:padding={padding}
   style:margin={margin}
   style:width={width}
@@ -114,27 +147,24 @@
   <div class="duration-infos">
     <div>
       <StandardDatepicker
-        label="Data"
         placeholder="Data "
-        name="startDate"
         bind:value={date}
-        on:change={handleDatePickerChange}
+        on:day-click={handleDatePickerClick}
+        on:input={handleDatePickerInput}
       ></StandardDatepicker>
     </div>
     <div>
       <StandardTimePicker
         value={startTime}
         name="startTime"
-        label="Ora inizio"
-        on:change={handleStartTimeChange}
+        on:input={handleStartTimeChange}
       ></StandardTimePicker>
     </div>
     <div>
       <StandardTimePicker
         value={endTime}
         name="endTime"
-        label="Ora fine"
-        on:change={handleEndTimeChange}
+        on:input={handleEndTimeChange}
       ></StandardTimePicker>
     </div>
   </div>
@@ -153,18 +183,20 @@
       <CollapsableSection
         title="Convocazioni"
       >
-        <LinkButton
+        <button
           on:click={selectAll}
-        >Seleziona tutti</LinkButton>
+          style:color="rgb(var(--global-color-primary-500))"
+        >Seleziona tutti</button>
         <TeammatesChecklist
           bind:value={convocations}
           bind:teammates={teammates}
+          bind:selectableRoles={roles}
           onlyConvocables={true}
         ></TeammatesChecklist>
       </CollapsableSection>
     </div>
   {/if}
-</form>
+</div>
 
 
 <style>
@@ -176,6 +208,7 @@
 
   .duration-infos {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px
   }
 </style>

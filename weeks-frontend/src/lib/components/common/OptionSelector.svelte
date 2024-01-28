@@ -4,10 +4,12 @@
     label: string,
     icon?: string,
     color?: string
-  }
+  };
 </script>
 
 <script lang="ts">
+  import { Icon } from "@likable-hair/svelte";
+
   export let options: Option[] = [],
     padding: string = "0px",
     optionPadding: string = "0px 20px 0px 10px",
@@ -27,19 +29,16 @@
       nativeEvent: event
     })
   }
-
-  import colors from "$lib/stores/colors"
-  import Icon from "@likable-hair/svelte/media/Icon.svelte";
 </script>
 
 <div 
   style:padding={padding}
-  style:background-color={$colors.background}
-  style:--option-selector-hover-background-color={$colors.thinContrast}
+  style:background-color="rgb(var(--global-color-background-100))"
+  style:--option-selector-hover-background-color="rgb(var(--global-color-background-300))"
   class="options-container"
 >
   {#each options as option}
-    <div 
+    <button 
       style:height={optionHeight}
       style:padding={optionPadding}
       class="option-container"
@@ -51,8 +50,8 @@
         >
           <Icon 
             name={option.icon}
-            color={option.color || $colors.contrast}
-            size={12}
+            --icon-color={option.color || "rgb(var(--global-color-contrast-900))"}
+            --icon-size="12px"
           ></Icon>
         </div>
       {/if}
@@ -66,7 +65,7 @@
           option={option}
         ></slot>
       </div>
-    </div>
+    </button>
   {/each}
 </div>
 

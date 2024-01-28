@@ -1,13 +1,16 @@
 <script lang="ts" context="module">
   import type { Role } from '$lib/services/roles/roles.service'
-  import type { Header } from '@likable-hair/svelte/common/SimpleTable.svelte'
   import type { Team } from '$lib/services/teams/teams.service'
 </script>
 
 <script lang="ts">
   import { goto } from '$app/navigation';
   import RolesService from '$lib/services/roles/roles.service';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, type ComponentProps } from 'svelte';
+  import StandardTextfield from '$lib/components/common/StandardTextfield.svelte';
+  import StandardButton from '$lib/components/common/StandardButton.svelte';
+  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+	import { SimpleTable, Icon } from '@likable-hair/svelte';
 
   let dispatch = createEventDispatcher<{
     "destroy": { },
@@ -17,11 +20,13 @@
     team: Team | undefined = undefined,
     searchable: boolean = false
 
-  let headers: Header[] = [
+  let headers: ComponentProps<SimpleTable>['headers'] = [
     {
       value: "name",
       label: "Nome",
-      type: 'string',
+      type: {
+        key: 'string'
+      },
     }
   ]
 
@@ -60,13 +65,6 @@
       })
     }
   }
-
-  import StandardTable from '$lib/components/common/StandardTable.svelte';
-  import StandardTextfield from '$lib/components/StandardTextfield.svelte';
-  import Icon from '@likable-hair/svelte/media/Icon.svelte';
-  import colors from '$lib/stores/colors';
-  import StandardButton from '$lib/components/StandardButton.svelte';
-  import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 </script>
 
 
@@ -87,7 +85,7 @@
         <div style:margin-right="10px">
           <Icon 
             name="mdi-search-web"
-            color={$colors.lightContrast}
+            --icon-color="rgb(var(--global-color-contrast-500), .5)"
           ></Icon>
         </div>
       </svelte:fragment>
@@ -102,20 +100,19 @@
   </div>
 {/if}
 
-<StandardTable
+<SimpleTable
   headers={headers}
   items={filteredRoles}
 >
   <div 
     style:display="flex"
     style:justify-content="end"
-    slot="appendLastColumn" 
+    slot="rowActions" 
     let:item
   >
     <div style:margin-right="10px">
       <Icon 
         name="mdi-pencil"
-        color={$colors.contrast}
         click
         on:click={() => goToEdit(item)}
       ></Icon>
@@ -123,11 +120,11 @@
     <Icon 
       name="mdi-delete"
       click
-      color={$colors.warning}
+      --icon-color="rgb(var(--global-color-error-500))"
       on:click={() => handleDeleteClick(item)}
     ></Icon>
   </div>
-</StandardTable>
+</SimpleTable>
 
 <ConfirmDialog
   confirmText="Elimina"

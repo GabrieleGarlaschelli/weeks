@@ -1,12 +1,13 @@
 <script lang="ts" context="module">
   export type Team = {
     name: string,
-  }
+  };
 </script>
 
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { createEventDispatcher } from "svelte";
+  import { CircularLoader, Icon } from "@likable-hair/svelte"
+  import StandardTextfield from "$lib/components/common/StandardTextfield.svelte";
 
   const dispatch = createEventDispatcher<{
     "teams-click": {
@@ -21,10 +22,6 @@
     marginTop: string | undefined = undefined,
     marginBottom: string | undefined = undefined
 
-  function goToCreateTeam() {
-    goto('/teams/new')
-  }
-
   function handleTeamClick(event: MouseEvent, team: Team) {
     dispatch("teams-click", {
       nativeEvent: event,
@@ -36,12 +33,6 @@
   $: filteredTeams = !!searchText ? teams.filter((team) => {
     return team.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
   }) : teams
-
-  import colors from "$lib/stores/colors"
-  import CircularLoader from "@likable-hair/svelte/loaders/CircularLoader.svelte"
-  import LinkButton from "$lib/components/LinkButton.svelte"
-  import Icon from "@likable-hair/svelte/media/Icon.svelte"
-  import StandardTextfield from "$lib/components/StandardTextfield.svelte";
 </script>
 
 
@@ -65,7 +56,7 @@
           <div style:margin-right="10px">
             <Icon 
               name="mdi-search-web"
-              color={$colors.lightContrast}
+              --icon-color="rgb(var(--global-color-background-400))"
             ></Icon>
           </div>
         </svelte:fragment>
@@ -78,7 +69,7 @@
     {:else if teams?.length > 0}
       {#each filteredTeams as team}
         <div 
-          style:background-color={$colors.thinContrast}
+          style:background-color="rgb(var(--global-color-background-400))"
           style:padding="15px"
           style:font-weight="600"
           style:font-size="1.3rem"
@@ -101,10 +92,9 @@
       {/each}
     {:else}
       Ops, ancora nessun team, 
-      <LinkButton 
-        display="inline-block"
-        on:click={goToCreateTeam}
-      >Creane uno</LinkButton>
+      <a
+        href="/teams/new"
+      >Creane uno</a>
     {/if}
   </div>
 </div>

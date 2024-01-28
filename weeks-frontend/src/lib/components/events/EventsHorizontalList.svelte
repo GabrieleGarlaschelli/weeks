@@ -7,6 +7,7 @@
   import { DateTime } from 'luxon';
   import qs from 'qs'
   import CansService from '$lib/services/roles/cans.service';
+  import { Icon } from '@likable-hair/svelte';
 
   export let events: Event[] = [],
     team: { id: number } | undefined = undefined,
@@ -39,8 +40,6 @@
   $: sortedEvents = !!events ? events.sort((a, b) => {
     return DateTime.fromJSDate(new Date(a.start)).diff(DateTime.fromJSDate(new Date(b.start))).milliseconds
   } ) : []
-
-  import Icon from "@likable-hair/svelte/media/Icon.svelte"
 </script>
 
 <div class="events-container">

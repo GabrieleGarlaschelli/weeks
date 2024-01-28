@@ -7,7 +7,8 @@
   import { DateTime } from 'luxon';
   import qs from 'qs'
   import CansService from '$lib/services/roles/cans.service';
-  import colors from '$lib/stores/colors';
+  import { Icon } from "@likable-hair/svelte"
+	import type { Teammate } from '$lib/services/teams/teams.service';
 
   export let events: Event[] = [],
     team: { id: number } | undefined = undefined,
@@ -46,9 +47,6 @@
   $: sortedEvents = !!events ? events.sort((a, b) => {
     return DateTime.fromJSDate(new Date(a.start)).diff(DateTime.fromJSDate(new Date(b.start))).milliseconds
   } ) : []
-
-  import Icon from "@likable-hair/svelte/media/Icon.svelte"
-	import type { Teammate } from '$lib/services/teams/teams.service';
 </script>
 
 <div class="events-container">
@@ -84,11 +82,11 @@
           >
             <Icon 
               name="mdi-account-check"
-              color={$colors.success}
-              size={15}
+              --icon-color="rgb(var(--global-color-success))"
+              --icon-size="15pt"
             ></Icon>
             <span 
-              style:color={$colors.success}
+              style:color="rgb(var(--global-color-success))"
               style:font-size="0.9rem"
               style:font-weight="300"
             >
@@ -122,7 +120,7 @@
   }
 
   .event-post {
-    background-color: var(--global-thin-contrast-color);
+    background-color: rgb(var(--global-color-background-300));
     border-radius: 5px;
     padding-top: 5px;
     padding-left: 10px;

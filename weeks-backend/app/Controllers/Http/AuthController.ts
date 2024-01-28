@@ -66,7 +66,8 @@ export default class AuthController {
       data: {
         email: request.input('email'),
         password: request.input('password'),
-        name: request.input('name')
+        firstname: request.input('firstname'),
+        lastname: request.input('lastname')
       }
     })
 
@@ -91,10 +92,12 @@ export default class AuthController {
 
     const googleUser = await google.user()
 
-    const user = await User.firstOrCreate({
+    const user = await User.updateOrCreate({
       email: googleUser.email || undefined,
     }, {
       name: googleUser.name || undefined,
+      firstname: googleUser.original.given_name,
+      lastname: googleUser.original.family_name,
       avatarUrl: googleUser.avatarUrl || undefined,
       googleToken: googleUser.token.token
     })

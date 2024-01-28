@@ -7,19 +7,17 @@
   import { DateTime } from "luxon";
   import { onMount } from "svelte";
   import EventsService from "$lib/services/events/events.service"
+  import EventsViewer from "$lib/components/events/EventsViewer.svelte";
 
   export let team: Team,
     teammate: Teammate | undefined = undefined,
     selectedDate: Date = new Date(),
     selectedEvents: Event[] = [],
     visibleMonth: number = DateTime.now().get('month') - 1,
-    visibleYear: number = DateTime.now().get('year')
+    visibleYear: number = DateTime.now().get('year'),
+    events: Event[] = []
 
-  onMount(() => {
-    loadEvents()
-  })
-
-  let events: Event[]
+  
   function loadEvents() {
     let service = new EventsService({ fetch })
     service.list({
@@ -56,9 +54,6 @@
       events = loadedEvents
     })
   }
-
-  $: if(!!visibleMonth && !!visibleYear) loadEvents()
-  import EventsViewer from "$lib/components/events/EventsViewer.svelte";
 </script>
 
 <EventsViewer
@@ -69,4 +64,6 @@
   bind:selectedEvents={selectedEvents}
   bind:visibleMonth={visibleMonth}
   bind:visibleYear={visibleYear}
+  on:nextMonth={loadEvents}
+  on:previousMonth={loadEvents}
 ></EventsViewer>

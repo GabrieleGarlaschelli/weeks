@@ -1,5 +1,4 @@
-import { FetchBasedService } from "../base/fetchBased.service";
-import { browser } from "$app/environment";
+import { FetchBasedService } from "$lib/services/common/fetchBased.service";
 import type { Teammate } from "$lib/services/teams/teams.service";
 
 export default class TeammatesService extends FetchBasedService {
@@ -16,7 +15,7 @@ export default class TeammatesService extends FetchBasedService {
     alias?: string,
     roleId?: number,
   }): Promise<Teammate> {
-    let response = await this.put({
+    let response = await this.client.put({
       url: '/teammates/' + params.id,
       body: params
     })

@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   import type { Team, Teammate } from "$lib/services/teams/teams.service"
-  import type { DateStat } from "@likable-hair/svelte/dates/utils"
+  import type { DateStat } from "@likable-hair/svelte/dist/components/simple/dates/utils";
   import type { Event } from "$lib/services/events/events.service"
 </script>
 
@@ -10,6 +10,19 @@
   import { goto } from "$app/navigation";
   import CansService from '$lib/services/roles/cans.service';
   import qs from 'qs'
+  import { Button, Calendar, Icon, MediaQuery } from "@likable-hair/svelte"
+  import { createEventDispatcher } from "svelte";
+
+  let dispatch = createEventDispatcher<{
+    nextMonth: {
+      month: number,
+      year: number
+    },
+    previousMonth: {
+      month: number,
+      year: number
+    },
+  }>()
 
   export let team: Team | undefined,
     teammate: Teammate | undefined = undefined,
@@ -18,7 +31,6 @@
     events: Event[],
     visibleMonth: number = DateTime.now().get('month') - 1,
     visibleYear: number = DateTime.now().get('year')
-
 
   let dayGroupedEvents: {
     [key: string]: Event[] | undefined
@@ -56,6 +68,8 @@
     } else {
       visibleMonth += 1
     }
+
+    dispatch('nextMonth')
   }
 
   function previousMonth() {
@@ -65,6 +79,8 @@
     } else {
       visibleMonth -= 1
     }
+
+    dispatch('previousMonth')
   }
 
   function handleDayClick(dayStat: DateStat) {
@@ -109,11 +125,6 @@
       selectedEvents = dayGroupedEvents[key] || []
     }
   }
-
-  import colors from "$lib/stores/colors";
-  import Calendar from "@likable-hair/svelte/dates/Calendar.svelte"
-  import Icon from "@likable-hair/svelte/media/Icon.svelte"
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
 </script>
 
 <MediaQuery 
@@ -131,6 +142,7 @@
           on:click={previousMonth}
         ></Icon>
         <div>
+          {monthName}
           <slot name="options">
           </slot>
         </div>
@@ -139,12 +151,6 @@
           click
           on:click={nextMonth}
         ></Icon>
-      </div>
-      <div 
-        class="month-name"
-        style:margin-bottom="20px"
-      >
-        {monthName}
       </div>
     {:else}
       <div class="month-switcher">
@@ -173,16 +179,17 @@
       bind:visibleYear={visibleYear}
       bind:selectedDate={selectedDate}
       locale="it"
-      height={mAndDown ? "200px" : "auto"}
-      gridGap="0px"
+      --calendar-height={mAndDown ? "200px" : "auto"}
+      --calendar-grid-gap="0px"
     >
       <div
         slot="day"
         let:dayStat
         let:selected
         class="day-slot"
-        style:border-color={$colors.thinContrast}
+        style:border-color="rgb(var(--global-color-background-300))"
         on:click={() => handleDayClick(dayStat)}
+        on:keypress={() => handleDayClick(dayStat)}
       >
         {#if !mAndDown}
           <div>
@@ -194,8 +201,8 @@
               <div style:position="relative">
                 <div 
                   class="event-post"
-                  style:background-color={$colors.tertiary}
-                  style:color={$colors.contrast}
+                  style:background-color="rgb(var(--global-color-primary-700))"
+                  style:color="rgb(var(--global-color-grey-50))"
                 >
                   <div
                     style:white-space="nowrap"
@@ -224,15 +231,19 @@
           {#if CansService.can('Event', 'create') && !!team}
             <div
               class="add-new"
-              style:background-color={$colors.primary}
             >
-              <Icon
-                name="mdi-plus"
-                size={10}
-                color={$colors.background}
-                click
+              <Button
+                buttonType="icon"
                 on:click={() => handlePlusClick(dayStat)}
-              ></Icon>
+                --button-padding="0px 4px"
+                --button-border-radius="4px"
+              >
+                <Icon
+                  name="mdi-plus"
+                  --icon-size="10px"
+                  --icon-color="rgb(var(--global-color-background-900))"
+                ></Icon>
+              </Button>
             </div>
           {/if}
         {:else if isGreaterThan(dayGroupedEvents[DateTime.now().set({
@@ -244,7 +255,7 @@
         {/if}
         <div
           class="day-of-month"
-          style:color={selected ? $colors.primary : $colors.contrast}
+          style:color={selected ? "rgb(var(--global-color-primary-500))" : "rgb(var(--global-color-contrast-900))"}
         >
           {dayStat.dayOfMonth}
         </div>
@@ -335,14 +346,14 @@
     position: absolute;
     left: 5px;
     top: 0px;
-    height: 38px;
+    bottom: 0px;
     width: 3px;
     border-radius: 2px 2px 0px 0px;
-    background-color: var(--global-primary-color);
+    background-color: rgb(var(--global-color-primary-200));
   }
 
   .event-post {
-    font-size: .9rem;
+    font-size: .8rem;
     word-break: keep-all;
     margin: 5px;
     padding-top: 4px;
@@ -352,6 +363,5 @@
     text-overflow: clip;
     overflow: hidden;
     border-radius: 3px;
-    height: 30px;
   }
 </style>

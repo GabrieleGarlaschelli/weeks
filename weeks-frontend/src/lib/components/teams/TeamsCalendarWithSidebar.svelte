@@ -1,13 +1,14 @@
-<script lang="ts" context="module">
-  import type { Event } from '$lib/services/events/events.service'
-  import type { Team, Teammate } from '$lib/services/teams/teams.service'
-</script>
-
 <script lang="ts">
   import { DateTime } from 'luxon';
+  import TeamsCalendar from "$lib/components/teams/TeamsCalendar.svelte";
+  import { MediaQuery, Icon } from "@likable-hair/svelte";
+  import EventsList from "$lib/components/events/EventsList.svelte";
+  import type { Event } from '$lib/services/events/events.service'
+  import type { Team, Teammate } from '$lib/services/teams/teams.service'
 
   export let team: Team,
-    teammate: Teammate | undefined = undefined
+    teammate: Teammate | undefined = undefined,
+    events: Event[] = []
 
   let selectedDate: Date | undefined,
     selectedEvents: Event[] = []
@@ -17,11 +18,6 @@
   function handleCloseDrawer() {
     selectedDate = undefined
   }
-
-  import TeamsCalendar from "$lib/components/teams/TeamsCalendar.svelte";
-  import MediaQuery from "@likable-hair/svelte/common/MediaQuery.svelte";
-  import EventsList from "$lib/components/events/EventsList.svelte";
-  import Icon from "@likable-hair/svelte/media/Icon.svelte";
 </script>
 
 <MediaQuery 
@@ -34,6 +30,7 @@
       <TeamsCalendar
         bind:selectedDate={selectedDate}
         bind:selectedEvents={selectedEvents}
+        bind:events={events}
         team={team}
         teammate={teammate}
       ></TeamsCalendar>

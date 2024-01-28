@@ -1,5 +1,9 @@
 <script lang="ts" context="module">
-  import type { Tab } from "@likable-hair/svelte/navigation/TabSwitcher.svelte"
+  export type Tab = {
+    name: string;
+    label: string;
+    icon?: string;
+  } 
 </script>
 
 <script lang="ts">
@@ -8,8 +12,7 @@
     marginTop: string | undefined = undefined,
     marginBottom: string | undefined = undefined
 
-  import colors from "$lib/stores/colors"
-  import TabSwitcher from "@likable-hair/svelte/navigation/TabSwitcher.svelte"
+  import { TabSwitcher } from "@likable-hair/svelte"
 </script>
 
 <div
@@ -17,13 +20,12 @@
   style:margin-bottom={marginBottom}
 >
   <TabSwitcher
-    color={$colors.primary}
-    bookmarkColor={$colors.primary}
-    horizontalGuideColor={$colors.lightContrast}
     tabs={tabs}
-    margin="4px"
-    width="100%"
     bind:selected={selected}
     on:tab-click
-  ></TabSwitcher>
+  >
+    <svelte:fragment slot="append">
+      <slot name="append"></slot>
+    </svelte:fragment>
+  </TabSwitcher>
 </div>

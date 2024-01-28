@@ -1,10 +1,6 @@
-<script lang="ts" context="module">
-  import type { Item } from '@likable-hair/svelte/forms/Autocomplete.svelte'
-  import type { Team } from '$lib/services/teams/teams.service'
-</script>
-
 <script lang="ts">
   import RolesService from '$lib/services/roles/roles.service'
+
   export let team: { id: number },
     width: string | undefined = undefined,
     values: Item[] = []
@@ -32,10 +28,3 @@
   import StandardAutocomplete from '$lib/components/common/StandardAutocomplete.svelte'
   import { onMount } from 'svelte'
 </script>
-
-<StandardAutocomplete
-  width={width}
-  items={items}
-  bind:values={values}
-  on:change
-></StandardAutocomplete>

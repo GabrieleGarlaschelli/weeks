@@ -2,11 +2,10 @@
   export type Chip = {
     label: string,
     value: number | string
-  }
+  };
 </script>
 
 <script lang="ts">
-  import colors from "$lib/stores/colors";
 
   export let chips: Chip[] = [],
     value: Chip[] = []
@@ -27,12 +26,13 @@
 
 <div class="container">
   {#each chips as chip}
-    <div
+    <button
+      type="button"
       class="chip"
       class:selected={value.map(el => el.value).includes(chip.value)}
       class:unselected={!value.map(el => el.value).includes(chip.value)}
       on:click={() => toggleSelection(chip)}
-    >{chip.label}</div>
+    >{chip.label}</button>
   {/each}
 </div>
 
@@ -53,14 +53,14 @@
   }
 
   .chip.unselected {
-    background-color: var(--global-background-color);
-    color: var(--global-primary-color);
-    border: 1px solid var(--global-primary-color);
+    background-color: rgb(var(--global-color-background-300));
+    color: rgb(var(--global-color-primary-500));
+    border: 1px solid rgb(var(--global-color-primary-500));
   }
 
   .chip.selected {
-    background-color: var(--global-primary-color);
-    color: var(--global-background-color);
-    border: 1px solid var(--global-primary-color);
+    background-color: rgb(var(--global-color-primary-500));
+    color: rgb(var(--global-color-background-300));
+    border: 1px solid rgb(var(--global-color-primary-500));
   }
 </style>

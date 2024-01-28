@@ -9,7 +9,8 @@ export type CreateParams = {
   data: {
     email: string,
     password: string,
-    name: string
+    firstname: string,
+    lastname: string
   },
   context?: {}
 }
@@ -19,7 +20,8 @@ export type UpdateParams = {
     id?: number,
     email?: string,
     password?: string,
-    name?: string
+    firstname?: string,
+    lastname?: string
   },
   context?: {}
 }
@@ -69,7 +71,10 @@ class UsersManager {
 
     return await UserModel.firstOrCreate({
       email: params.data.email
-    }, params.data)
+    }, {
+      ...params.data,
+      name: params.data.firstname + ' ' + params.data.lastname
+    })
   }
 
   public async get(params: GetParams): Promise<User | null> {
