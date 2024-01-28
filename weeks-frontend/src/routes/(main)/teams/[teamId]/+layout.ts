@@ -1,14 +1,14 @@
-import type { LayoutLoad } from './$types';
-import TeamsService from '$lib/services/teams/teams.service';
+import type { LayoutLoad } from './$types'
+import TeamsService from '$lib/services/teams/teams.service'
 
 export const load = (async ({ parent, fetch, params, depends }) => {
-  depends('/teams/[teamId]')
-  let parentData = await parent()
+	depends('/teams/[teamId]')
+	let parentData = await parent()
 
-  let teamsService = new TeamsService({ fetch, token: parentData.token })
-  let team = await teamsService.show({ id: Number(params.teamId) })
+	let teamsService = new TeamsService({ fetch, token: parentData.token })
+	let team = await teamsService.show({ id: Number(params.teamId) })
 
-  return {
-    team
-  };
-}) satisfies LayoutLoad;
+	return {
+		team
+	}
+}) satisfies LayoutLoad

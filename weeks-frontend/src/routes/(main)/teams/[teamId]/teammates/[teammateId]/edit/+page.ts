@@ -1,6 +1,5 @@
-import type { PageLoad } from './$types';
+import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, parent, params }) => {
-  return {
-  };
-}) satisfies PageLoad;
+	return {}
+}) satisfies PageLoad

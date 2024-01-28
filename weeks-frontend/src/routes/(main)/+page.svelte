@@ -1,88 +1,70 @@
 <script lang="ts" context="module">
-  import type { Team } from "$lib/services/teams/teams.service"
+	import type { Team } from '$lib/services/teams/teams.service'
 </script>
 
 <script lang="ts">
-  import type { PageData } from './$types';
-  import TeamsBoxList from "$lib/components/teams/TeamsBoxList.svelte";
-  import PageTitle from "$lib/components/common/PageTitle.svelte";
-  import { MediaQuery } from "@likable-hair/svelte";
-  import { onMount } from "svelte";
-  import TeamsService from "$lib/services/teams/teams.service";
-  import { goto } from "$app/navigation";
-	import EventsService, { type Event } from "$lib/services/events/events.service";
-	import { DateTime } from "luxon";
-	import EventsHorizontalList from "$lib/components/events/EventsHorizontalList.svelte";
-	import GlobalCalendarWithSidebar from "$lib/components/profile/GlobalCalendarWithSidebar.svelte";
+	import type { PageData } from './$types'
+	import TeamsBoxList from '$lib/components/teams/TeamsBoxList.svelte'
+	import PageTitle from '$lib/components/common/PageTitle.svelte'
+	import { MediaQuery } from '@likable-hair/svelte'
+	import { onMount } from 'svelte'
+	import TeamsService from '$lib/services/teams/teams.service'
+	import { goto } from '$app/navigation'
+	import EventsService, { type Event } from '$lib/services/events/events.service'
+	import { DateTime } from 'luxon'
+	import EventsHorizontalList from '$lib/components/events/EventsHorizontalList.svelte'
+	import GlobalCalendarWithSidebar from '$lib/components/profile/GlobalCalendarWithSidebar.svelte'
 
-  export let data: PageData
+	export let data: PageData
 
-  let teams: Team[] = []
-  async function loadTeams() {
-    let service = new TeamsService({ fetch })
-    let paginationData = await service.list()
-    teams = paginationData.data
-  }
+	let teams: Team[] = []
+	async function loadTeams() {
+		let service = new TeamsService({ fetch })
+		let paginationData = await service.list()
+		teams = paginationData.data
+	}
 
-  let nextEvents: Event[] = [], 
-    loadingEvents: boolean = false
+	let nextEvents: Event[] = [],
+		loadingEvents: boolean = false
 
-  async function loadNextEvents() {
-    loadingEvents = true
-    let service = new EventsService({ fetch })
-    let results = await service.list({
-      filters: {
-        from: DateTime.now().toJSDate(),
-        to: DateTime.now().plus({ days: 1 }).toJSDate()
-      }
-    })
+	async function loadNextEvents() {
+		loadingEvents = true
+		let service = new EventsService({ fetch })
+		let results = await service.list({
+			filters: {
+				from: DateTime.now().toJSDate(),
+				to: DateTime.now().plus({ days: 1 }).toJSDate()
+			}
+		})
 
-    loadingEvents = false
-    nextEvents = results
-  }
+		loadingEvents = false
+		nextEvents = results
+	}
 
-  async function handleTeamClick(event: any) {
-    goto('/teams/' + event.detail.team.id + '/general')
-  }
+	async function handleTeamClick(event: any) {
+		goto('/teams/' + event.detail.team.id + '/general')
+	}
 
-  onMount(() => {
-    loadTeams()
-    loadNextEvents()
-  })
+	onMount(() => {
+		loadTeams()
+		loadNextEvents()
+	})
 </script>
 
-
-<PageTitle
-  title="Home"
-></PageTitle>
+<PageTitle title="Home" />
 <div class="font-bold mt-4">I miei team</div>
-<div
-  style:margin-top="10px"
->
-  <TeamsBoxList
-    marginTop="20px"
-    teams={teams}
-    on:teams-click={handleTeamClick}
-  ></TeamsBoxList>
+<div style:margin-top="10px">
+	<TeamsBoxList marginTop="20px" {teams} on:teams-click={handleTeamClick} />
 </div>
 <div class="font-bold mt-4">Prossimi appuntamenti</div>
-<div
-  style:margin-top="10px"
->
-  {#if loadingEvents}
-    Caricamento eventi ...
-  {:else}
-    <EventsHorizontalList
-      events={nextEvents}
-    ></EventsHorizontalList>
-  {/if}
+<div style:margin-top="10px">
+	{#if loadingEvents}
+		Caricamento eventi ...
+	{:else}
+		<EventsHorizontalList events={nextEvents} />
+	{/if}
 </div>
 <div class="font-bold mt-4">Calendario globale</div>
-<div
-  style:margin-top="10px"
-  style:padding-bottom="50px"
->
-  <GlobalCalendarWithSidebar
-    events={data.events}
-  ></GlobalCalendarWithSidebar>
+<div style:margin-top="10px" style:padding-bottom="50px">
+	<GlobalCalendarWithSidebar events={data.events} />
 </div>

@@ -1,40 +1,26 @@
 <script lang="ts" context="module">
-  export type Team = {
-    name?: string,
-    notes?: string
-  };
+	export type Team = {
+		name?: string
+		notes?: string
+	}
 </script>
 
 <script lang="ts">
-  import LabelAndTextfield from "$lib/components/common/LabelAndTextfield.svelte"
-  import LabelAndTextarea from "$lib/components/common/LabelAndTextarea.svelte"
+	import LabelAndTextfield from '$lib/components/common/LabelAndTextfield.svelte'
+	import LabelAndTextarea from '$lib/components/common/LabelAndTextarea.svelte'
 
-  export let team: Team = {
-      name: undefined,
-      notes: undefined
-    },
-    mode: 'create' | 'update' = 'create',
-    padding: string | undefined = undefined,
-    margin: string | undefined = undefined,
-    width: string | undefined = undefined,
-    height: string | undefined = undefined
+	export let team: Team = {
+			name: undefined,
+			notes: undefined
+		},
+		mode: 'create' | 'update' = 'create',
+		padding: string | undefined = undefined,
+		margin: string | undefined = undefined,
+		width: string | undefined = undefined,
+		height: string | undefined = undefined
 </script>
 
-<form
-  style:padding={padding}
-  style:margin={margin}
-  style:width={width}
-  style:height={height}
->
-  <LabelAndTextfield
-    label="Nome"
-    name="name"
-    bind:value={team.name}
-  ></LabelAndTextfield>
-  <LabelAndTextarea
-    label="Note"
-    name="notes"
-    bind:value={team.notes}
-  ></LabelAndTextarea>
+<form style:padding style:margin style:width style:height>
+	<LabelAndTextfield label="Nome" name="name" bind:value={team.name} />
+	<LabelAndTextarea label="Note" name="notes" bind:value={team.notes} />
 </form>
-

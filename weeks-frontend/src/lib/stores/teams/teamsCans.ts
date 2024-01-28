@@ -1,9 +1,9 @@
-import type { RoleCans } from '$lib/services/roles/roles.service';
-import { writable } from "svelte/store";
+import type { RoleCans } from '$lib/services/roles/roles.service'
+import { writable } from 'svelte/store'
 
 export type TeamCans = {
-  cans: RoleCans,
-  owner: boolean
+	cans: RoleCans
+	owner: boolean
 }
 
 const store = writable<TeamCans | undefined>(undefined)

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation'
 
 	export let title: string,
 		subtitle: string = '',
@@ -9,10 +9,10 @@
 		prependRoute: string | undefined = undefined
 
 	function handleBackClick() {
-		if (!prependRoute) window.history.back();
-		else goto(prependRoute);
+		if (!prependRoute) window.history.back()
+		else goto(prependRoute)
 	}
-	import { Icon } from '@likable-hair/svelte';
+	import { Icon } from '@likable-hair/svelte'
 </script>
 
 <div style:margin-top={marginTop} style:padding-top={paddingTop}>
@@ -31,9 +31,9 @@
 	<div style:display="flex" style:align-items="center">
 		<div style:font-weight="700" style:font-size="22pt">
 			<slot name="title">
-        <div class="mt-2 ml-2 mb-1 text-4xl font-bold title">
-          {title}
-        </div>
+				<div class="mt-2 ml-2 mb-1 text-4xl font-bold title">
+					{title}
+				</div>
 				<div class="ml-2 mb-4 text-base font-normal">
 					{subtitle}
 				</div>
@@ -59,7 +59,7 @@
 		transform: translateX(-8px);
 	}
 
-  .title {
-    color: rgb(var(--global-color-contrast-800));
-  }
+	.title {
+		color: rgb(var(--global-color-contrast-800));
+	}
 </style>

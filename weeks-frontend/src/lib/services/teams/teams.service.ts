@@ -1,94 +1,82 @@
-import { FetchBasedService } from "$lib/services/common/fetchBased.service";
-import type { User } from "../auth/auth.service";
-import type { Role } from "../roles/roles.service";
-import type { Invitation } from "../invitations/invitations.service";
+import { FetchBasedService } from '$lib/services/common/fetchBased.service'
+import type { User } from '../auth/auth.service'
+import type { Role } from '../roles/roles.service'
+import type { Invitation } from '../invitations/invitations.service'
 
 export type Teammate = {
-  id: number,
-  roleId?: number
-  role?: Role,
-  teamId: number
-  uid?: string
-  userId: number,
-  user: User,
-  alias?: string,
-  createdAt: Date,
-  updatedAt: Date,
+	id: number
+	roleId?: number
+	role?: Role
+	teamId: number
+	uid?: string
+	userId: number
+	user: User
+	alias?: string
+	createdAt: Date
+	updatedAt: Date
 }
 
 export type Team = {
-  id: number
-  name: string,
-  notes: string,
-  ownerId?: number,
-  invitations?: Invitation[],
-  owner?: User,
-  teammates: Teammate[]
-  roles?: Role[],
-  createdAt: Date,
-  updatedAt: Date,
+	id: number
+	name: string
+	notes: string
+	ownerId?: number
+	invitations?: Invitation[]
+	owner?: User
+	teammates: Teammate[]
+	roles?: Role[]
+	createdAt: Date
+	updatedAt: Date
 }
 
 export type PaginatedTeams = {
-  data: Team[],
-  meta: PaginationData
+	data: Team[]
+	meta: PaginationData
 }
 
 export default class TeamsService extends FetchBasedService {
+	public async create(params: { name?: string; notes?: string }): Promise<Team> {
+		if (!params.name) throw new Error('name must be defined')
 
-  public async create(params: {
-    name?: string,
-    notes?: string
-  }): Promise<Team> {
-    if(!params.name) throw new Error('name must be defined')
+		let response = await this.client.post({
+			url: '/teams',
+			body: params
+		})
 
-    let response = await this.client.post({
-      url: '/teams',
-      body: params
-    })
+		return response
+	}
 
-    return response
-  }
+	public async list(params?: { page?: number; perPage?: number }): Promise<PaginatedTeams> {
+		if (!params)
+			params = {
+				page: 1,
+				perPage: 300
+			}
+		if (!params.page) params.page = 1
+		if (!params.perPage) params.perPage = 300
 
-  public async list(params?: {
-    page?: number,
-    perPage?: number
-  }): Promise<PaginatedTeams> {
-    if(!params) params = {
-      page: 1,
-      perPage: 300
-    }
-    if (!params.page) params.page = 1
-    if (!params.perPage) params.perPage = 300
+		let response = await this.client.get({
+			url: '/teams',
+			params: params
+		})
 
-    let response = await this.client.get({
-      url: '/teams',
-      params: params
-    })
+		return response
+	}
 
-    return response
-  }
+	public async show(params: { id: number }): Promise<Team> {
+		let response = await this.client.get({
+			url: '/teams/' + params.id
+		})
 
-  public async show(params: {
-    id: number
-  }): Promise<Team> {
-    let response = await this.client.get({
-      url: '/teams/' + params.id
-    })
+		return response
+	}
 
-    return response
-  }
+	public async update(params: { id: number; name?: string; notes?: string }): Promise<Team> {
+		let response = await this.client.put({
+			url: '/teams/' + params.id,
+			body: params
+		})
 
-  public async update(params: {
-    id: number,
-    name?: string,
-    notes?: string
-  }): Promise<Team> {
-    let response = await this.client.put({
-      url: '/teams/' + params.id,
-      body: params
-    })
-
-    return response
-  }
+		return response
+	}
 }
