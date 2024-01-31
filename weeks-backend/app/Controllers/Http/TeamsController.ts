@@ -89,4 +89,13 @@ export default class TeamsController {
       throw new Error('user not present in team')
     }
   }
+
+  public async absencesInLatestEvents({ request }: HttpContextContract) {
+    const manager = new TeamsManager()
+    return await manager.absencesInLatestEvents({
+      data: {
+        forLastEvents: Number(request.input('forLastEvents'))
+      }
+    })
+  }
 }

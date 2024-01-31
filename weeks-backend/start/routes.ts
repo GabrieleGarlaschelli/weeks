@@ -30,6 +30,7 @@ Route.get('/auth/google/callback', 'AuthController.googleCallback')
 
 Route.post('/auth/google/loginWithIosGoogleToken', 'AuthController.loginWithIosGoogleToken')
 
+Route.get('/teams/absencesInLatestEvents', 'TeamsController.absencesInLatestEvents').middleware('auth:api')
 Route.resource('teams', 'TeamsController')
   .only(['index', 'store', 'update', 'show', 'destroy'])
   .middleware({
@@ -39,6 +40,7 @@ Route.post('/teams/:id/removeUser', 'TeamsController.removeUser').middleware('au
 Route.post('/teams/:id/exit', 'TeamsController.exit').middleware('auth:api')
 Route.post('/teams/:id/updatePreference', 'TeamsController.updatePreference').middleware('auth:api')
 
+Route.get('/teammates/mostAbsenceForTeammates', 'TeammatesController.mostAbsenceForTeammates').middleware('auth:api')
 Route.put('/teammates/:id', 'TeammatesController.update').middleware('auth:api')
 
 Route.post('/roles', 'RolesController.store').middleware('auth:api')

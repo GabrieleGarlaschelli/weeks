@@ -94,4 +94,12 @@ test.group('Teams', (group) => {
 
     assert.isTrue(error, 'unknow preference should not be set')
   })
+
+  test('get absences in latest events', async ({ client, assert }) => {
+    let response = await client.get('/teams/absencesInLatestEvents').qs({
+      forLastEvents: 10
+    }).loginAs(loggedInUser)
+
+    response.assertAgainstApiSpec()
+  })
 })

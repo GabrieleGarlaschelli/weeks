@@ -12,4 +12,9 @@ export default class TeammatesController {
       }
     })
   }
+
+  public async mostAbsenceForTeammates({ }: HttpContextContract) {
+    const manager = new TeammatesManager()
+    return await manager.mostAbsenceForTeammates()
+  }
 }

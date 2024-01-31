@@ -92,7 +92,7 @@ export default class TeamsManager {
     let query = TeamModel
       .query()
 
-    if(!!user) {
+    if (!!user) {
       query = query.whereHas('teammates', (teammateQuery) => {
         teammateQuery.whereHas('user', (userQuery) => {
           userQuery.where('id', user.id)
@@ -112,7 +112,7 @@ export default class TeamsManager {
 
   public async create(params: CreateParams): Promise<Team> {
     const user = await this._getUserFromContext(params.context)
-    if(!user) throw new Error('user must be defined to create team')
+    if (!user) throw new Error('user must be defined to create team')
 
     let trx = params.context?.trx
     if (!trx) trx = await Database.transaction()
@@ -143,7 +143,7 @@ export default class TeamsManager {
 
       if (!params.context?.trx) await trx.commit()
       return createdTeam
-    } catch(error) {
+    } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }
@@ -232,7 +232,7 @@ export default class TeamsManager {
       const results = await team.save()
       if (!params.context?.trx) await trx.commit()
       return results
-    } catch(error) {
+    } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
     }
@@ -264,7 +264,7 @@ export default class TeamsManager {
 
       if (!params.data.preference) throw new Error('preference key must be defined')
       else if (!params.data.value) throw new Error('preference value must be defined')
-      else if(![
+      else if (![
         'confirmPresenceByDefault'
       ].includes(params.data.preference)) throw new Error("unknown preference");
 
@@ -272,7 +272,7 @@ export default class TeamsManager {
         client: trx
       })
 
-      if(!team.preferences) team.preferences = {}
+      if (!team.preferences) team.preferences = {}
       team.preferences[params.data.preference] = params.data.value
 
       const results = await team.save()
@@ -296,11 +296,11 @@ export default class TeamsManager {
       if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
 
       let existingTeammates = await TeammateModel.query({
-          client: trx
-        }).where('teamId', params.data.team.id)
+        client: trx
+      }).where('teamId', params.data.team.id)
         .where('userId', params.data.user.id)
 
-      if(existingTeammates.length != 0) return
+      if (existingTeammates.length != 0) return
 
       const team = await TeamModel.findOrFail(params.data.team.id, {
         client: trx
@@ -355,7 +355,7 @@ export default class TeamsManager {
         builder.where('users.id', params.data.user.id)
       }).where('teams.id', params.data.team.id)
 
-      if(isTeamOwner.length > 0) {
+      if (isTeamOwner.length > 0) {
         throw new Error('cannot exit in owned teams')
       }
 
@@ -397,7 +397,7 @@ export default class TeamsManager {
       })
 
       const results = await TeamModel.query({ client: trx }).where('id', params.data.id)
-      
+
       await results[0].delete()
       if (!params.context?.trx) await trx.commit()
     } catch (error) {
@@ -417,8 +417,8 @@ export default class TeamsManager {
     if (!params.data.user || !params.data.user.id) throw new Error('user must be defined')
 
     const userBelongs = await UserModel.query({
-        client: params.context?.trx
-      })
+      client: params.context?.trx
+    })
       .whereHas('teams', (builder) => {
         builder.where('teams.id', params.data.team.id)
       })
@@ -429,7 +429,7 @@ export default class TeamsManager {
 
   public async absencesInLatestEvents(params: {
     data: {
-      forLastEvents: 10
+      forLastEvents: number
     },
     context?: Context
   }): Promise<Record<number, {
@@ -440,7 +440,11 @@ export default class TeamsManager {
     absences: {
       eventId: number,
       absencesNumber: number
-    }
+    }[],
+    presences: {
+      eventId: number,
+      presencesNumber: number
+    }[]
   }>> {
     const user = await this._getUserFromContext(params.context)
     if (!user) throw new Error('user must be get absences in latest events')
@@ -461,47 +465,88 @@ export default class TeamsManager {
 
       let teams = await query
 
-      for(let i = 0; i < teams.length; i += 1) {
-        Database.raw(`SELECT 
-          e.id,
-          e."teamId",
-          COUNT(
-            CASE WHEN
-              c."confirmationStatus" = 'denied'
-              THEN 1
-              ELSE 0
-            END
-          ) as "absencesCount",
-          COUNT(
-            CASE WHEN
-              c."confirmationStatus" = 'pending'
-              THEN 1
-              ELSE 0
-            END
-          ) as "pendingCount",
-          COUNT(
-            CASE WHEN
-              c."confirmationStatus" = 'confirmed'
-              THEN 1
-              ELSE 0
-            END
-          ) as "presenceCount"
-        FROM events e
-        INNER JOIN convocations c ON c."eventId" = e.id
-        WHERE e.id IN (
-          SELECT id FROM events 
-          WHERE e."teamId" = events."teamId"
-          ORDER BY events."start" DESC
-          LIMIT ?
-        ) AND e."teamId" IN ?
-        GROUP BY e.id, e."teamId"`, [
-          params.data.forLastEvents,
-          teams.map((t) => t.id)
-        ])
+      let results = await Database.rawQuery<{
+        rows: {
+          id: number
+          teamId: number
+          absencesCount: string
+          pendingCount: string
+          presencesCount: string
+        }[]
+      }>(`SELECT 
+        e.id,
+        e."teamId",
+        COUNT(
+          CASE WHEN
+            c."confirmationStatus" = 'denied'
+            THEN c.id
+            ELSE NULL
+          END
+        ) as "absencesCount",
+        COUNT(
+          CASE WHEN
+            c."confirmationStatus" = 'pasdsdasd'
+            THEN c.id
+            ELSE NULL
+          END
+        ) as "pendingCount",
+        COUNT(
+          CASE WHEN
+            c."confirmationStatus" = 'confirmed'
+            THEN c.id
+            ELSE NULL
+          END
+        ) as "presencesCount"
+      FROM events e
+      INNER JOIN convocations c ON c."eventId" = e.id
+      WHERE e.id IN (
+        SELECT id FROM events 
+        WHERE e."teamId" = events."teamId"
+        ORDER BY events."start" DESC
+        LIMIT :lastEventNumber
+      ) AND e."teamId" IN (${teams.map((t) => t.id).join(', ')})
+      GROUP BY e.id, e."teamId"`, {
+        lastEventNumber: params.data.forLastEvents,
+      })
+
+      let finalResults: Record<number, {
+        team: {
+          id: number,
+          name: string
+        }
+        absences: {
+          eventId: number,
+          absencesNumber: number
+        }[]
+        presences: {
+          eventId: number,
+          presencesNumber: number
+        }[]
+      }> = {}
+      for (let i = 0; i < results.rows.length; i += 1) {
+        let row = results.rows[i]
+        if(!finalResults[row.teamId]) finalResults[row.teamId] = {
+          team: {
+            name: teams.find((t) => t.id == row.teamId)?.name!,
+            id: row.teamId
+          },
+          absences: [],
+          presences: []
+        }
+
+        finalResults[row.teamId].absences.push({
+          eventId: row.id,
+          absencesNumber: Number(row.absencesCount)
+        })
+
+        finalResults[row.teamId].presences.push({
+          eventId: row.id,
+          presencesNumber: Number(row.presencesCount)
+        })
       }
 
       if (!params.context?.trx) await trx.commit()
-      return {}
+      return finalResults
     } catch (error) {
       if (!params.context?.trx) await trx.rollback()
       throw error
@@ -509,7 +554,7 @@ export default class TeamsManager {
   }
 
   private async _getUserFromContext(context?: Context) {
-    if(!!context?.user) {
+    if (!!context?.user) {
       return await UserModel.query().where('id', context.user.id).first()
     } else {
       const ctx = HttpContext.get()

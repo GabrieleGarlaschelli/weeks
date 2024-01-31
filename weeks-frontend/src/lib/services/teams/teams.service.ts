@@ -79,4 +79,30 @@ export default class TeamsService extends FetchBasedService {
 
 		return response
 	}
+
+  public async absencesInLatestEvents(params: {
+    forLastEvents: number
+  }): Promise<Record<number, {
+    team: {
+      id: number,
+      name: string
+    }
+    absences: {
+      eventId: number,
+      absencesNumber: number
+    }[]
+    presences: {
+      eventId: number,
+      presencesNumber: number
+    }[]
+  }>> {
+    let response = await this.client.get({
+      url: '/teams/absencesInLatestEvents',
+      params: {
+        forLastEvents: params.forLastEvents
+      }
+    })
+
+    return response
+  }
 }

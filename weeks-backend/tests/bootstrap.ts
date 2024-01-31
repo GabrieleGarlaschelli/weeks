@@ -8,7 +8,7 @@ export const plugins: Config['plugins'] = [
       schemas: ['api-spec.yml'],
     },
   }), 
-  runFailedTests(), 
+  // runFailedTests(), 
   apiClient()
 ]
 export const reporters: Config['reporters'] = [specReporter()]

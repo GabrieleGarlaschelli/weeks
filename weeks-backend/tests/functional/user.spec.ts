@@ -20,7 +20,8 @@ test.group('Users', (group) => {
     const response = await client.post('/users').json({
       email: 'someemail@email.com',
       password: 'some_secret_password',
-      name: 'some name'
+      firstname: 'some name',
+      lastname: 'some lastname'
     }).loginAs(loggedInUser)
 
     response.assertAgainstApiSpec()
@@ -32,7 +33,8 @@ test.group('Users', (group) => {
     await client.post('/users').json({
       email: 'someemail@email.com',
       password: 'some_secret_password',
-      name: 'some name'
+      firstname: 'some name',
+      lastname: 'some lastname'
     }).loginAs(loggedInUser)
 
     let response = await client.get('/users').qs({

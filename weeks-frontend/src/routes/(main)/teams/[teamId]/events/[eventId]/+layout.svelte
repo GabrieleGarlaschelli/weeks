@@ -79,9 +79,9 @@
 
 	function handleTabClick() {
 		if (selectedTab == 'general') {
-			goto(`/teams/${data.event.teamId}/events/${data.event.id}/general`)
+			goto(`/teams/${data.event.teamId}/events/${data.event.id}/general`, { replaceState: true })
 		} else if (selectedTab == 'convocations') {
-			goto(`/teams/${data.event.teamId}/events/${data.event.id}/convocations`)
+			goto(`/teams/${data.event.teamId}/events/${data.event.id}/convocations`, { replaceState: true })
 		}
 	}
 
@@ -100,7 +100,6 @@
 			<PageTitle
 				title={$event.name}
 				prependVisible={true}
-				prependRoute={`/teams/${$team?.id}/calendar`}
 			>
 				<svelte:fragment slot="append">
 					{#if !!options && options.length > 0}

@@ -118,15 +118,15 @@
 
 	function handleTabClick(event: any) {
 		if (selectedTab == 'general') {
-			goto(`/teams/${$team?.id}/general`)
+			goto(`/teams/${$team?.id}/general`, { replaceState: true })
 		} else if (selectedTab == 'teammates') {
-			goto(`/teams/${$team?.id}/teammates`)
+			goto(`/teams/${$team?.id}/teammates`, { replaceState: true })
 		} else if (selectedTab == 'roles') {
-			goto(`/teams/${$team?.id}/roles`)
+			goto(`/teams/${$team?.id}/roles`, { replaceState: true })
 		} else if (selectedTab == 'calendar') {
-			goto(`/teams/${$team?.id}/calendar`)
+			goto(`/teams/${$team?.id}/calendar`, { replaceState: true })
 		} else if (selectedTab == 'weeks') {
-			goto(`/teams/${$team?.id}/weeks`)
+			goto(`/teams/${$team?.id}/weeks`, { replaceState: true })
 		}
 	}
 
@@ -171,7 +171,7 @@
 {#if !!$team}
 	{#if !headerHidden}
 		<div transition:slide|local={{ duration: 200 }}>
-			<PageTitle title={$team.name} prependVisible={true} prependRoute="/teams">
+			<PageTitle title={$team.name} prependVisible={true}>
 				<svelte:fragment slot="append">
 					{#if !!options && options.length > 0}
 						<OptionMenu {options} on:select={handleOptionClick} />

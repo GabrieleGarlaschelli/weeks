@@ -438,6 +438,34 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Team"
+  /teams/absencesInLatestEvents:
+    get:
+      summary: Returns a the absences for the latest events in all participating teams.
+      responses:
+        '200':
+          description: The teams associated to my user.
+          content:
+            application/json:
+              schema: 
+                type: object
+                additionalProperties: 
+                  type: object
+                  properties:
+                    team:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                    absences:
+                      type: object
+                      properties:
+                        eventId:
+                          type: number
+                        absencesNumber:
+                          type: number
+                        
   /teammates/{teammateId}:
     put:
       summary: Update a certain teammate.

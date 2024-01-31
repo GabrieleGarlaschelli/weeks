@@ -17,9 +17,10 @@ export default class UsersController {
     const manager = new UsersManager()
     return await manager.create({
       data: {
-        email: request.body().email,
-        password: request.body().password,
-        name: request.body().name
+        email: request.input('email'),
+        password: request.input('password'),
+        firstname: request.input('firstname'),
+        lastname: request.input('lastname')
       }
     })
   }
@@ -40,7 +41,8 @@ export default class UsersController {
         id: params.id,
         email: request.input('email'),
         password: request.input('password'),
-        name: request.input('name')
+        firstname: request.input('firstname'),
+        lastname: request.input('lastname')
       }
     })
   }

@@ -25,7 +25,8 @@ test.group('Auth', () => {
     const response = await client.post('/auth/signup').json({
       email: 'test2@example.com',
       password: 'passwordtest',
-      name: 'some new name'
+      firstname: 'some new name',
+      lastname: 'some other new name'
     })
 
     assert.equal(response.status(), 200)

@@ -2,11 +2,6 @@ import { FetchBasedService } from '$lib/services/common/fetchBased.service'
 import type { Teammate } from '$lib/services/teams/teams.service'
 
 export default class TeammatesService extends FetchBasedService {
-	constructor(params: { fetch: any }) {
-		super({
-			fetch: params.fetch
-		})
-	}
 
 	public async update(params: { id: number; alias?: string; roleId?: number }): Promise<Teammate> {
 		let response = await this.client.put({
@@ -16,4 +11,27 @@ export default class TeammatesService extends FetchBasedService {
 
 		return response
 	}
+
+  public async mostAbsenceForTeammates(): Promise<{
+    team: {
+      id: number,
+      name: string
+    }
+    teammate: {
+      id: number,
+      alias: string
+    }
+    user: {
+      email: string
+      firstname?: string
+      lastname?: string
+    }
+    absenceCount: number
+  }[]> {
+    let response = await this.client.get({
+      url: '/teammates/mostAbsenceForTeammates',
+    })
+
+    return response
+  }
 }
