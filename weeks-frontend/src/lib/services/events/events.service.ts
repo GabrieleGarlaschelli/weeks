@@ -36,9 +36,11 @@ export default class EventsService extends FetchBasedService {
 		let response = await this.client.get({
 			url: '/events',
 			params: {
-        from: params.filters.from,
-        to: params.filters.to,
-        team: teamParameter
+        filters: {
+          from: params.filters.from,
+          to: params.filters.to,
+          team: teamParameter
+        }
       }
 		})
 
