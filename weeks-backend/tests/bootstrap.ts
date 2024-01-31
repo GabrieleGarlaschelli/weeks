@@ -1,6 +1,6 @@
 import { Config } from '@japa/runner'
 import TestUtils from '@ioc:Adonis/Core/TestUtils'
-import { assert, runFailedTests, specReporter, apiClient } from '@japa/preset-adonis'
+import { assert, specReporter, apiClient } from '@japa/preset-adonis'
 
 export const plugins: Config['plugins'] = [
   assert({
@@ -8,7 +8,6 @@ export const plugins: Config['plugins'] = [
       schemas: ['api-spec.yml'],
     },
   }), 
-  // runFailedTests(), 
   apiClient()
 ]
 export const reporters: Config['reporters'] = [specReporter()]
