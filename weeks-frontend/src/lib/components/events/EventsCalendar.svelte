@@ -185,8 +185,8 @@
 									style:background-color="rgb(var(--global-color-primary-700))"
 									style:color="rgb(var(--global-color-grey-50))"
 								>
-									<div style:white-space="nowrap" style:max-width="100px">{event.name}</div>
-									<div style:font-size="0.8rem" style:font-weight="800">{event.team.name}</div>
+									<div style:white-space="nowrap" style:font-weight="800" style:max-width="100px">{event.name}</div>
+									<div style:font-size="0.8rem" style:font-weight="300">{event.team.name}</div>
 								</div>
 							</div>
 						{/each}
@@ -329,5 +329,6 @@
 		text-overflow: clip;
 		overflow: hidden;
 		border-radius: 3px;
+    line-height: 14px;
 	}
 </style>
