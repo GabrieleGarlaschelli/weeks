@@ -55,10 +55,12 @@
 
       if(userIndexes[user.email] === undefined) {
         userIndexes[user.email] = chartData.datasets[teamIndexes[team.id]].data.length
+        chartData.datasets[teamIndexes[team.id]].data.push(absencesCount)
         chartData.labels[userIndexes[user.email]] = user.firstname + ' ' + user.lastname
+      } else {
+        chartData.datasets[teamIndexes[team.id]].data[userIndexes[user.email]] = absencesCount
       }
 
-      chartData.datasets[teamIndexes[team.id]].data[userIndexes[user.email]] = absencesCount
     }
 
     chartData = {...chartData}
