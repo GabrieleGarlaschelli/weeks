@@ -227,11 +227,11 @@ export default class AuthService extends FetchBasedService {
 	}
 
 	async deleteTokenCookie(): Promise<void> {
-		this.cookies?.delete(this.cookieName)
+		this.cookies?.delete(this.cookieName, { path: '/' })
 	}
 
 	async deleteRefreshTokenCookie(): Promise<void> {
-		this.cookies?.delete(this.refreshCookieName)
+		this.cookies?.delete(this.refreshCookieName, { path: '/' })
 	}
 
 	async logout(): Promise<void> {
