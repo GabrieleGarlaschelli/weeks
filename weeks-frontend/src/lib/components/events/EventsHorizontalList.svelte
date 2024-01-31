@@ -94,11 +94,20 @@
 		padding-bottom: 5px;
     position: relative;
     text-align: left;
+    transition: all .2s cubic-bezier(0.23, 1, 0.320, 1);
 	}
+
+  .event-post:hover {
+    background-color: rgb(var(--global-color-background-400));
+  }
 
   @media (min-width: 768px) {
     .event-post {
       min-width: 240px;
+    }
+
+    .event-post:hover {
+      min-width: 260px;
     }
   }
 
