@@ -246,7 +246,7 @@
 		}
 
 		.dot {
-			background-color: var(--global-primary-color);
+			background-color: rgb(var(--global-color-primary-500));
 			height: 4px;
 			width: 4px;
 			border-radius: 50%;

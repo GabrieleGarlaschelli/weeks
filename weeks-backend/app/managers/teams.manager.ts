@@ -427,6 +427,87 @@ export default class TeamsManager {
     return userBelongs.length != 0
   }
 
+  public async absencesInLatestEvents(params: {
+    data: {
+      forLastEvents: 10
+    },
+    context?: Context
+  }): Promise<Record<number, {
+    team: {
+      id: number,
+      name: string
+    },
+    absences: {
+      eventId: number,
+      absencesNumber: number
+    }
+  }>> {
+    const user = await this._getUserFromContext(params.context)
+    if (!user) throw new Error('user must be get absences in latest events')
+
+    let trx = params.context?.trx
+    if (!trx) trx = await Database.transaction()
+
+    try {
+      let query = TeamModel.query({ client: trx })
+
+      if (!!user) {
+        query = query.whereHas('teammates', (teammateQuery) => {
+          teammateQuery.whereHas('user', (userQuery) => {
+            userQuery.where('id', user.id)
+          })
+        })
+      }
+
+      let teams = await query
+
+      for(let i = 0; i < teams.length; i += 1) {
+        Database.raw(`SELECT 
+          e.id,
+          e."teamId",
+          COUNT(
+            CASE WHEN
+              c."confirmationStatus" = 'denied'
+              THEN 1
+              ELSE 0
+            END
+          ) as "absencesCount",
+          COUNT(
+            CASE WHEN
+              c."confirmationStatus" = 'pending'
+              THEN 1
+              ELSE 0
+            END
+          ) as "pendingCount",
+          COUNT(
+            CASE WHEN
+              c."confirmationStatus" = 'confirmed'
+              THEN 1
+              ELSE 0
+            END
+          ) as "presenceCount"
+        FROM events e
+        INNER JOIN convocations c ON c."eventId" = e.id
+        WHERE e.id IN (
+          SELECT id FROM events 
+          WHERE e."teamId" = events."teamId"
+          ORDER BY events."start" DESC
+          LIMIT ?
+        ) AND e."teamId" IN ?
+        GROUP BY e.id, e."teamId"`, [
+          params.data.forLastEvents,
+          teams.map((t) => t.id)
+        ])
+      }
+
+      if (!params.context?.trx) await trx.commit()
+      return {}
+    } catch (error) {
+      if (!params.context?.trx) await trx.rollback()
+      throw error
+    }
+  }
+
   private async _getUserFromContext(context?: Context) {
     if(!!context?.user) {
       return await UserModel.query().where('id', context.user.id).first()

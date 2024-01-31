@@ -43,7 +43,7 @@
 	})
 
 	function handleOptionClick(event: any) {
-		if (event.detail?.option?.name == 'new') goto('/teams/new')
+		if (event.detail?.element?.name == 'new') goto('/teams/new')
 	}
 </script>
 
@@ -57,7 +57,7 @@
 					icon: 'mdi-plus'
 				}
 			]}
-			on:option-click={handleOptionClick}
+			on:select={handleOptionClick}
 		/>
 	</svelte:fragment>
 </PageTitle>

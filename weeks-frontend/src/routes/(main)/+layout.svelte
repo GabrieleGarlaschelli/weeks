@@ -32,6 +32,7 @@
 
 	function handleMenuClick(event: CustomEvent<{ option: { name: string } }>) {
 		if (event.detail.option.name == 'teams') goto('/teams')
+    else if (event.detail.option.name == 'calendar') goto('/calendar')
 		else if (event.detail.option.name == 'home') goto('/')
 	}
 
@@ -45,6 +46,11 @@
 			name: 'teams',
 			label: 'Teams',
 			icon: 'mdi-account-multiple'
+		},
+    {
+			name: 'calendar',
+			label: 'Calendario',
+			icon: 'mdi-calendar'
 		}
 	]
 
@@ -52,6 +58,8 @@
 
 	$: if ($page.url.pathname.startsWith('/teams'))
 		selectedIndex = options.findIndex((o) => o.name == 'teams')
+  else if ($page.url.pathname.startsWith('/calendar'))
+    selectedIndex = options.findIndex((o) => o.name == 'calendar')
 	else selectedIndex = options.findIndex((o) => o.name == 'home')
 
 	let drawerOpened: boolean

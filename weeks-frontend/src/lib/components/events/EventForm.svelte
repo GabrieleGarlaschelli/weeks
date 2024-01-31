@@ -100,7 +100,6 @@
 			datetime: Date | undefined
 		}>
 	) {
-		console.log(e.detail.datetime)
 		if (!!e.detail.datetime) {
 			let newDateStart = event.start
 			if (!newDateStart) newDateStart = new Date()

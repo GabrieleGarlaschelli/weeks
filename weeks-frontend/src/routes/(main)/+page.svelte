@@ -6,7 +6,6 @@
 	import type { PageData } from './$types'
 	import TeamsBoxList from '$lib/components/teams/TeamsBoxList.svelte'
 	import PageTitle from '$lib/components/common/PageTitle.svelte'
-	import { MediaQuery } from '@likable-hair/svelte'
 	import { onMount } from 'svelte'
 	import TeamsService from '$lib/services/teams/teams.service'
 	import { goto } from '$app/navigation'
@@ -14,6 +13,7 @@
 	import { DateTime } from 'luxon'
 	import EventsHorizontalList from '$lib/components/events/EventsHorizontalList.svelte'
 	import GlobalCalendarWithSidebar from '$lib/components/profile/GlobalCalendarWithSidebar.svelte'
+  import user from '$lib/stores/auth/user'
 
 	export let data: PageData
 
@@ -51,11 +51,7 @@
 	})
 </script>
 
-<PageTitle title="Home" />
-<div class="font-bold mt-4">I miei team</div>
-<div style:margin-top="10px">
-	<TeamsBoxList marginTop="20px" {teams} on:teams-click={handleTeamClick} />
-</div>
+<PageTitle title={`Bevenuto ${$user?.firstname} 👋`} />
 <div class="font-bold mt-4">Prossimi appuntamenti</div>
 <div style:margin-top="10px">
 	{#if loadingEvents}
@@ -63,8 +59,4 @@
 	{:else}
 		<EventsHorizontalList events={nextEvents} />
 	{/if}
-</div>
-<div class="font-bold mt-4">Calendario globale</div>
-<div style:margin-top="10px" style:padding-bottom="50px">
-	<GlobalCalendarWithSidebar events={data.events} />
 </div>

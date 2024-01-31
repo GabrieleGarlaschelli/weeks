@@ -35,9 +35,9 @@
 	}
 
 	function handleOptionClick(customEvent: any) {
-		if (customEvent.detail?.option?.name == 'save') {
+		if (customEvent.detail?.element?.name == 'save') {
 			handleConfirmClick()
-		} else if (customEvent.detail?.option?.name == 'delete' && !!event) {
+		} else if (customEvent.detail?.element?.name == 'delete' && !!event) {
 			let service = new EventsService({ fetch })
 			service.destroy(event).then(() => {
 				window.history.back()
@@ -65,7 +65,7 @@
 						}
 					}
 				]}
-				on:option-click={handleOptionClick}
+				on:select={handleOptionClick}
 			/>
 		</svelte:fragment>
 	</PageTitle>

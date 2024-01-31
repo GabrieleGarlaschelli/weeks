@@ -49,9 +49,9 @@
 				return (
 					!!$event &&
 					!$event.convocations.map((c) => c.teammateId).includes(tm.id) &&
-					tm.role?.convocable
+					(tm.role === undefined || tm.role === null || tm.role?.convocable)
 				)
-		  })
+		})
 		: []
 </script>
 

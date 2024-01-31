@@ -3,7 +3,7 @@
 		label: string
 		name: string
 		icon?: string
-	}
+	};
 </script>
 
 <script lang="ts">
@@ -43,7 +43,7 @@
 			on:keypress={() => handleButtonClick(button)}
 		>
 			{#if !!button.icon}
-				<Icon size={10} name={button.icon} />
+				<Icon --icon-size="10px" name={button.icon} />
 			{/if}
 			<span>{button.label}</span>
 		</div>
@@ -65,7 +65,7 @@
 
 	.selected {
 		color: var(--global-background-color);
-		background-color: var(--global-primary-color);
+		background-color: rgb(var(--global-color-primary-500));
 		border: 0px;
 	}
 

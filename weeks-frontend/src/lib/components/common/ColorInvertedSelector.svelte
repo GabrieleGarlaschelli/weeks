@@ -82,7 +82,7 @@
 
 	.selected {
 		color: var(--global-background-color);
-		background-color: var(--global-primary-color);
+		background-color: rgb(var(--global-color-primary-500));
 		font-weight: 700;
 	}
 </style>

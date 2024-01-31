@@ -45,20 +45,25 @@
 		? events.sort((a, b) => {
 				return DateTime.fromJSDate(new Date(a.start)).diff(DateTime.fromJSDate(new Date(b.start)))
 					.milliseconds
-		  })
+		})
 		: []
 </script>
 
 <div class="events-container">
 	{#if events.length > 0}
 		{#each sortedEvents as event}
-			<div class="event-post" on:click={() => handleEventClick(event)} class:clickable={true}>
+			<button class="event-post" on:click={() => handleEventClick(event)} class:clickable={true}>
+        <div class="event-post-band"></div>
 				<div class="title">{event.name}</div>
-				<div class="time">{formattedTime(event)}, {event.team.name}</div>
+        <div class="team">{event.team.name}</div>
+				<div class="time">{formattedTime(event)}</div>
 				{#if !!event.description}
 					<div class="description" style:white-space="pre-wrap">{event.description}</div>
 				{/if}
-			</div>
+        <div class="event-post-cta">
+          <Icon name="mdi-arrow-right" --icon-size="24px"></Icon>
+        </div>
+      </button>
 		{/each}
 		{#if !!team && CansService.can('Event', 'create')}
 			<div class="plus-container">
@@ -75,33 +80,75 @@
 <style>
 	.events-container {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		gap: 10px;
+    overflow-x: auto;
 	}
 
 	.event-post {
-		background-color: var(--global-thin-contrast-color);
+		background-color: rgb(var(--global-color-background-300));
 		border-radius: 5px;
 		padding-top: 5px;
-		padding-left: 10px;
+		padding-left: 20px;
 		padding-right: 10px;
 		padding-bottom: 5px;
+    position: relative;
+    text-align: left;
 	}
+
+  @media (min-width: 768px) {
+    .event-post {
+      min-width: 240px;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .event-post {
+      min-width: 90%;
+      scroll-snap-align: start;
+    }
+
+    .events-container {
+      scroll-snap-type: x mandatory;
+      width: 100%;
+    }
+  }
+
+  .event-post-band {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 10px;
+    left: 0px;
+    border-radius: 5px 0px 0px 5px;
+    background-color: rgb(var(--global-color-primary-500));
+  }
+
+  .event-post-cta {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+  }
 
 	.clickable {
 		cursor: pointer;
 	}
 
 	.title {
-		font-weight: 500;
+		font-weight: 700;
 		font-size: 1.2rem;
 		margin-top: 5px;
 		margin-bottom: 5px;
 	}
 
+  .team {
+		font-size: 0.8rem;
+		font-weight: 500;
+	}
+
 	.time {
 		font-size: 0.8rem;
-		font-weight: 300;
+		font-weight: 200;
 		margin-bottom: 10px;
 	}
 

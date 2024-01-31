@@ -87,7 +87,7 @@
 	}
 
 	.selected {
-		background-color: var(--global-primary-color);
+		background-color: rgb(var(--global-color-primary-500));
 		color: var(--global-background-color);
 		cursor: default;
 	}
