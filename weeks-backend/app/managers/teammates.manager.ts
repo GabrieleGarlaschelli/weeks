@@ -141,7 +141,7 @@ export default class TeammatesManager {
         INNER JOIN teammates t ON t.id = c."teammateId"
         WHERE c."confirmationStatus" = 'denied' AND t."teamId" IN (${teams.map((t) => t.id).join(', ')})
         GROUP BY t."teamId", t."userId", t.id
-      `)
+      `).useTransaction(trx)
 
       let finalResults: AbsencesForTeammates = []
 

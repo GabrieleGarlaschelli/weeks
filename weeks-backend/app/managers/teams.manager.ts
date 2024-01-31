@@ -507,7 +507,7 @@ export default class TeamsManager {
       ) AND e."teamId" IN (${teams.map((t) => t.id).join(', ')})
       GROUP BY e.id, e."teamId"`, {
         lastEventNumber: params.data.forLastEvents,
-      })
+      }).useTransaction(trx)
 
       let finalResults: Record<number, {
         team: {
