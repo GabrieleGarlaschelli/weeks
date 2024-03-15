@@ -33,7 +33,7 @@
 	$: filteredTeams = !!searchText
 		? teams.filter((team) => {
 				return team.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
-		  })
+			})
 		: teams
 </script>
 

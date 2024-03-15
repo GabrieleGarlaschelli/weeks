@@ -65,7 +65,7 @@
 		events = !!events
 			? events.filter((e) => {
 					return !(e.start > from && e.start < to)
-			  })
+				})
 			: []
 
 		events = [...events, ...newEvents]

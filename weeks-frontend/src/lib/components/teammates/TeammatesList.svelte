@@ -50,7 +50,7 @@
 				return (
 					teammate.user.firstname.toLowerCase() + teammate.user.lastname.toLowerCase()
 				).includes(searchText.toLowerCase())
-		  })
+			})
 		: teammates
 
 	function inviteUser(event: any) {

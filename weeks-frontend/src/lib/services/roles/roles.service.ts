@@ -15,14 +15,30 @@ export type PaginatedRoles = {
 	meta: PaginationData
 }
 
-export const resources = ['Team', 'Invitation', 'Event', 'Convocation', 'EventSession', 'Role']
-export type Resource = 'Team' | 'Invitation' | 'Event' | 'Convocation' | 'EventSession' | 'Role'
+export const resources = [
+	'Team',
+	'Invitation',
+	'Event',
+	'Convocation',
+	'EventSession',
+	'Role',
+	'Scout'
+]
+export type Resource =
+	| 'Team'
+	| 'Invitation'
+	| 'Event'
+	| 'Convocation'
+	| 'EventSession'
+	| 'Role'
+	| 'Scout'
 
 export const actionsForResources: { [key: string]: string[] } = {
 	Team: ['update', 'invite', 'removeUser', 'destroy'],
 	Event: ['create', 'update', 'destroy', 'convocate'],
 	Role: ['update'],
-	Convocation: ['confirm', 'deny']
+	Convocation: ['confirm', 'deny'],
+	Scout: ['create']
 }
 
 export type Action =
@@ -125,7 +141,8 @@ export default class RolesService extends FetchBasedService {
 			Event: 'Eventi',
 			Convocation: 'Convocazioni',
 			EventSession: 'Sessioni',
-			Role: 'Ruoli'
+			Role: 'Ruoli',
+			Scout: 'Scout'
 		}
 		return translationMapping[resource]
 	}

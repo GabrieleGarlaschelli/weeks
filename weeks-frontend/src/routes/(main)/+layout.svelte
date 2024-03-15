@@ -32,7 +32,8 @@
 
 	function handleMenuClick(event: CustomEvent<{ option: { name: string } }>) {
 		if (event.detail.option.name == 'teams') goto('/teams')
-    else if (event.detail.option.name == 'calendar') goto('/calendar')
+		else if (event.detail.option.name == 'calendar') goto('/calendar')
+    else if (event.detail.option.name == 'scout') goto('/scout')
 		else if (event.detail.option.name == 'home') goto('/')
 	}
 
@@ -47,10 +48,15 @@
 			label: 'Teams',
 			icon: 'mdi-account-multiple'
 		},
-    {
+		{
 			name: 'calendar',
 			label: 'Calendario',
 			icon: 'mdi-calendar'
+		},
+		{
+			name: 'scout',
+			label: 'Scout',
+			icon: 'mdi-chart-line'
 		}
 	]
 
@@ -58,8 +64,10 @@
 
 	$: if ($page.url.pathname.startsWith('/teams'))
 		selectedIndex = options.findIndex((o) => o.name == 'teams')
-  else if ($page.url.pathname.startsWith('/calendar'))
-    selectedIndex = options.findIndex((o) => o.name == 'calendar')
+	else if ($page.url.pathname.startsWith('/calendar'))
+		selectedIndex = options.findIndex((o) => o.name == 'calendar')
+  else if ($page.url.pathname.startsWith('/scout'))
+		selectedIndex = options.findIndex((o) => o.name == 'scout')
 	else selectedIndex = options.findIndex((o) => o.name == 'home')
 
 	let drawerOpened: boolean
@@ -116,20 +124,20 @@
 					</div>
 					{#if sidebarExpanded || hamburgerVisible}
 						<div class="mt-3 flex flex-col gap-3 pl-1">
-							<div
-								class="cursor-pointer opacity-60"
+							<button
+								class="cursor-pointer opacity-60 text-left"
 								on:click={handleLogoutClick}
 								on:keydown={handleLogoutClick}
 							>
 								Logout
-							</div>
-							<div
-								class="cursor-pointer opacity-60"
+              </button>
+							<button
+								class="cursor-pointer opacity-60 text-left"
 								on:click={handleDarkThemeClick}
 								on:keydown={handleDarkThemeClick}
 							>
 								{$theme.dark ? 'Tema chiaro' : 'Tema scuro'}
-							</div>
+              </button>
 						</div>
 					{/if}
 				</div>

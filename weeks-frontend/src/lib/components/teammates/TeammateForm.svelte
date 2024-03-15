@@ -21,7 +21,7 @@
 					value: role.id.toString(),
 					label: role.name
 				}
-		  ]
+			]
 		: []
 
 	function handleRoleChange() {

@@ -29,19 +29,21 @@ export default class EventsService extends FetchBasedService {
 			}
 		}
 	}): Promise<Event[]> {
-    let teamParameter = !!params.filters.team ? {
-      id: params.filters.team?.id
-    } : undefined
+		let teamParameter = !!params.filters.team
+			? {
+					id: params.filters.team?.id
+				}
+			: undefined
 
 		let response = await this.client.get({
 			url: '/events',
 			params: {
-        filters: {
-          from: params.filters.from,
-          to: params.filters.to,
-          team: teamParameter
-        }
-      }
+				filters: {
+					from: params.filters.from,
+					to: params.filters.to,
+					team: teamParameter
+				}
+			}
 		})
 
 		return response.map((el: any) => {

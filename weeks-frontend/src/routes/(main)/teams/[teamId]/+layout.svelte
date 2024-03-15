@@ -165,7 +165,8 @@
 		$page.url.pathname.endsWith('/roles/new') ||
 		/\/roles\/\d+\/edit$/.test($page.url.pathname) ||
 		$page.url.pathname.endsWith('/events/new') ||
-		/\/events\/\d+\//.test($page.url.pathname)
+		/\/events\/\d+\//.test($page.url.pathname) ||
+    $page.url.pathname.endsWith('/scout/new')
 </script>
 
 {#if !!$team}

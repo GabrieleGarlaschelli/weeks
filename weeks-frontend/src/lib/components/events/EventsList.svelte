@@ -52,7 +52,7 @@
 		? events.sort((a, b) => {
 				return DateTime.fromJSDate(new Date(a.start)).diff(DateTime.fromJSDate(new Date(b.start)))
 					.milliseconds
-		})
+			})
 		: []
 </script>
 
@@ -60,7 +60,7 @@
 	{#if events.length > 0}
 		{#each sortedEvents as event}
 			<button class="event-post" on:click={() => handleEventClick(event)} class:clickable={true}>
-        <div class="event-post-band"></div>
+				<div class="event-post-band"></div>
 				<div class="title">{event.name}</div>
 				<div class="time">
 					{formattedTime(event)}
@@ -96,7 +96,7 @@
 						</span>
 					</div>
 				{/if}
-      </button>
+			</button>
 		{/each}
 		{#if !!team && CansService.can('Event', 'create')}
 			<div class="plus-container">
@@ -126,19 +126,19 @@
 		padding-bottom: 5px;
 		margin-left: 10px;
 		margin-right: 10px;
-    text-align: left;
-    position: relative;
+		text-align: left;
+		position: relative;
 	}
 
-  .event-post-band {
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    width: 10px;
-    left: 0px;
-    border-radius: 5px 0px 0px 5px;
-    background-color: rgb(var(--global-color-primary-500));
-  }
+	.event-post-band {
+		position: absolute;
+		top: 0px;
+		bottom: 0px;
+		width: 10px;
+		left: 0px;
+		border-radius: 5px 0px 0px 5px;
+		background-color: rgb(var(--global-color-primary-500));
+	}
 
 	.clickable {
 		cursor: pointer;

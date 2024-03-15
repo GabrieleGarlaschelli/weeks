@@ -23,7 +23,8 @@ export type Resource =
   'Convocation' |
   'EventSession' |
   'Role' |
-  'Teammate'
+  'Teammate' |
+  'Scout'
 
 export type Action =
   'update' |

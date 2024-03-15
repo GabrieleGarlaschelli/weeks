@@ -49,10 +49,10 @@
 		}
 	}
 
-  function displayDatalabels(context: any) {
-    return false
-    return context.dataset.data[context.dataIndex] > 1 // or >= 1 or ...
-  }
+	function displayDatalabels(context: any) {
+		return false
+		return context.dataset.data[context.dataIndex] > 1 // or >= 1 or ...
+	}
 </script>
 
 <Bar

@@ -217,13 +217,13 @@
 										--chip-hover-background-color={convocation.confirmationStatus == 'denied'
 											? 'red'
 											: convocation.confirmationStatus == 'confirmed'
-											? 'rgb(var(--global-color-primary-500))'
-											: 'rgb(var(--global-color-background-400))'}
+												? 'rgb(var(--global-color-primary-500))'
+												: 'rgb(var(--global-color-background-400))'}
 										--chip-background-color={convocation.confirmationStatus == 'denied'
 											? 'red'
 											: convocation.confirmationStatus == 'confirmed'
-											? 'rgb(var(--global-color-primary-500))'
-											: 'rgb(var(--global-color-background-400))'}
+												? 'rgb(var(--global-color-primary-500))'
+												: 'rgb(var(--global-color-background-400))'}
 									>
 										<span style:font-weight="700"
 											>{translateConfirmationStatus(convocation.confirmationStatus)}</span
@@ -296,13 +296,13 @@
 								--chip-hover-background-color={editingConvocation.confirmationStatus == 'denied'
 									? 'red'
 									: editingConvocation.confirmationStatus == 'confirmed'
-									? 'rgb(var(--global-color-primary-500))'
-									: 'rgb(var(--global-color-background-400))'}
+										? 'rgb(var(--global-color-primary-500))'
+										: 'rgb(var(--global-color-background-400))'}
 								--chip-background-color={editingConvocation.confirmationStatus == 'denied'
 									? 'red'
 									: editingConvocation.confirmationStatus == 'confirmed'
-									? 'rgb(var(--global-color-primary-500))'
-									: 'rgb(var(--global-color-background-400))'}
+										? 'rgb(var(--global-color-primary-500))'
+										: 'rgb(var(--global-color-background-400))'}
 							>
 								<span style:font-weight="700"
 									>{translateConfirmationStatus(editingConvocation.confirmationStatus)}</span

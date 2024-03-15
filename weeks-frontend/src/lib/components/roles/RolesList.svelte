@@ -34,7 +34,7 @@
 	$: filteredRoles = !!searchText
 		? roles.filter((role) => {
 				return role.name.toLowerCase().includes(searchText.toLowerCase())
-		  })
+			})
 		: roles
 
 	function goToNewRole(event: any) {

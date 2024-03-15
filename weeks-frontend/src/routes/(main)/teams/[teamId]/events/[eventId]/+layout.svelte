@@ -81,7 +81,9 @@
 		if (selectedTab == 'general') {
 			goto(`/teams/${data.event.teamId}/events/${data.event.id}/general`, { replaceState: true })
 		} else if (selectedTab == 'convocations') {
-			goto(`/teams/${data.event.teamId}/events/${data.event.id}/convocations`, { replaceState: true })
+			goto(`/teams/${data.event.teamId}/events/${data.event.id}/convocations`, {
+				replaceState: true
+			})
 		}
 	}
 
@@ -97,10 +99,7 @@
 {#if !!$event}
 	{#if !headerHidden}
 		<div transition:slide|local={{ duration: 200 }}>
-			<PageTitle
-				title={$event.name}
-				prependVisible={true}
-			>
+			<PageTitle title={$event.name} prependVisible={true}>
 				<svelte:fragment slot="append">
 					{#if !!options && options.length > 0}
 						<OptionMenu {options} on:select={handleOptionClick} />

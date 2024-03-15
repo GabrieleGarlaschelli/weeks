@@ -3,7 +3,7 @@
 		label: string
 		name: string
 		icon?: string
-	};
+	}
 </script>
 
 <script lang="ts">

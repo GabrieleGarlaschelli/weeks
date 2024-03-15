@@ -7,7 +7,8 @@ export default class TeamsController {
     return await manager.list({
       data: {
         page: request.input('page'),
-        perPage: request.input('perPage')
+        perPage: request.input('perPage'),
+        filters: request.input('filters')
       }
     })
   }
