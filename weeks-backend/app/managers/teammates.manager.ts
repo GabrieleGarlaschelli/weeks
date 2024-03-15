@@ -125,6 +125,8 @@ export default class TeammatesManager {
 
       let teams = await query
 
+      if(teams.length == 0) return []
+
       let results = await Database.rawQuery<{
         rows: {
           userId: number

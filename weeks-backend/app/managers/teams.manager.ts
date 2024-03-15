@@ -61,7 +61,10 @@ export type AddUserParams = {
 export type ListParams = {
   data: {
     page?: number,
-    perPage?: number
+    perPage?: number,
+    filters?: {
+      scoutable?: boolean 
+    }
   },
   context?: Context
 }
@@ -98,6 +101,17 @@ export default class TeamsManager {
           userQuery.where('id', user.id)
         })
       })
+
+      if(!!params.data.filters?.scoutable) {
+        query.where(b => {
+          b.whereHas('roles', rolesBuilder => {
+            rolesBuilder.whereRaw("cast(roles.cans->:resource->>:action as BOOLEAN) = true", {
+              resource: 'Scout',
+              action: 'manage'
+            })
+          }).orWhere('ownerId', user.id)
+        })
+      }
     }
 
     const results = await query
@@ -464,6 +478,8 @@ export default class TeamsManager {
       }
 
       let teams = await query
+
+      if (teams.length == 0) return []
 
       let results = await Database.rawQuery<{
         rows: {
