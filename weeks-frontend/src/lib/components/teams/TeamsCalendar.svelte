@@ -27,6 +27,7 @@
 							month: visibleMonth + 1,
 							year: visibleYear
 						})
+            .minus({ month: 1 })
 						.startOf('month')
 						.startOf('day')
 						.startOf('hour')
@@ -39,6 +40,7 @@
 							month: visibleMonth + 1,
 							year: visibleYear
 						})
+            .plus({ month: 1 })
 						.endOf('month')
 						.endOf('day')
 						.endOf('hour')

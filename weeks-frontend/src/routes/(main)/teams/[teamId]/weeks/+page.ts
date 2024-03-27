@@ -8,8 +8,8 @@ export const load = (async ({ parent, fetch, params }) => {
 	let eventsService = new EventsService({ fetch, token: parentData.token })
 	let events = await eventsService.list({
 		filters: {
-			from: DateTime.now().startOf('month').toJSDate(),
-			to: DateTime.now().endOf('month').toJSDate(),
+			from: DateTime.now().startOf('month').minus({ month: 1 }).toJSDate(),
+			to: DateTime.now().endOf('month').plus({ month: 1 }).toJSDate(),
 			team: parentData.team
 		}
 	})
